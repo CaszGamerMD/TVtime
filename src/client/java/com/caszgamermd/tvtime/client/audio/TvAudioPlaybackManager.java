@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class TvAudioPlaybackManager {
-    private static final float DEFAULT_RANGE = 24.0f;
-
     private static final Map<TvAudioAnchors.SourceKey, Playback> PLAYBACKS = new HashMap<>();
 
     private TvAudioPlaybackManager() {
@@ -43,7 +41,7 @@ public final class TvAudioPlaybackManager {
         anchors.forEach((sourceKey, anchor) -> {
             Playback playback = PLAYBACKS.get(sourceKey);
             if (playback == null || playback.stopped()) {
-                playback = create(anchor.sessionId());
+                playback = create(anchor);
                 if (playback == null) {
                     return;
                 }
@@ -60,7 +58,7 @@ public final class TvAudioPlaybackManager {
         TvAudioAnchors.clear();
     }
 
-    private static Playback create(UUID sessionId) {
+    private static Playback create(TvAudioAnchors.Anchor anchor) {
         Minecraft client = Minecraft.getInstance();
         SoundManager soundManager = client.getSoundManager();
 
@@ -77,12 +75,16 @@ public final class TvAudioPlaybackManager {
             return null;
         }
 
-        TvPcmAudioStream stream = new TvPcmAudioStream(sessionId);
+        TvPcmAudioStream stream = new TvPcmAudioStream(
+            anchor.sessionId(),
+            anchor.speakerChannel()
+        );
 
         handle.execute(channel -> {
             channel.setPitch(1.0f);
-            channel.setVolume(1.0f);
-            channel.linearAttenuation(DEFAULT_RANGE);
+            channel.setVolume(anchor.volume());
+            channel.linearAttenuation(anchor.range());
+            channel.setSelfPosition(anchor.position());
             channel.setRelative(false);
             channel.attachBufferStream(stream);
             channel.play();
@@ -96,9 +98,11 @@ public final class TvAudioPlaybackManager {
         TvPcmAudioStream stream
     ) {
         private void update(TvAudioAnchors.Anchor anchor) {
-            handle.execute(channel ->
-                channel.setSelfPosition(anchor.position())
-            );
+            handle.execute(channel -> {
+                channel.setSelfPosition(anchor.position());
+                channel.setVolume(anchor.volume());
+                channel.linearAttenuation(anchor.range());
+            });
         }
 
         private void stop() {
