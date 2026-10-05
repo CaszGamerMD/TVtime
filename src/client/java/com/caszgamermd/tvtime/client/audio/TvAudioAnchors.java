@@ -1,5 +1,6 @@
 package com.caszgamermd.tvtime.client.audio;
 
+import com.caszgamermd.tvtime.audio.SpeakerChannel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
@@ -17,7 +18,10 @@ public final class TvAudioAnchors {
     public static void markSeen(
         UUID sessionId,
         BlockPos sourcePos,
-        Vec3 position
+        Vec3 position,
+        SpeakerChannel speakerChannel,
+        float volume,
+        int range
     ) {
         if (sessionId == null || sourcePos == null || position == null) {
             return;
@@ -25,7 +29,14 @@ public final class TvAudioAnchors {
 
         ANCHORS.put(
             new SourceKey(sessionId, sourcePos.immutable()),
-            new Anchor(sessionId, position, System.currentTimeMillis())
+            new Anchor(
+                sessionId,
+                position,
+                speakerChannel == null ? SpeakerChannel.FULL : speakerChannel,
+                Math.max(0.0f, Math.min(2.0f, volume)),
+                Math.max(1, Math.min(128, range)),
+                System.currentTimeMillis()
+            )
         );
     }
 
@@ -50,6 +61,9 @@ public final class TvAudioAnchors {
     public record Anchor(
         UUID sessionId,
         Vec3 position,
+        SpeakerChannel speakerChannel,
+        float volume,
+        int range,
         long seenAtMillis
     ) {
     }
