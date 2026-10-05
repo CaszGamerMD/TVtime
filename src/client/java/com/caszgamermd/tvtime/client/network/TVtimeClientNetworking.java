@@ -3,6 +3,8 @@ package com.caszgamermd.tvtime.client.network;
 import com.caszgamermd.tvtime.client.media.ClientBroadcastMedia;
 import com.caszgamermd.tvtime.client.media.RawTestFrameCodec;
 import com.caszgamermd.tvtime.client.media.VideoFrameStore;
+import com.caszgamermd.tvtime.client.media.RawPcmAudioCodec;
+import com.caszgamermd.tvtime.client.media.AudioChunkStore;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
 import com.caszgamermd.tvtime.network.payload.StartBroadcastAckPayload;
 import com.caszgamermd.tvtime.network.payload.ChannelSessionPayload;
@@ -42,6 +44,16 @@ public final class TVtimeClientNetworking {
 
                 if (rawFrame != null) {
                     VideoFrameStore.publish(payload.sessionId(), rawFrame);
+                    return;
+                }
+
+                var rawAudio = RawPcmAudioCodec.decode(
+                    payload.payload(),
+                    payload.presentationTimeMicros()
+                );
+
+                if (rawAudio != null) {
+                    AudioChunkStore.offer(payload.sessionId(), rawAudio);
                     return;
                 }
 
