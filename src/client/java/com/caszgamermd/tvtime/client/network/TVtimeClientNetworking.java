@@ -6,6 +6,8 @@ import com.caszgamermd.tvtime.client.media.VideoFrameStore;
 import com.caszgamermd.tvtime.client.media.RawPcmAudioCodec;
 import com.caszgamermd.tvtime.client.audio.TvAudioBus;
 import com.caszgamermd.tvtime.client.media.DeflateVideoCodec;
+import com.caszgamermd.tvtime.client.media.DeltaVideoDecoderStore;
+import com.caszgamermd.tvtime.network.MediaKind;
 import com.caszgamermd.tvtime.client.media.MediaReassembler;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
 import com.caszgamermd.tvtime.network.payload.MediaFragmentPayload;
@@ -49,7 +51,10 @@ public final class TVtimeClientNetworking {
 
                 handleCompleteMedia(
                     complete.sessionId(),
+                    complete.kind(),
+                    complete.sequence(),
                     complete.presentationTimeMicros(),
+                    complete.keyFrame(),
                     complete.payload()
                 );
             }
@@ -60,7 +65,10 @@ public final class TVtimeClientNetworking {
             (payload, context) -> {
                 if (handleCompleteMedia(
                     payload.sessionId(),
+                    payload.kind(),
+                    payload.sequence(),
                     payload.presentationTimeMicros(),
+                    payload.keyFrame(),
                     payload.payload()
                 )) {
                     return;
@@ -73,27 +81,47 @@ public final class TVtimeClientNetworking {
 
     private static boolean handleCompleteMedia(
         java.util.UUID sessionId,
+        MediaKind kind,
+        long sequence,
         long presentationTimeMicros,
+        boolean keyFrame,
         byte[] encoded
     ) {
-        var compressedFrame = DeflateVideoCodec.decode(
-            encoded,
-            presentationTimeMicros
-        );
+        if (kind == MediaKind.VIDEO) {
+            var deltaFrame = DeltaVideoDecoderStore.decode(
+                sessionId,
+                sequence,
+                presentationTimeMicros,
+                keyFrame,
+                encoded
+            );
 
-        if (compressedFrame != null) {
-            VideoFrameStore.publish(sessionId, compressedFrame);
-            return true;
-        }
+            if (deltaFrame != null) {
+                VideoFrameStore.publish(sessionId, deltaFrame);
+                return true;
+            }
 
-        var rawFrame = RawTestFrameCodec.decode(
-            encoded,
-            presentationTimeMicros
-        );
+            var compressedFrame = DeflateVideoCodec.decode(
+                encoded,
+                presentationTimeMicros
+            );
 
-        if (rawFrame != null) {
-            VideoFrameStore.publish(sessionId, rawFrame);
-            return true;
+            if (compressedFrame != null) {
+                VideoFrameStore.publish(sessionId, compressedFrame);
+                return true;
+            }
+
+            var rawFrame = RawTestFrameCodec.decode(
+                encoded,
+                presentationTimeMicros
+            );
+
+            if (rawFrame != null) {
+                VideoFrameStore.publish(sessionId, rawFrame);
+                return true;
+            }
+
+            return false;
         }
 
         var rawAudio = RawPcmAudioCodec.decode(
