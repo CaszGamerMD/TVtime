@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "GGR",
+    "III"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:black_stained_glass_pane",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "tvtime:tv",
+    "count": 1
+  }
+}
