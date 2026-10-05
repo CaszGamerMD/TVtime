@@ -43,6 +43,13 @@ jobs:
         shell: pwsh
         run: cmake --build native/windows/build --config Release
 
+      - name: Embed native helper in client resources
+        shell: pwsh
+        run: |
+          $target = "src/client/resources/tvtime/native/windows-x64"
+          New-Item -ItemType Directory -Force -Path $target | Out-Null
+          Copy-Item native/windows/build/Release/tvtime-capture.exe "$target/tvtime-capture.exe"
+
       - name: Build Fabric mod
         shell: pwsh
         run: gradle build --stacktrace
@@ -51,7 +58,6 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path bundle | Out-Null
-          Copy-Item native/windows/build/Release/tvtime-capture.exe bundle/tvtime-capture.exe
 
           $jar = Get-ChildItem build/libs/*.jar |
             Where-Object { $_.Name -notmatch "sources" } |
@@ -67,13 +73,12 @@ jobs:
           TVtime Windows development bundle
 
           1. Put the TVtime JAR in your Minecraft mods folder.
-          2. Put tvtime-capture.exe in your Minecraft game folder
-             (the same folder that contains mods/), OR:
-             config/tvtime/tvtime-capture.exe
-          3. Start Minecraft.
-          4. /tvtime_capture windows
-          5. /tvtime_capture start <windowIndex> <channel>
-          6. Look at a connected TV wall and run:
+          2. Start Minecraft. The Windows capture helper is bundled inside
+             the JAR and is extracted automatically to:
+             config/tvtime/native/tvtime-capture.exe
+          3. /tvtime_capture windows
+          4. /tvtime_capture start <windowIndex> <channel>
+          5. Look at a connected TV wall and run:
              /tvtime_capture tune <channel>
 
           Current real-window development stream:
