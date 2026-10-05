@@ -154,6 +154,17 @@ public final class TVtimeNetworking {
             payload.videoBitrateKbps()
         );
 
+        SUBSCRIPTIONS.attachSession(session.id(), session.channel());
+        for (UUID viewerId : SUBSCRIPTIONS.viewers(session.id())) {
+            ServerPlayer viewer = player.getServer().getPlayerList().getPlayer(viewerId);
+            if (viewer != null) {
+                ServerPlayNetworking.send(
+                    viewer,
+                    new ChannelSessionPayload(session.channel(), session.id(), true)
+                );
+            }
+        }
+
         ServerPlayNetworking.send(
             player,
             new StartBroadcastAckPayload(session.id(), session.channel())
@@ -190,20 +201,31 @@ public final class TVtimeNetworking {
 
     private static void handleSubscription(ServerPlayer player, SubscribeChannelPayload payload) {
         String channel = sanitizeChannel(payload.channel());
-        TVtime.broadcasts().byChannel(channel).ifPresent(session -> {
-            if (payload.subscribed()) {
+        if (channel.isEmpty()) {
+            return;
+        }
+
+        if (payload.subscribed()) {
+            SUBSCRIPTIONS.subscribeChannel(channel, player.getUUID());
+
+            TVtime.broadcasts().byChannel(channel).ifPresent(session -> {
                 SUBSCRIPTIONS.subscribe(session.id(), player.getUUID());
                 ServerPlayNetworking.send(
                     player,
                     new ChannelSessionPayload(session.channel(), session.id(), true)
                 );
-            } else {
-                SUBSCRIPTIONS.unsubscribe(session.id(), player.getUUID());
-                ServerPlayNetworking.send(
-                    player,
-                    new ChannelSessionPayload(session.channel(), session.id(), false)
-                );
-            }
+            });
+            return;
+        }
+
+        SUBSCRIPTIONS.unsubscribeChannel(channel, player.getUUID());
+
+        TVtime.broadcasts().byChannel(channel).ifPresent(session -> {
+            SUBSCRIPTIONS.unsubscribe(session.id(), player.getUUID());
+            ServerPlayNetworking.send(
+                player,
+                new ChannelSessionPayload(session.channel(), session.id(), false)
+            );
         });
     }
 
