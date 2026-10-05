@@ -230,31 +230,48 @@ public final class HelperProcessCaptureBackend implements WindowCaptureBackend {
                     break;
                 }
 
-                if (type != 1 || format != 0 || width <= 0 || height <= 0) {
-                    continue;
-                }
-
-                long expected = (long) width * height * 4L;
-                if (expected != payloadLength) {
-                    continue;
-                }
-
                 Listener current = listener;
                 if (current == null || !running) {
                     continue;
                 }
 
-                ByteBuffer pixels = ByteBuffer.allocateDirect(payloadLength);
-                pixels.put(payload);
-                pixels.flip();
+                if (type == 1 && format == 0 && width > 0 && height > 0) {
+                    long expected = (long) width * height * 4L;
+                    if (expected != payloadLength) {
+                        continue;
+                    }
 
-                current.onVideoFrame(new CapturedVideoFrame(
-                    width,
-                    height,
-                    timestampMicros,
-                    CapturedVideoFrame.PixelFormat.BGRA8,
-                    pixels
-                ));
+                    ByteBuffer pixels = ByteBuffer.allocateDirect(payloadLength);
+                    pixels.put(payload);
+                    pixels.flip();
+
+                    current.onVideoFrame(new CapturedVideoFrame(
+                        width,
+                        height,
+                        timestampMicros,
+                        CapturedVideoFrame.PixelFormat.BGRA8,
+                        pixels
+                    ));
+                    continue;
+                }
+
+                if (type == 2 && format == 0 && width > 0 && height > 0) {
+                    if ((payloadLength & 1) != 0) {
+                        continue;
+                    }
+
+                    ByteBuffer samples = ByteBuffer.allocateDirect(payloadLength);
+                    samples.put(payload);
+                    samples.flip();
+
+                    current.onAudioChunk(new CapturedAudioChunk(
+                        width,
+                        height,
+                        CapturedAudioChunk.SampleFormat.S16_LE,
+                        timestampMicros,
+                        samples
+                    ));
+                }
             }
         } catch (IOException e) {
             if (process != null && process.isAlive()) {
