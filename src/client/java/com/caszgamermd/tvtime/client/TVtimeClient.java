@@ -7,6 +7,7 @@ import com.caszgamermd.tvtime.client.network.ClientChannelSubscriptions;
 import com.caszgamermd.tvtime.client.network.ClientChannelDirectory;
 import com.caszgamermd.tvtime.client.network.TestNetworkBroadcaster;
 import com.caszgamermd.tvtime.client.command.TVtimeClientCommands;
+import com.caszgamermd.tvtime.client.capture.CaptureBroadcastController;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -23,6 +24,7 @@ public final class TVtimeClient implements ClientModInitializer {
                 ClientChannelSubscriptions.clear();
                 ClientChannelDirectory.clear();
                 TestNetworkBroadcaster.stop();
+                CaptureBroadcastController.instance().stop();
             } else {
                 ClientChannelSubscriptions.tick();
                 TestNetworkBroadcaster.tick();
