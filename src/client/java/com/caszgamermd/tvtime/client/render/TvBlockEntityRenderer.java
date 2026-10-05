@@ -8,11 +8,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -87,7 +86,7 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
             Component.literal(title).getVisualOrderText(),
             false,
             Font.DisplayMode.SEE_THROUGH,
-            LightTexture.FULL_BRIGHT,
+            state.lightCoords,
             0xffffffff,
             0,
             0
@@ -104,7 +103,7 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
             Component.literal(detail).getVisualOrderText(),
             false,
             Font.DisplayMode.SEE_THROUGH,
-            LightTexture.FULL_BRIGHT,
+            state.lightCoords,
             0xff7fffd4,
             0,
             0
