@@ -154,12 +154,23 @@ public final class TVtimeClientCommands {
                                 CaptureBroadcastController controller =
                                     CaptureBroadcastController.instance();
 
+                                if (!controller.running()) {
+                                    context.getSource().sendFeedback(
+                                        Component.literal("TVtime window capture is idle.")
+                                    );
+                                    return 0;
+                                }
+
+                                var stats = controller.stats();
                                 context.getSource().sendFeedback(Component.literal(
-                                    controller.running()
-                                        ? "TVtime is capturing channel '" + controller.channel() + "'."
-                                        : "TVtime window capture is idle."
+                                    "TVtime channel '" + controller.channel() + "'"
+                                        + " | " + String.format("%.1f", stats.fps()) + " FPS"
+                                        + " | " + String.format("%.0f", stats.kbps()) + " kbps"
+                                        + " | video "
+                                        + String.format("%.1f%%", stats.compressionRatio() * 100.0)
+                                        + " of raw size"
                                 ));
-                                return controller.running() ? 1 : 0;
+                                return 1;
                             })
                     )
                     .then(tuneCommand())
