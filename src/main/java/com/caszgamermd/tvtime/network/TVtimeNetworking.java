@@ -7,6 +7,7 @@ import com.caszgamermd.tvtime.display.TvDisplaySettings;
 import com.caszgamermd.tvtime.block.ModBlocks;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
 import com.caszgamermd.tvtime.network.payload.ConfigureTvPayload;
+import com.caszgamermd.tvtime.network.payload.ChannelSessionPayload;
 import com.caszgamermd.tvtime.network.payload.StartBroadcastAckPayload;
 import com.caszgamermd.tvtime.network.payload.StartBroadcastPayload;
 import com.caszgamermd.tvtime.network.payload.StopBroadcastPayload;
@@ -60,6 +61,10 @@ public final class TVtimeNetworking {
         PayloadTypeRegistry.clientboundPlay().register(
             MediaRelayPayload.TYPE,
             MediaRelayPayload.CODEC
+        );
+        PayloadTypeRegistry.clientboundPlay().register(
+            ChannelSessionPayload.TYPE,
+            ChannelSessionPayload.CODEC
         );
 
         ServerPlayNetworking.registerGlobalReceiver(
@@ -168,6 +173,15 @@ public final class TVtimeNetworking {
                 return;
             }
 
+            for (UUID viewerId : SUBSCRIPTIONS.viewers(session.id())) {
+                ServerPlayer viewer = player.getServer().getPlayerList().getPlayer(viewerId);
+                if (viewer != null) {
+                    ServerPlayNetworking.send(
+                        viewer,
+                        new ChannelSessionPayload(session.channel(), session.id(), false)
+                    );
+                }
+            }
             SUBSCRIPTIONS.removeSession(session.id());
             RATE_LIMITER.remove(session.id());
             TVtime.broadcasts().remove(session.id());
@@ -179,8 +193,16 @@ public final class TVtimeNetworking {
         TVtime.broadcasts().byChannel(channel).ifPresent(session -> {
             if (payload.subscribed()) {
                 SUBSCRIPTIONS.subscribe(session.id(), player.getUUID());
+                ServerPlayNetworking.send(
+                    player,
+                    new ChannelSessionPayload(session.channel(), session.id(), true)
+                );
             } else {
                 SUBSCRIPTIONS.unsubscribe(session.id(), player.getUUID());
+                ServerPlayNetworking.send(
+                    player,
+                    new ChannelSessionPayload(session.channel(), session.id(), false)
+                );
             }
         });
     }
