@@ -7,6 +7,7 @@ import com.caszgamermd.tvtime.client.media.TestPatternVideo;
 import com.caszgamermd.tvtime.client.media.VideoTexture;
 import com.caszgamermd.tvtime.client.media.VideoTextureManager;
 import com.caszgamermd.tvtime.client.network.ClientChannelSubscriptions;
+import com.caszgamermd.tvtime.client.network.ClientChannelDirectory;
 import com.caszgamermd.tvtime.display.DisplayRect;
 import com.caszgamermd.tvtime.display.VideoLayout;
 import com.caszgamermd.tvtime.display.VideoLayoutCalculator;
@@ -80,17 +81,27 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
             ClientChannelSubscriptions.markSeen(state.channel);
         }
 
-        UUID sessionId = TestPatternVideo.sessionId(state.channel);
-        TestPatternVideo.publishIfDue(sessionId);
+        UUID sessionId;
+        if (state.channel.isBlank()) {
+            sessionId = TestPatternVideo.sessionId("");
+            TestPatternVideo.publishIfDue(sessionId);
+        } else {
+            sessionId = ClientChannelDirectory.sessionFor(state.channel);
+        }
 
-        VideoTexture videoTexture = VideoTextureManager.get(sessionId);
-        videoTexture.updateFromLatest();
+        VideoTexture videoTexture = sessionId == null
+            ? null
+            : VideoTextureManager.get(sessionId);
+
+        if (videoTexture != null) {
+            videoTexture.updateFromLatest();
+        }
 
         matrices.pushPose();
         moveToDisplayCenter(matrices, state);
         rotateToFacing(matrices, state.facing);
 
-        if (videoTexture.ready()) {
+        if (videoTexture != null && videoTexture.ready()) {
             submitVideoSurface(state, matrices, queue, videoTexture);
         } else {
             submitFallbackText(state, matrices, queue);
