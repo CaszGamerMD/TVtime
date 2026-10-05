@@ -81,13 +81,13 @@ public final class CaptureBroadcastController {
         }
 
         ClientPlayNetworking.send(
-            new StartBroadcastPayload(normalized, 128, 72, 10, 4000)
+            new StartBroadcastPayload(normalized, 192, 108, 12, 4000)
         );
 
         try {
             backend().start(
                 windows.get(windowIndex),
-                new CaptureOptions(128, 72, 10, true),
+                new CaptureOptions(192, 108, 12, true),
                 new WindowCaptureBackend.Listener() {
                     @Override
                     public void onVideoFrame(CapturedVideoFrame frame) {
