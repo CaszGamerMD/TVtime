@@ -3,7 +3,10 @@ package com.caszgamermd.tvtime.network;
 import com.caszgamermd.tvtime.TVtime;
 import com.caszgamermd.tvtime.broadcast.BroadcastSession;
 import com.caszgamermd.tvtime.config.StreamLimits;
+import com.caszgamermd.tvtime.display.TvDisplaySettings;
+import com.caszgamermd.tvtime.block.ModBlocks;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
+import com.caszgamermd.tvtime.network.payload.ConfigureTvPayload;
 import com.caszgamermd.tvtime.network.payload.StartBroadcastAckPayload;
 import com.caszgamermd.tvtime.network.payload.StartBroadcastPayload;
 import com.caszgamermd.tvtime.network.payload.StopBroadcastPayload;
@@ -45,6 +48,10 @@ public final class TVtimeNetworking {
             MediaRelayPayload.TYPE,
             MediaRelayPayload.CODEC
         );
+        PayloadTypeRegistry.serverboundPlay().register(
+            ConfigureTvPayload.TYPE,
+            ConfigureTvPayload.CODEC
+        );
 
         PayloadTypeRegistry.clientboundPlay().register(
             StartBroadcastAckPayload.TYPE,
@@ -73,6 +80,11 @@ public final class TVtimeNetworking {
         ServerPlayNetworking.registerGlobalReceiver(
             MediaRelayPayload.TYPE,
             (payload, context) -> handleMedia(context.player(), payload)
+        );
+
+        ServerPlayNetworking.registerGlobalReceiver(
+            ConfigureTvPayload.TYPE,
+            (payload, context) -> handleConfigureTv(context.player(), payload)
         );
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
@@ -171,6 +183,28 @@ public final class TVtimeNetworking {
                 SUBSCRIPTIONS.unsubscribe(session.id(), player.getUUID());
             }
         });
+    }
+
+    private static void handleConfigureTv(ServerPlayer player, ConfigureTvPayload payload) {
+        long dx = (long) player.blockPosition().getX() - payload.pos().getX();
+        long dy = (long) player.blockPosition().getY() - payload.pos().getY();
+        long dz = (long) player.blockPosition().getZ() - payload.pos().getZ();
+
+        if (dx * dx + dy * dy + dz * dz > 64L) {
+            return;
+        }
+
+        if (!player.level().getBlockState(payload.pos()).is(ModBlocks.TV)) {
+            return;
+        }
+
+        TvDisplaySettings.apply(
+            player.level(),
+            payload.pos(),
+            sanitizeChannel(payload.channel()),
+            payload.displayMode(),
+            payload.tvAudioEnabled()
+        );
     }
 
     private static void handleMedia(ServerPlayer sender, MediaRelayPayload payload) {
