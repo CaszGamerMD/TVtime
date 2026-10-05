@@ -17,7 +17,7 @@ import java.util.UUID;
 public final class TvAudioPlaybackManager {
     private static final float DEFAULT_RANGE = 24.0f;
 
-    private static final Map<UUID, Playback> PLAYBACKS = new HashMap<>();
+    private static final Map<TvAudioAnchors.SourceKey, Playback> PLAYBACKS = new HashMap<>();
 
     private TvAudioPlaybackManager() {
     }
@@ -29,7 +29,7 @@ public final class TvAudioPlaybackManager {
             return;
         }
 
-        Map<UUID, TvAudioAnchors.Anchor> anchors = TvAudioAnchors.active();
+        Map<TvAudioAnchors.SourceKey, TvAudioAnchors.Anchor> anchors = TvAudioAnchors.active();
 
         PLAYBACKS.entrySet().removeIf(entry -> {
             if (anchors.containsKey(entry.getKey())) {
@@ -40,14 +40,14 @@ public final class TvAudioPlaybackManager {
             return true;
         });
 
-        anchors.forEach((sessionId, anchor) -> {
-            Playback playback = PLAYBACKS.get(sessionId);
+        anchors.forEach((sourceKey, anchor) -> {
+            Playback playback = PLAYBACKS.get(sourceKey);
             if (playback == null || playback.stopped()) {
-                playback = create(sessionId);
+                playback = create(anchor.sessionId());
                 if (playback == null) {
                     return;
                 }
-                PLAYBACKS.put(sessionId, playback);
+                PLAYBACKS.put(sourceKey, playback);
             }
 
             playback.update(anchor);
