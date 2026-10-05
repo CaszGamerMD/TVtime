@@ -7,6 +7,7 @@ import com.caszgamermd.tvtime.client.media.RawPcmAudioCodec;
 import com.caszgamermd.tvtime.client.media.AudioChunkStore;
 import com.caszgamermd.tvtime.client.media.DecodedAudioChunk;
 import com.caszgamermd.tvtime.client.media.MediaFragmenter;
+import com.caszgamermd.tvtime.client.media.DeflateVideoCodec;
 import com.caszgamermd.tvtime.client.network.ClientBroadcastState;
 import com.caszgamermd.tvtime.network.MediaKind;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
@@ -167,7 +168,7 @@ public final class CaptureBroadcastController {
             )
         );
 
-        byte[] encoded = RawTestFrameCodec.encode(
+        byte[] encoded = DeflateVideoCodec.encode(
             frame.width(),
             frame.height(),
             rgba
