@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "tvtime",
+  "version": "${version}",
+  "name": "TVtime",
+  "description": "Shared in-world TV streaming for Fabric.",
+  "authors": ["CaszGamerMD"],
+  "contact": {
+    "sources": "https://github.com/CaszGamerMD/TVtime"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.caszgamermd.tvtime.TVtime"
+    ],
+    "client": [
+      "com.caszgamermd.tvtime.client.TVtimeClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
