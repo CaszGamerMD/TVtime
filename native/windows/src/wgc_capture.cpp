@@ -17,10 +17,6 @@
 
 namespace {
 
-constexpr int DEBUG_MAX_WIDTH = 128;
-constexpr int DEBUG_MAX_HEIGHT = 72;
-constexpr std::int64_t DEBUG_FRAME_INTERVAL_MICROS = 100'000; // 10 FPS
-
 std::int64_t now_micros() {
     return std::chrono::duration_cast<std::chrono::microseconds>(
         std::chrono::steady_clock::now().time_since_epoch()
@@ -95,6 +91,9 @@ WgcCaptureSession::~WgcCaptureSession() {
 
 bool WgcCaptureSession::start(
     HWND hwnd,
+    int max_width,
+    int max_height,
+    int max_fps,
     FrameCallback callback,
     std::string& error
 ) {
@@ -107,6 +106,16 @@ bool WgcCaptureSession::start(
             return false;
         }
 
+        if (max_width <= 0 || max_height <= 0 || max_fps <= 0) {
+            error = "Capture dimensions and FPS must be positive.";
+            return false;
+        }
+
+        max_width_.store(max_width);
+        max_height_.store(max_height);
+        frame_interval_micros_.store(
+            std::max<std::int64_t>(1, 1'000'000LL / max_fps)
+        );
         frame_callback_ = std::move(callback);
 
         auto device = create_direct3d_device(d3d_device_, d3d_context_);
@@ -177,7 +186,7 @@ void WgcCaptureSession::handle_frame(
 
     const std::int64_t now = now_micros();
     const std::int64_t last = last_emit_micros_.load(std::memory_order_relaxed);
-    if (now - last < DEBUG_FRAME_INTERVAL_MICROS) {
+    if (now - last < frame_interval_micros_.load(std::memory_order_relaxed)) {
         return;
     }
     last_emit_micros_.store(now, std::memory_order_relaxed);
@@ -229,8 +238,8 @@ void WgcCaptureSession::handle_frame(
     const double scale = std::min(
         1.0,
         std::min(
-            static_cast<double>(DEBUG_MAX_WIDTH) / source_width,
-            static_cast<double>(DEBUG_MAX_HEIGHT) / source_height
+            static_cast<double>(max_width_.load()) / source_width,
+            static_cast<double>(max_height_.load()) / source_height
         )
     );
 
