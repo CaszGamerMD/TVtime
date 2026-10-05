@@ -5,8 +5,10 @@ import com.caszgamermd.tvtime.broadcast.BroadcastSession;
 import com.caszgamermd.tvtime.config.StreamLimits;
 import com.caszgamermd.tvtime.display.TvDisplaySettings;
 import com.caszgamermd.tvtime.block.ModBlocks;
+import com.caszgamermd.tvtime.block.SpeakerBlockEntity;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
 import com.caszgamermd.tvtime.network.payload.ConfigureTvPayload;
+import com.caszgamermd.tvtime.network.payload.ConfigureSpeakerPayload;
 import com.caszgamermd.tvtime.network.payload.ChannelSessionPayload;
 import com.caszgamermd.tvtime.network.payload.StartBroadcastAckPayload;
 import com.caszgamermd.tvtime.network.payload.StartBroadcastPayload;
@@ -53,6 +55,10 @@ public final class TVtimeNetworking {
             ConfigureTvPayload.TYPE,
             ConfigureTvPayload.CODEC
         );
+        PayloadTypeRegistry.serverboundPlay().register(
+            ConfigureSpeakerPayload.TYPE,
+            ConfigureSpeakerPayload.CODEC
+        );
 
         PayloadTypeRegistry.clientboundPlay().register(
             StartBroadcastAckPayload.TYPE,
@@ -90,6 +96,11 @@ public final class TVtimeNetworking {
         ServerPlayNetworking.registerGlobalReceiver(
             ConfigureTvPayload.TYPE,
             (payload, context) -> handleConfigureTv(context.player(), payload)
+        );
+
+        ServerPlayNetworking.registerGlobalReceiver(
+            ConfigureSpeakerPayload.TYPE,
+            (payload, context) -> handleConfigureSpeaker(context.player(), payload)
         );
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
@@ -240,6 +251,34 @@ public final class TVtimeNetworking {
                 new ChannelSessionPayload(session.channel(), session.id(), false)
             );
         });
+    }
+
+    private static void handleConfigureSpeaker(
+        ServerPlayer player,
+        ConfigureSpeakerPayload payload
+    ) {
+        long dx = (long) player.blockPosition().getX() - payload.pos().getX();
+        long dy = (long) player.blockPosition().getY() - payload.pos().getY();
+        long dz = (long) player.blockPosition().getZ() - payload.pos().getZ();
+
+        if (dx * dx + dy * dy + dz * dz > 64L) {
+            return;
+        }
+
+        if (!player.level().getBlockState(payload.pos()).is(ModBlocks.SPEAKER)) {
+            return;
+        }
+
+        if (!(player.level().getBlockEntity(payload.pos()) instanceof SpeakerBlockEntity speaker)) {
+            return;
+        }
+
+        speaker.configure(
+            sanitizeChannel(payload.channel()),
+            payload.speakerChannel(),
+            payload.volume(),
+            payload.range()
+        );
     }
 
     private static void handleConfigureTv(ServerPlayer player, ConfigureTvPayload payload) {
