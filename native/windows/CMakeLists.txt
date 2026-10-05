@@ -4,6 +4,7 @@ project(tvtime_capture LANGUAGES CXX)
 
 add_executable(tvtime-capture
     src/main.cpp
+    src/wgc_capture.cpp
 )
 
 target_compile_features(tvtime-capture PRIVATE cxx_std_20)
@@ -17,6 +18,9 @@ target_compile_definitions(tvtime-capture PRIVATE
 target_link_libraries(tvtime-capture PRIVATE
     user32
     kernel32
+    d3d11
+    dxgi
+    windowsapp
 )
 
 if(MSVC)
