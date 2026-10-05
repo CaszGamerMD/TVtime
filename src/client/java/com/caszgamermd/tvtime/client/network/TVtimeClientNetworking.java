@@ -5,6 +5,7 @@ import com.caszgamermd.tvtime.client.media.RawTestFrameCodec;
 import com.caszgamermd.tvtime.client.media.VideoFrameStore;
 import com.caszgamermd.tvtime.client.media.RawPcmAudioCodec;
 import com.caszgamermd.tvtime.client.media.AudioChunkStore;
+import com.caszgamermd.tvtime.client.media.DeflateVideoCodec;
 import com.caszgamermd.tvtime.client.media.MediaReassembler;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
 import com.caszgamermd.tvtime.network.payload.MediaFragmentPayload;
@@ -75,6 +76,16 @@ public final class TVtimeClientNetworking {
         long presentationTimeMicros,
         byte[] encoded
     ) {
+        var compressedFrame = DeflateVideoCodec.decode(
+            encoded,
+            presentationTimeMicros
+        );
+
+        if (compressedFrame != null) {
+            VideoFrameStore.publish(sessionId, compressedFrame);
+            return true;
+        }
+
         var rawFrame = RawTestFrameCodec.decode(
             encoded,
             presentationTimeMicros
