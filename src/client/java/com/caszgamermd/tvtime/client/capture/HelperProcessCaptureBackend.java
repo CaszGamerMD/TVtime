@@ -83,7 +83,12 @@ public final class HelperProcessCaptureBackend implements WindowCaptureBackend {
         this.listener = listener;
 
         JsonObject response = request(
-            "START " + Long.toUnsignedString(window.nativeHandle()),
+            "START "
+                + Long.toUnsignedString(window.nativeHandle())
+                + " " + options.maxWidth()
+                + " " + options.maxHeight()
+                + " " + options.maxFps()
+                + " " + (options.captureAudio() ? 1 : 0),
             "capture_started"
         );
 
