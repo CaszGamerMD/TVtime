@@ -97,12 +97,25 @@ public final class TVtimeNetworking {
 
             TVtime.broadcasts().all().stream()
                 .filter(session -> session.broadcaster().equals(playerId))
-                .map(BroadcastSession::id)
                 .toList()
-                .forEach(sessionId -> {
-                    SUBSCRIPTIONS.removeSession(sessionId);
-                    RATE_LIMITER.remove(sessionId);
-                    TVtime.broadcasts().remove(sessionId);
+                .forEach(session -> {
+                    for (UUID viewerId : SUBSCRIPTIONS.viewers(session.id())) {
+                        ServerPlayer viewer = server.getPlayerList().getPlayer(viewerId);
+                        if (viewer != null) {
+                            ServerPlayNetworking.send(
+                                viewer,
+                                new ChannelSessionPayload(
+                                    session.channel(),
+                                    session.id(),
+                                    false
+                                )
+                            );
+                        }
+                    }
+
+                    SUBSCRIPTIONS.removeSession(session.id());
+                    RATE_LIMITER.remove(session.id());
+                    TVtime.broadcasts().remove(session.id());
                 });
 
             SUBSCRIPTIONS.removePlayer(playerId);
