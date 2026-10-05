@@ -26,6 +26,11 @@ public final class CaptureBroadcastController {
         new CaptureBroadcastController();
 
     private final AtomicLong sequence = new AtomicLong();
+    private final AtomicLong videoFrames = new AtomicLong();
+    private final AtomicLong rawVideoBytes = new AtomicLong();
+    private final AtomicLong encodedVideoBytes = new AtomicLong();
+    private final AtomicLong audioBytes = new AtomicLong();
+    private volatile long startedAtMillis;
 
     private WindowCaptureBackend backend;
     private String requestedChannel;
@@ -64,6 +69,11 @@ public final class CaptureBroadcastController {
         stop();
         requestedChannel = normalized;
         sequence.set(0);
+        videoFrames.set(0);
+        rawVideoBytes.set(0);
+        encodedVideoBytes.set(0);
+        audioBytes.set(0);
+        startedAtMillis = System.currentTimeMillis();
 
         if (!ClientPlayNetworking.canSend(StartBroadcastPayload.TYPE)) {
             requestedChannel = null;
@@ -127,6 +137,7 @@ public final class CaptureBroadcastController {
 
         requestedChannel = null;
         sequence.set(0);
+        startedAtMillis = 0;
         ClientBroadcastState.clear();
     }
 
@@ -136,6 +147,37 @@ public final class CaptureBroadcastController {
 
     public synchronized String channel() {
         return requestedChannel;
+    }
+
+    public Stats stats() {
+        long started = startedAtMillis;
+        long elapsedMillis = started == 0
+            ? 0
+            : Math.max(1, System.currentTimeMillis() - started);
+
+        long raw = rawVideoBytes.get();
+        long encoded = encodedVideoBytes.get();
+        long audio = audioBytes.get();
+        long frames = videoFrames.get();
+
+        double seconds = elapsedMillis / 1000.0;
+        double fps = seconds <= 0 ? 0.0 : frames / seconds;
+        double kbps = seconds <= 0
+            ? 0.0
+            : ((encoded + audio) * 8.0 / 1000.0) / seconds;
+        double compression = raw <= 0
+            ? 1.0
+            : encoded / (double) raw;
+
+        return new Stats(
+            frames,
+            raw,
+            encoded,
+            audio,
+            fps,
+            kbps,
+            compression
+        );
     }
 
     public synchronized void close() {
@@ -174,6 +216,10 @@ public final class CaptureBroadcastController {
             rgba
         );
 
+        videoFrames.incrementAndGet();
+        rawVideoBytes.addAndGet(rgba.remaining());
+        encodedVideoBytes.addAndGet(encoded.length);
+
         long packetSequence = sequence.getAndIncrement();
         sendEncoded(
             active,
@@ -197,6 +243,7 @@ public final class CaptureBroadcastController {
         }
 
         byte[] encoded = RawPcmAudioCodec.encode(chunk);
+        audioBytes.addAndGet(encoded.length);
         AudioChunkStore.offer(
             active.sessionId(),
             new DecodedAudioChunk(
@@ -251,6 +298,17 @@ public final class CaptureBroadcastController {
                 ClientPlayNetworking.send(fragment);
             }
         });
+    }
+
+    public record Stats(
+        long videoFrames,
+        long rawVideoBytes,
+        long encodedVideoBytes,
+        long audioBytes,
+        double fps,
+        double kbps,
+        double compressionRatio
+    ) {
     }
 
     private static ByteBuffer toRgba(CapturedVideoFrame frame) {
