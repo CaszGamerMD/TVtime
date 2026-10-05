@@ -1,6 +1,5 @@
 package com.caszgamermd.tvtime.client.audio;
 
-import com.caszgamermd.tvtime.audio.SpeakerChannel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
@@ -10,31 +9,29 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class TvAudioAnchors {
     private static final long STALE_AFTER_MILLIS = 5_000L;
-    private static final Map<SourceKey, Anchor> ANCHORS = new ConcurrentHashMap<>();
+    private static final Map<SourceKey, Anchor> ANCHORS =
+        new ConcurrentHashMap<>();
 
     private TvAudioAnchors() {
     }
 
     public static void markSeen(
         UUID sessionId,
-        BlockPos sourcePos,
+        BlockPos sourceBlock,
         Vec3 position,
-        SpeakerChannel speakerChannel,
         float volume,
-        int range
+        float range
     ) {
-        if (sessionId == null || sourcePos == null || position == null) {
+        if (sessionId == null || sourceBlock == null || position == null) {
             return;
         }
 
         ANCHORS.put(
-            new SourceKey(sessionId, sourcePos.immutable()),
+            new SourceKey(sessionId, sourceBlock.immutable()),
             new Anchor(
-                sessionId,
                 position,
-                speakerChannel == null ? SpeakerChannel.FULL : speakerChannel,
                 Math.max(0.0f, Math.min(2.0f, volume)),
-                Math.max(1, Math.min(128, range)),
+                Math.max(1.0f, Math.min(128.0f, range)),
                 System.currentTimeMillis()
             )
         );
@@ -54,16 +51,14 @@ public final class TvAudioAnchors {
 
     public record SourceKey(
         UUID sessionId,
-        BlockPos sourcePos
+        BlockPos sourceBlock
     ) {
     }
 
     public record Anchor(
-        UUID sessionId,
         Vec3 position,
-        SpeakerChannel speakerChannel,
         float volume,
-        int range,
+        float range,
         long seenAtMillis
     ) {
     }
