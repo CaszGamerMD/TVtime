@@ -77,8 +77,10 @@ jobs:
              /tvtime_capture tune <channel>
 
           Current real-window test stream is intentionally limited to
-          128x72 at 10 FPS and has no audio yet. It is for validating the
-          full capture -> server relay -> remote TV path before H.264/Opus.
+          128x72 at 10 FPS. Selected-process audio is captured with Windows
+          application loopback and emitted positionally from the TV wall.
+          This build validates the full capture -> server relay -> remote
+          TV video/audio path before H.264/Opus compression.
           "@ | Set-Content -Encoding UTF8 bundle/TESTING.txt
 
       - name: Upload Windows test bundle
