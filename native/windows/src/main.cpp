@@ -3,15 +3,78 @@
 #include "wgc_capture.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
+#include <cstring>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <string_view>
 #include <vector>
+#include <mutex>
 #include <charconv>
 
 namespace {
+
+std::mutex media_output_mutex;
+
+void write_u32_le(std::uint8_t* target, std::uint32_t value) {
+    target[0] = static_cast<std::uint8_t>(value & 0xff);
+    target[1] = static_cast<std::uint8_t>((value >> 8) & 0xff);
+    target[2] = static_cast<std::uint8_t>((value >> 16) & 0xff);
+    target[3] = static_cast<std::uint8_t>((value >> 24) & 0xff);
+}
+
+void write_u64_le(std::uint8_t* target, std::uint64_t value) {
+    for (int i = 0; i < 8; ++i) {
+        target[i] = static_cast<std::uint8_t>((value >> (i * 8)) & 0xff);
+    }
+}
+
+void write_all(HANDLE handle, const void* data, DWORD bytes) {
+    const auto* cursor = static_cast<const std::uint8_t*>(data);
+    DWORD remaining = bytes;
+
+    while (remaining > 0) {
+        DWORD written = 0;
+        if (!WriteFile(handle, cursor, remaining, &written, nullptr) || written == 0) {
+            return;
+        }
+        cursor += written;
+        remaining -= written;
+    }
+}
+
+void write_video_frame(
+    int width,
+    int height,
+    std::int64_t timestamp_micros,
+    const std::vector<std::uint8_t>& bgra
+) {
+    if (bgra.empty()) return;
+
+    std::scoped_lock lock(media_output_mutex);
+    HANDLE output = GetStdHandle(STD_ERROR_HANDLE);
+    if (output == nullptr || output == INVALID_HANDLE_VALUE) return;
+
+    std::array<std::uint8_t, 28> header{};
+    header[0] = 'T';
+    header[1] = 'V';
+    header[2] = 'F';
+    header[3] = '1';
+    header[4] = 1; // video
+    header[5] = 0; // BGRA8
+    write_u32_le(header.data() + 8, static_cast<std::uint32_t>(bgra.size()));
+    write_u64_le(
+        header.data() + 12,
+        static_cast<std::uint64_t>(timestamp_micros)
+    );
+    write_u32_le(header.data() + 20, static_cast<std::uint32_t>(width));
+    write_u32_le(header.data() + 24, static_cast<std::uint32_t>(height));
+
+    write_all(output, header.data(), static_cast<DWORD>(header.size()));
+    write_all(output, bgra.data(), static_cast<DWORD>(bgra.size()));
+}
 
 struct WindowInfo {
     std::uint64_t handle{};
@@ -199,7 +262,7 @@ int main() {
                 static_cast<std::uintptr_t>(handle_value)
             );
 
-            if (!capture.start(hwnd, error)) {
+            if (!capture.start(hwnd, write_video_frame, error)) {
                 write_error("capture_start_failed", error);
                 continue;
             }
