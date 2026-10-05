@@ -8,6 +8,7 @@ import com.caszgamermd.tvtime.client.media.DecodedAudioChunk;
 import com.caszgamermd.tvtime.client.audio.TvAudioBus;
 import com.caszgamermd.tvtime.client.media.MediaFragmenter;
 import com.caszgamermd.tvtime.client.media.DeflateVideoCodec;
+import com.caszgamermd.tvtime.client.media.DeltaDeflateVideoCodec;
 import com.caszgamermd.tvtime.client.network.ClientBroadcastState;
 import com.caszgamermd.tvtime.network.MediaKind;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
@@ -25,7 +26,8 @@ public final class CaptureBroadcastController {
     private static final CaptureBroadcastController INSTANCE =
         new CaptureBroadcastController();
 
-    private final AtomicLong sequence = new AtomicLong();
+    private final AtomicLong videoSequence = new AtomicLong();
+    private final AtomicLong audioSequence = new AtomicLong();
     private final AtomicLong videoFrames = new AtomicLong();
     private final AtomicLong rawVideoBytes = new AtomicLong();
     private final AtomicLong encodedVideoBytes = new AtomicLong();
@@ -34,6 +36,7 @@ public final class CaptureBroadcastController {
 
     private WindowCaptureBackend backend;
     private String requestedChannel;
+    private volatile byte[] previousVideoFrame;
 
     private CaptureBroadcastController() {
     }
@@ -68,7 +71,9 @@ public final class CaptureBroadcastController {
 
         stop();
         requestedChannel = normalized;
-        sequence.set(0);
+        videoSequence.set(0);
+        audioSequence.set(0);
+        previousVideoFrame = null;
         videoFrames.set(0);
         rawVideoBytes.set(0);
         encodedVideoBytes.set(0);
@@ -136,7 +141,9 @@ public final class CaptureBroadcastController {
         }
 
         requestedChannel = null;
-        sequence.set(0);
+        videoSequence.set(0);
+        audioSequence.set(0);
+        previousVideoFrame = null;
         startedAtMillis = 0;
         ClientBroadcastState.clear();
     }
@@ -210,24 +217,32 @@ public final class CaptureBroadcastController {
             )
         );
 
-        byte[] encoded = DeflateVideoCodec.encode(
-            frame.width(),
-            frame.height(),
-            rgba
-        );
+        long frameNumber = videoFrames.get();
+        boolean forceKeyFrame = frameNumber % 24L == 0L;
+
+        DeltaDeflateVideoCodec.Encoded encodedFrame =
+            DeltaDeflateVideoCodec.encode(
+                frame.width(),
+                frame.height(),
+                rgba,
+                previousVideoFrame,
+                forceKeyFrame
+            );
+
+        previousVideoFrame = encodedFrame.currentFrame();
 
         videoFrames.incrementAndGet();
         rawVideoBytes.addAndGet(rgba.remaining());
-        encodedVideoBytes.addAndGet(encoded.length);
+        encodedVideoBytes.addAndGet(encodedFrame.payload().length);
 
-        long packetSequence = sequence.getAndIncrement();
+        long packetSequence = videoSequence.getAndIncrement();
         sendEncoded(
             active,
             MediaKind.VIDEO,
             packetSequence,
             frame.timestampMicros(),
-            true,
-            encoded
+            encodedFrame.keyFrame(),
+            encodedFrame.payload()
         );
     }
 
@@ -253,7 +268,7 @@ public final class CaptureBroadcastController {
 
         TvAudioBus.offer(active.sessionId(), decoded);
 
-        long packetSequence = sequence.getAndIncrement();
+        long packetSequence = audioSequence.getAndIncrement();
         sendEncoded(
             active,
             MediaKind.AUDIO,
