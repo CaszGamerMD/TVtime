@@ -12,10 +12,10 @@ import net.minecraft.client.sounds.SoundManager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public final class TvAudioPlaybackManager {
-    private static final Map<TvAudioAnchors.SourceKey, Playback> PLAYBACKS = new HashMap<>();
+    private static final Map<TvAudioAnchors.SourceKey, Playback> PLAYBACKS =
+        new HashMap<>();
 
     private TvAudioPlaybackManager() {
     }
@@ -27,7 +27,8 @@ public final class TvAudioPlaybackManager {
             return;
         }
 
-        Map<TvAudioAnchors.SourceKey, TvAudioAnchors.Anchor> anchors = TvAudioAnchors.active();
+        Map<TvAudioAnchors.SourceKey, TvAudioAnchors.Anchor> anchors =
+            TvAudioAnchors.active();
 
         PLAYBACKS.entrySet().removeIf(entry -> {
             if (anchors.containsKey(entry.getKey())) {
@@ -41,7 +42,7 @@ public final class TvAudioPlaybackManager {
         anchors.forEach((sourceKey, anchor) -> {
             Playback playback = PLAYBACKS.get(sourceKey);
             if (playback == null || playback.stopped()) {
-                playback = create(anchor);
+                playback = create(sourceKey);
                 if (playback == null) {
                     return;
                 }
@@ -58,7 +59,7 @@ public final class TvAudioPlaybackManager {
         TvAudioAnchors.clear();
     }
 
-    private static Playback create(TvAudioAnchors.Anchor anchor) {
+    private static Playback create(TvAudioAnchors.SourceKey sourceKey) {
         Minecraft client = Minecraft.getInstance();
         SoundManager soundManager = client.getSoundManager();
 
@@ -75,16 +76,13 @@ public final class TvAudioPlaybackManager {
             return null;
         }
 
-        TvPcmAudioStream stream = new TvPcmAudioStream(
-            anchor.sessionId(),
-            anchor.speakerChannel()
-        );
+        TvPcmAudioStream stream =
+            new TvPcmAudioStream(sourceKey.sessionId());
 
         handle.execute(channel -> {
             channel.setPitch(1.0f);
-            channel.setVolume(anchor.volume());
-            channel.linearAttenuation(anchor.range());
-            channel.setSelfPosition(anchor.position());
+            channel.setVolume(1.0f);
+            channel.linearAttenuation(24.0f);
             channel.setRelative(false);
             channel.attachBufferStream(stream);
             channel.play();
