@@ -4,7 +4,9 @@
   "version": "${version}",
   "name": "TVtime",
   "description": "Shared in-world TV streaming for Fabric.",
-  "authors": ["CaszGamerMD"],
+  "authors": [
+    "CaszGamerMD"
+  ],
   "contact": {
     "sources": "https://github.com/CaszGamerMD/TVtime"
   },
@@ -23,5 +25,11 @@
     "minecraft": "~26.2",
     "java": ">=25",
     "fabric-api": "*"
-  }
+  },
+  "mixins": [
+    {
+      "config": "tvtime.client.mixins.json",
+      "environment": "client"
+    }
+  ]
 }
