@@ -5,6 +5,7 @@
 #include <atomic>
 #include <cstdint>
 #include <mutex>
+#include <string>
 
 #include <winrt/Windows.Graphics.Capture.h>
 
