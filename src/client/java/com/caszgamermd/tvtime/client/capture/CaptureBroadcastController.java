@@ -4,7 +4,6 @@ import com.caszgamermd.tvtime.client.media.RawTestFrameCodec;
 import com.caszgamermd.tvtime.client.media.DecodedVideoFrame;
 import com.caszgamermd.tvtime.client.media.VideoFrameStore;
 import com.caszgamermd.tvtime.client.media.RawPcmAudioCodec;
-import com.caszgamermd.tvtime.client.media.AudioChunkStore;
 import com.caszgamermd.tvtime.client.media.DecodedAudioChunk;
 import com.caszgamermd.tvtime.client.audio.TvAudioBus;
 import com.caszgamermd.tvtime.client.media.MediaFragmenter;
@@ -252,7 +251,6 @@ public final class CaptureBroadcastController {
             chunk.samples().duplicate()
         );
 
-        AudioChunkStore.offer(active.sessionId(), decoded);
         TvAudioBus.offer(active.sessionId(), decoded);
 
         long packetSequence = sequence.getAndIncrement();
