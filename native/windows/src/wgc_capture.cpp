@@ -182,7 +182,7 @@ void WgcCaptureSession::handle_frame(
     }
     last_emit_micros_.store(now, std::memory_order_relaxed);
 
-    auto access = frame.Surface().as<IDirect3DDxgiInterfaceAccess>();
+    auto access = frame.Surface().as<::Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
     winrt::com_ptr<ID3D11Texture2D> source_texture;
     winrt::check_hresult(access->GetInterface(
         __uuidof(ID3D11Texture2D),
