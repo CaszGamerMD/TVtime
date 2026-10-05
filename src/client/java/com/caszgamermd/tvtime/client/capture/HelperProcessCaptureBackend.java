@@ -8,8 +8,11 @@ import com.google.gson.JsonParser;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,13 +20,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class HelperProcessCaptureBackend implements WindowCaptureBackend {
+    private static final int MEDIA_HEADER_BYTES = 28;
+    private static final int MAX_DEBUG_FRAME_BYTES = 16 * 1024 * 1024;
+
     private final Path executable;
 
     private Process process;
     private BufferedReader reader;
     private BufferedWriter writer;
-    private boolean running;
-    private Listener listener;
+    private InputStream mediaInput;
+    private Thread mediaThread;
+
+    private volatile boolean running;
+    private volatile Listener listener;
 
     public HelperProcessCaptureBackend(Path executable) {
         this.executable = executable.toAbsolutePath().normalize();
@@ -81,11 +90,10 @@ public final class HelperProcessCaptureBackend implements WindowCaptureBackend {
         int width = response.get("width").getAsInt();
         int height = response.get("height").getAsInt();
         if (width <= 0 || height <= 0) {
+            this.listener = null;
             throw new IllegalStateException("Capture helper returned an invalid source size");
         }
 
-        // Frame delivery is added after the helper binary transport is frozen.
-        // For now this confirms a real WGC session is receiving the chosen HWND.
         running = true;
     }
 
@@ -152,9 +160,7 @@ public final class HelperProcessCaptureBackend implements WindowCaptureBackend {
         }
 
         try {
-            process = new ProcessBuilder(executable.toString())
-                .redirectError(ProcessBuilder.Redirect.INHERIT)
-                .start();
+            process = new ProcessBuilder(executable.toString()).start();
 
             reader = new BufferedReader(
                 new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)
@@ -162,6 +168,7 @@ public final class HelperProcessCaptureBackend implements WindowCaptureBackend {
             writer = new BufferedWriter(
                 new OutputStreamWriter(process.getOutputStream(), StandardCharsets.UTF_8)
             );
+            mediaInput = process.getErrorStream();
 
             JsonObject hello = readMessage();
             if (!"hello".equals(string(hello, "type"))) {
@@ -172,9 +179,87 @@ public final class HelperProcessCaptureBackend implements WindowCaptureBackend {
             if (protocol != 1) {
                 throw new IOException("Unsupported capture-helper protocol: " + protocol);
             }
+
+            startMediaReader();
         } catch (IOException e) {
             cleanup();
             throw new IllegalStateException("Unable to start TVtime capture helper", e);
+        }
+    }
+
+    private void startMediaReader() {
+        mediaThread = Thread.ofPlatform()
+            .name("TVtime-Capture-Media")
+            .daemon(true)
+            .start(this::mediaLoop);
+    }
+
+    private void mediaLoop() {
+        byte[] header = new byte[MEDIA_HEADER_BYTES];
+
+        try {
+            while (true) {
+                if (!readFully(mediaInput, header)) {
+                    break;
+                }
+
+                if (header[0] != 'T'
+                    || header[1] != 'V'
+                    || header[2] != 'F'
+                    || header[3] != '1') {
+                    throw new IOException("Invalid TVtime helper media magic");
+                }
+
+                ByteBuffer meta = ByteBuffer
+                    .wrap(header)
+                    .order(ByteOrder.LITTLE_ENDIAN);
+
+                int type = Byte.toUnsignedInt(header[4]);
+                int format = Byte.toUnsignedInt(header[5]);
+                int payloadLength = meta.getInt(8);
+                long timestampMicros = meta.getLong(12);
+                int width = meta.getInt(20);
+                int height = meta.getInt(24);
+
+                if (payloadLength < 0 || payloadLength > MAX_DEBUG_FRAME_BYTES) {
+                    throw new IOException("Invalid helper media payload length: " + payloadLength);
+                }
+
+                byte[] payload = new byte[payloadLength];
+                if (!readFully(mediaInput, payload)) {
+                    break;
+                }
+
+                if (type != 1 || format != 0 || width <= 0 || height <= 0) {
+                    continue;
+                }
+
+                long expected = (long) width * height * 4L;
+                if (expected != payloadLength) {
+                    continue;
+                }
+
+                Listener current = listener;
+                if (current == null || !running) {
+                    continue;
+                }
+
+                ByteBuffer pixels = ByteBuffer.allocateDirect(payloadLength);
+                pixels.put(payload);
+                pixels.flip();
+
+                current.onVideoFrame(new CapturedVideoFrame(
+                    width,
+                    height,
+                    timestampMicros,
+                    CapturedVideoFrame.PixelFormat.BGRA8,
+                    pixels
+                ));
+            }
+        } catch (IOException e) {
+            if (process != null && process.isAlive()) {
+                notifyStopped("Capture media pipe failed: " + e.getMessage());
+            }
         }
     }
 
@@ -224,6 +309,18 @@ public final class HelperProcessCaptureBackend implements WindowCaptureBackend {
         return parsed.getAsJsonObject();
     }
 
+    private static boolean readFully(InputStream input, byte[] target) throws IOException {
+        int offset = 0;
+        while (offset < target.length) {
+            int read = input.read(target, offset, target.length - offset);
+            if (read < 0) {
+                return false;
+            }
+            offset += read;
+        }
+        return true;
+    }
+
     private void notifyStopped(String reason) {
         Listener current = listener;
         running = false;
@@ -237,6 +334,8 @@ public final class HelperProcessCaptureBackend implements WindowCaptureBackend {
         listener = null;
         reader = null;
         writer = null;
+        mediaInput = null;
+        mediaThread = null;
 
         if (process != null) {
             process.destroyForcibly();
