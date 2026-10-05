@@ -8,6 +8,7 @@ import com.caszgamermd.tvtime.client.media.VideoTexture;
 import com.caszgamermd.tvtime.client.media.VideoTextureManager;
 import com.caszgamermd.tvtime.client.network.ClientChannelSubscriptions;
 import com.caszgamermd.tvtime.client.network.ClientChannelDirectory;
+import com.caszgamermd.tvtime.client.audio.TvAudioAnchors;
 import com.caszgamermd.tvtime.display.DisplayRect;
 import com.caszgamermd.tvtime.display.VideoLayout;
 import com.caszgamermd.tvtime.display.VideoLayoutCalculator;
@@ -24,6 +25,7 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 
@@ -64,6 +66,8 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
         state.facing = rect.facing();
         state.displayMode = blockEntity.displayMode();
         state.channel = blockEntity.channel();
+        state.tvAudioEnabled = blockEntity.tvAudioEnabled();
+        state.anchorPos = rect.anchor();
     }
 
     @Override
@@ -87,6 +91,13 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
             TestPatternVideo.publishIfDue(sessionId);
         } else {
             sessionId = ClientChannelDirectory.sessionFor(state.channel);
+        }
+
+        if (sessionId != null && state.tvAudioEnabled && !state.channel.isBlank()) {
+            TvAudioAnchors.markSeen(
+                sessionId,
+                displayWorldCenter(state)
+            );
         }
 
         VideoTexture videoTexture = sessionId == null
@@ -216,6 +227,15 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
             .setOverlay(OverlayTexture.NO_OVERLAY)
             .setLight(light)
             .setNormal(pose, 0, 0, 1);
+    }
+
+    private static Vec3 displayWorldCenter(TvBlockEntityRenderState state) {
+        Direction right = rightFor(state.facing);
+        double halfSpan = (state.widthBlocks - 1) / 2.0;
+        double x = state.anchorPos.getX() + 0.5 + right.getStepX() * halfSpan;
+        double z = state.anchorPos.getZ() + 0.5 + right.getStepZ() * halfSpan;
+        double y = state.anchorPos.getY() + state.heightBlocks / 2.0;
+        return new Vec3(x, y, z);
     }
 
     private static void moveToDisplayCenter(PoseStack matrices, TvBlockEntityRenderState state) {
