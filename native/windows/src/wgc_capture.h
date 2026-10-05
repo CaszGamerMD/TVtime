@@ -28,7 +28,14 @@ public:
     WgcCaptureSession(const WgcCaptureSession&) = delete;
     WgcCaptureSession& operator=(const WgcCaptureSession&) = delete;
 
-    bool start(HWND hwnd, FrameCallback callback, std::string& error);
+    bool start(
+        HWND hwnd,
+        int max_width,
+        int max_height,
+        int max_fps,
+        FrameCallback callback,
+        std::string& error
+    );
     void stop();
 
     bool running() const noexcept;
@@ -47,6 +54,9 @@ private:
     std::atomic<int> width_{0};
     std::atomic<int> height_{0};
     std::atomic<std::int64_t> last_emit_micros_{0};
+    std::atomic<int> max_width_{128};
+    std::atomic<int> max_height_{72};
+    std::atomic<std::int64_t> frame_interval_micros_{100'000};
 
     FrameCallback frame_callback_;
 
