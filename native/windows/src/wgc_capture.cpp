@@ -17,8 +17,8 @@
 
 namespace {
 
-constexpr int DEBUG_MAX_WIDTH = 320;
-constexpr int DEBUG_MAX_HEIGHT = 180;
+constexpr int DEBUG_MAX_WIDTH = 128;
+constexpr int DEBUG_MAX_HEIGHT = 72;
 constexpr std::int64_t DEBUG_FRAME_INTERVAL_MICROS = 100'000; // 10 FPS
 
 std::int64_t now_micros() {
