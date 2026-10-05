@@ -35,6 +35,7 @@ public final class ClientBroadcastMedia {
         }
         VideoFrameStore.remove(sessionId);
         DeltaVideoDecoderStore.remove(sessionId);
+        H264VideoDecoderStore.remove(sessionId);
         TvAudioBus.removeSession(sessionId);
     }
 
@@ -43,6 +44,7 @@ public final class ClientBroadcastMedia {
         QUEUES.clear();
         VideoFrameStore.clear();
         DeltaVideoDecoderStore.clear();
+        H264VideoDecoderStore.clear();
         TvAudioBus.clear();
     }
 }
