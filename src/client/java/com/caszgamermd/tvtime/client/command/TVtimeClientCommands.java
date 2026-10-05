@@ -1,11 +1,16 @@
 package com.caszgamermd.tvtime.client.command;
 
 import com.caszgamermd.tvtime.broadcast.DisplayMode;
+import com.caszgamermd.tvtime.audio.SpeakerChannel;
 import com.caszgamermd.tvtime.client.capture.CaptureBroadcastController;
 import com.caszgamermd.tvtime.client.capture.CaptureWindow;
 import com.caszgamermd.tvtime.client.network.TestNetworkBroadcaster;
 import com.caszgamermd.tvtime.network.payload.ConfigureTvPayload;
+import com.caszgamermd.tvtime.network.payload.ConfigureSpeakerPayload;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import com.mojang.brigadier.arguments.StringArgumentType;
 
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -53,6 +58,7 @@ public final class TVtimeClientCommands {
                             })
                     )
                     .then(tuneCommand())
+                    .then(speakerCommand())
             );
 
             dispatcher.register(
@@ -159,6 +165,95 @@ public final class TVtimeClientCommands {
                     .then(tuneCommand())
             );
         });
+    }
+
+    private static com.mojang.brigadier.builder.LiteralArgumentBuilder<
+        FabricClientCommandSource
+    > speakerCommand() {
+        return ClientCommands.literal("speaker")
+            .then(
+                ClientCommands.argument("channel", StringArgumentType.word())
+                    .then(
+                        ClientCommands.argument("role", StringArgumentType.word())
+                            .executes(context ->
+                                configureSpeaker(context, 1.0f, 32)
+                            )
+                            .then(
+                                ClientCommands.argument(
+                                    "volume",
+                                    FloatArgumentType.floatArg(0.0f, 2.0f)
+                                ).executes(context ->
+                                    configureSpeaker(
+                                        context,
+                                        FloatArgumentType.getFloat(context, "volume"),
+                                        32
+                                    )
+                                ).then(
+                                    ClientCommands.argument(
+                                        "range",
+                                        IntegerArgumentType.integer(1, 128)
+                                    ).executes(context ->
+                                        configureSpeaker(
+                                            context,
+                                            FloatArgumentType.getFloat(context, "volume"),
+                                            IntegerArgumentType.getInteger(context, "range")
+                                        )
+                                    )
+                                )
+                            )
+                    )
+            );
+    }
+
+    private static int configureSpeaker(
+        CommandContext<FabricClientCommandSource> context,
+        float volume,
+        int range
+    ) {
+        String channel = StringArgumentType.getString(context, "channel");
+        String rawRole = StringArgumentType.getString(context, "role");
+
+        final SpeakerChannel role;
+        try {
+            role = SpeakerChannel.valueOf(
+                rawRole.trim().toUpperCase().replace('-', '_')
+            );
+        } catch (IllegalArgumentException ex) {
+            context.getSource().sendFeedback(Component.literal(
+                "Unknown speaker role. Use FULL, LEFT, RIGHT, CENTER, "
+                    + "REAR_LEFT, REAR_RIGHT, or LFE."
+            ));
+            return 0;
+        }
+
+        HitResult hit = Minecraft.getInstance().hitResult;
+        if (!(hit instanceof BlockHitResult blockHit)) {
+            context.getSource().sendFeedback(
+                Component.literal("Look directly at a TVtime speaker block first.")
+            );
+            return 0;
+        }
+
+        if (!ClientPlayNetworking.canSend(ConfigureSpeakerPayload.TYPE)) {
+            context.getSource().sendFeedback(
+                Component.literal("Server does not accept TVtime speaker settings.")
+            );
+            return 0;
+        }
+
+        ClientPlayNetworking.send(new ConfigureSpeakerPayload(
+            blockHit.getBlockPos(),
+            channel,
+            role,
+            volume,
+            range
+        ));
+
+        context.getSource().sendFeedback(Component.literal(
+            "Speaker tuned to '" + channel + "' as " + role
+                + " (volume " + volume + ", range " + range + ")."
+        ));
+        return 1;
     }
 
     private static com.mojang.brigadier.builder.LiteralArgumentBuilder<
