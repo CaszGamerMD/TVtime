@@ -3,6 +3,7 @@ package com.caszgamermd.tvtime;
 import com.caszgamermd.tvtime.block.ModBlockEntities;
 import com.caszgamermd.tvtime.block.ModBlocks;
 import com.caszgamermd.tvtime.broadcast.BroadcastManager;
+import com.caszgamermd.tvtime.network.TVtimeNetworking;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public final class TVtime implements ModInitializer {
     public void onInitialize() {
         ModBlocks.initialize();
         ModBlockEntities.initialize();
+        TVtimeNetworking.initialize();
         LOGGER.info("Initializing TVtime");
     }
 }
