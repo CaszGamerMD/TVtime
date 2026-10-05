@@ -5,13 +5,17 @@ import com.caszgamermd.tvtime.client.media.RawTestFrameCodec;
 import com.caszgamermd.tvtime.client.media.VideoFrameStore;
 import com.caszgamermd.tvtime.client.media.RawPcmAudioCodec;
 import com.caszgamermd.tvtime.client.media.AudioChunkStore;
+import com.caszgamermd.tvtime.client.media.MediaReassembler;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
+import com.caszgamermd.tvtime.network.payload.MediaFragmentPayload;
 import com.caszgamermd.tvtime.network.payload.StartBroadcastAckPayload;
 import com.caszgamermd.tvtime.network.payload.ChannelSessionPayload;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 public final class TVtimeClientNetworking {
+    private static final MediaReassembler REASSEMBLER = new MediaReassembler();
+
     private TVtimeClientNetworking() {
     }
 
@@ -35,30 +39,62 @@ public final class TVtimeClientNetworking {
         );
 
         ClientPlayNetworking.registerGlobalReceiver(
-            MediaRelayPayload.TYPE,
+            MediaFragmentPayload.TYPE,
             (payload, context) -> {
-                var rawFrame = RawTestFrameCodec.decode(
-                    payload.payload(),
-                    payload.presentationTimeMicros()
-                );
-
-                if (rawFrame != null) {
-                    VideoFrameStore.publish(payload.sessionId(), rawFrame);
+                var complete = REASSEMBLER.accept(payload);
+                if (complete == null) {
                     return;
                 }
 
-                var rawAudio = RawPcmAudioCodec.decode(
-                    payload.payload(),
-                    payload.presentationTimeMicros()
+                handleCompleteMedia(
+                    complete.sessionId(),
+                    complete.presentationTimeMicros(),
+                    complete.payload()
                 );
+            }
+        );
 
-                if (rawAudio != null) {
-                    AudioChunkStore.offer(payload.sessionId(), rawAudio);
+        ClientPlayNetworking.registerGlobalReceiver(
+            MediaRelayPayload.TYPE,
+            (payload, context) -> {
+                if (handleCompleteMedia(
+                    payload.sessionId(),
+                    payload.presentationTimeMicros(),
+                    payload.payload()
+                )) {
                     return;
                 }
 
                 ClientBroadcastMedia.queue(payload.sessionId()).offer(payload.asChunk());
             }
         );
+    }
+
+    private static boolean handleCompleteMedia(
+        java.util.UUID sessionId,
+        long presentationTimeMicros,
+        byte[] encoded
+    ) {
+        var rawFrame = RawTestFrameCodec.decode(
+            encoded,
+            presentationTimeMicros
+        );
+
+        if (rawFrame != null) {
+            VideoFrameStore.publish(sessionId, rawFrame);
+            return true;
+        }
+
+        var rawAudio = RawPcmAudioCodec.decode(
+            encoded,
+            presentationTimeMicros
+        );
+
+        if (rawAudio != null) {
+            AudioChunkStore.offer(sessionId, rawAudio);
+            return true;
+        }
+
+        return false;
     }
 }
