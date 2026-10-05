@@ -1,7 +1,6 @@
 package com.caszgamermd.tvtime.client.audio;
 
 import com.caszgamermd.tvtime.audio.SpeakerChannel;
-import com.caszgamermd.tvtime.client.media.AudioChunkStore;
 import com.caszgamermd.tvtime.client.media.DecodedAudioChunk;
 import net.minecraft.client.sounds.AudioStream;
 
@@ -20,6 +19,7 @@ public final class TvPcmAudioStream implements AudioStream {
         SAMPLE_RATE * OUTPUT_CHANNELS * BYTES_PER_SAMPLE * SILENCE_MILLIS / 1000;
 
     private final UUID sessionId;
+    private final TvAudioBus.Reader reader;
     private final SpeakerChannel speakerChannel;
     private final AudioFormat format =
         new AudioFormat(SAMPLE_RATE, 16, OUTPUT_CHANNELS, true, false);
@@ -44,7 +44,7 @@ public final class TvPcmAudioStream implements AudioStream {
             return null;
         }
 
-        DecodedAudioChunk chunk = AudioChunkStore.poll(sessionId);
+        DecodedAudioChunk chunk = reader.poll();
         if (chunk == null) {
             return silence();
         }
@@ -93,6 +93,7 @@ public final class TvPcmAudioStream implements AudioStream {
     @Override
     public void close() {
         closed = true;
+        reader.close();
     }
 
     private static ByteBuffer silence() {
