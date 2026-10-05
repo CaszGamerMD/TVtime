@@ -169,7 +169,7 @@ public final class TVtimeNetworking {
 
         SUBSCRIPTIONS.attachSession(session.id(), session.channel());
         for (UUID viewerId : SUBSCRIPTIONS.viewers(session.id())) {
-            ServerPlayer viewer = player.getServer().getPlayerList().getPlayer(viewerId);
+            ServerPlayer viewer = player.serverLevel().getServer().getPlayerList().getPlayer(viewerId);
             if (viewer != null) {
                 ServerPlayNetworking.send(
                     viewer,
@@ -198,7 +198,7 @@ public final class TVtimeNetworking {
             }
 
             for (UUID viewerId : SUBSCRIPTIONS.viewers(session.id())) {
-                ServerPlayer viewer = player.getServer().getPlayerList().getPlayer(viewerId);
+                ServerPlayer viewer = player.serverLevel().getServer().getPlayerList().getPlayer(viewerId);
                 if (viewer != null) {
                     ServerPlayNetworking.send(
                         viewer,
@@ -288,7 +288,7 @@ public final class TVtimeNetworking {
             }
 
             for (UUID viewerId : SUBSCRIPTIONS.viewers(session.id())) {
-                ServerPlayer viewer = sender.getServer().getPlayerList().getPlayer(viewerId);
+                ServerPlayer viewer = sender.serverLevel().getServer().getPlayerList().getPlayer(viewerId);
                 if (viewer != null && !viewer.getUUID().equals(sender.getUUID())) {
                     ServerPlayNetworking.send(viewer, payload);
                 }
