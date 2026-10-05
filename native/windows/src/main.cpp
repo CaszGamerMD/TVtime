@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <winrt/base.h>
+#include <wrl.h>
 #include "wgc_capture.h"
 #include "process_audio_capture.h"
 
@@ -264,7 +265,8 @@ int main() {
     SetConsoleOutputCP(CP_UTF8);
 
     WgcCaptureSession capture;
-    ProcessAudioCapture audio_capture;
+    auto audio_capture =
+        Microsoft::WRL::Make<ProcessAudioCapture>();
     write_hello();
 
     std::string line;
@@ -274,7 +276,7 @@ int main() {
         } else if (line == "LIST_WINDOWS") {
             write_windows();
         } else if (line == "QUIT") {
-            audio_capture.stop();
+            audio_capture->stop();
             capture.stop();
             return 0;
         } else if (line.rfind("START ", 0) == 0) {
@@ -333,7 +335,7 @@ int main() {
             const bool audio_started =
                 audio_requested
                 && process_id != 0
-                && audio_capture.start(
+                && audio_capture->start(
                     process_id,
                     write_audio_chunk,
                     audio_error
@@ -358,7 +360,7 @@ int main() {
 
             std::cout << "}" << std::endl;
         } else if (line == "STOP") {
-            audio_capture.stop();
+            audio_capture->stop();
             capture.stop();
             std::cout << "{\"type\":\"capture_stopped\"}" << std::endl;
         } else if (line == "STATUS") {
@@ -368,7 +370,7 @@ int main() {
                 << "\"frames\":" << capture.frame_count() << ","
                 << "\"width\":" << capture.width() << ","
                 << "\"height\":" << capture.height() << ","
-                << "\"audio\":" << (audio_capture.running() ? "true" : "false")
+                << "\"audio\":" << (audio_capture->running() ? "true" : "false")
                 << "}" << std::endl;
         } else {
             write_error("unknown_command", "Unknown TVtime capture-helper command.");
