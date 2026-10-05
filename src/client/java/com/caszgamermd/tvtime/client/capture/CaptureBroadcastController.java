@@ -9,6 +9,8 @@ import com.caszgamermd.tvtime.client.audio.TvAudioBus;
 import com.caszgamermd.tvtime.client.media.MediaFragmenter;
 import com.caszgamermd.tvtime.client.media.DeflateVideoCodec;
 import com.caszgamermd.tvtime.client.media.DeltaDeflateVideoCodec;
+import com.caszgamermd.tvtime.client.media.H264VideoCodec;
+import com.caszgamermd.tvtime.client.media.VideoCodecMode;
 import com.caszgamermd.tvtime.client.network.ClientBroadcastState;
 import com.caszgamermd.tvtime.network.MediaKind;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
@@ -33,6 +35,9 @@ public final class CaptureBroadcastController {
     private final AtomicLong encodedVideoBytes = new AtomicLong();
     private final AtomicLong audioBytes = new AtomicLong();
     private volatile long startedAtMillis;
+    private volatile VideoCodecMode preferredCodec = VideoCodecMode.AUTO;
+    private volatile VideoCodecMode activeCodec = VideoCodecMode.DELTA;
+    private H264VideoCodec.Encoder h264Encoder;
 
     private WindowCaptureBackend backend;
     private String requestedChannel;
@@ -74,6 +79,12 @@ public final class CaptureBroadcastController {
         videoSequence.set(0);
         audioSequence.set(0);
         previousVideoFrame = null;
+        activeCodec = preferredCodec == VideoCodecMode.DELTA
+            ? VideoCodecMode.DELTA
+            : VideoCodecMode.H264;
+        h264Encoder = activeCodec == VideoCodecMode.H264
+            ? new H264VideoCodec.Encoder(24)
+            : null;
         videoFrames.set(0);
         rawVideoBytes.set(0);
         encodedVideoBytes.set(0);
@@ -144,6 +155,8 @@ public final class CaptureBroadcastController {
         videoSequence.set(0);
         audioSequence.set(0);
         previousVideoFrame = null;
+        h264Encoder = null;
+        activeCodec = VideoCodecMode.DELTA;
         startedAtMillis = 0;
         ClientBroadcastState.clear();
     }
@@ -154,6 +167,26 @@ public final class CaptureBroadcastController {
 
     public synchronized String channel() {
         return requestedChannel;
+    }
+
+    public synchronized void setPreferredCodec(VideoCodecMode mode) {
+        if (running()) {
+            throw new IllegalStateException(
+                "Stop the current TVtime broadcast before changing codecs"
+            );
+        }
+
+        preferredCodec = mode == null
+            ? VideoCodecMode.AUTO
+            : mode;
+    }
+
+    public VideoCodecMode preferredCodec() {
+        return preferredCodec;
+    }
+
+    public VideoCodecMode activeCodec() {
+        return activeCodec;
     }
 
     public Stats stats() {
@@ -183,7 +216,8 @@ public final class CaptureBroadcastController {
             audio,
             fps,
             kbps,
-            compression
+            compression,
+            activeCodec
         );
     }
 
@@ -217,23 +251,14 @@ public final class CaptureBroadcastController {
             )
         );
 
-        long frameNumber = videoFrames.get();
-        boolean forceKeyFrame = frameNumber % 24L == 0L;
-
-        DeltaDeflateVideoCodec.Encoded encodedFrame =
-            DeltaDeflateVideoCodec.encode(
-                frame.width(),
-                frame.height(),
-                rgba,
-                previousVideoFrame,
-                forceKeyFrame
-            );
-
-        previousVideoFrame = encodedFrame.currentFrame();
+        EncodedVideo encodedVideo = encodeVideoFrame(
+            frame,
+            rgba
+        );
 
         videoFrames.incrementAndGet();
         rawVideoBytes.addAndGet(rgba.remaining());
-        encodedVideoBytes.addAndGet(encodedFrame.payload().length);
+        encodedVideoBytes.addAndGet(encodedVideo.payload().length);
 
         long packetSequence = videoSequence.getAndIncrement();
         sendEncoded(
@@ -241,8 +266,8 @@ public final class CaptureBroadcastController {
             MediaKind.VIDEO,
             packetSequence,
             frame.timestampMicros(),
-            encodedFrame.keyFrame(),
-            encodedFrame.payload()
+            encodedVideo.keyFrame(),
+            encodedVideo.payload()
         );
     }
 
@@ -314,6 +339,57 @@ public final class CaptureBroadcastController {
         });
     }
 
+    private EncodedVideo encodeVideoFrame(
+        CapturedVideoFrame frame,
+        ByteBuffer rgba
+    ) {
+        if (activeCodec == VideoCodecMode.H264
+            && h264Encoder != null) {
+            try {
+                H264VideoCodec.Encoded h264 =
+                    h264Encoder.encode(
+                        frame.width(),
+                        frame.height(),
+                        rgba
+                    );
+
+                return new EncodedVideo(
+                    h264.payload(),
+                    h264.keyFrame()
+                );
+            } catch (RuntimeException h264Failure) {
+                if (preferredCodec == VideoCodecMode.H264) {
+                    throw h264Failure;
+                }
+
+                activeCodec = VideoCodecMode.DELTA;
+                h264Encoder = null;
+                previousVideoFrame = null;
+            }
+        }
+
+        long frameNumber = videoFrames.get();
+        boolean forceKeyFrame =
+            previousVideoFrame == null
+                || frameNumber % 24L == 0L;
+
+        DeltaDeflateVideoCodec.Encoded delta =
+            DeltaDeflateVideoCodec.encode(
+                frame.width(),
+                frame.height(),
+                rgba,
+                previousVideoFrame,
+                forceKeyFrame
+            );
+
+        previousVideoFrame = delta.currentFrame();
+
+        return new EncodedVideo(
+            delta.payload(),
+            delta.keyFrame()
+        );
+    }
+
     public record Stats(
         long videoFrames,
         long rawVideoBytes,
@@ -321,7 +397,14 @@ public final class CaptureBroadcastController {
         long audioBytes,
         double fps,
         double kbps,
-        double compressionRatio
+        double compressionRatio,
+        VideoCodecMode codec
+    ) {
+    }
+
+    private record EncodedVideo(
+        byte[] payload,
+        boolean keyFrame
     ) {
     }
 
