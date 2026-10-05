@@ -76,11 +76,32 @@ jobs:
           6. Look at a connected TV wall and run:
              /tvtime_capture tune <channel>
 
-          Current real-window test stream is intentionally limited to
-          128x72 at 10 FPS. Selected-process audio is captured with Windows
-          application loopback and emitted positionally from the TV wall.
-          This build validates the full capture -> server relay -> remote
-          TV video/audio path before H.264/Opus compression.
+          Current real-window development stream:
+          - 192x108 at 12 FPS
+          - dependency-free Deflate video compression
+          - bounded media fragmentation/reassembly
+          - selected-process PCM audio
+          - positional mono TV/speaker playback
+
+          Speaker test:
+          1. Place a TVtime Speaker block.
+          2. Look directly at it.
+          3. Run:
+             /tvtime_test speaker <channel> <role> [volume] [range]
+
+          Roles:
+          FULL, LEFT, RIGHT, CENTER, REAR_LEFT, REAR_RIGHT, LFE
+
+          LEFT/REAR_LEFT use the captured left stereo channel.
+          RIGHT/REAR_RIGHT use the captured right stereo channel.
+          FULL/CENTER/LFE currently downmix both channels to mono.
+
+          /tvtime_capture status shows current FPS, combined kbps,
+          and video compression ratio.
+
+          This build validates the full capture -> compression -> server
+          relay -> remote connected-TV video + multi-speaker positional
+          audio path before H.264/Opus compression.
           "@ | Set-Content -Encoding UTF8 bundle/TESTING.txt
 
       - name: Upload Windows test bundle
