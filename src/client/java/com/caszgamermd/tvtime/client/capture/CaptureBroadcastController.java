@@ -36,6 +36,7 @@ public final class CaptureBroadcastController {
     private final AtomicLong audioBytes = new AtomicLong();
     private volatile long startedAtMillis;
     private volatile VideoCodecMode preferredCodec = VideoCodecMode.AUTO;
+    private volatile CaptureProfile captureProfile = CaptureProfile.LOW;
     private volatile VideoCodecMode activeCodec = VideoCodecMode.DELTA;
     private H264VideoCodec.Encoder h264Encoder;
 
@@ -96,14 +97,27 @@ public final class CaptureBroadcastController {
             throw new IllegalStateException("Server does not support TVtime broadcasts");
         }
 
+        CaptureProfile profile = captureProfile;
+
         ClientPlayNetworking.send(
-            new StartBroadcastPayload(normalized, 192, 108, 12, 4000)
+            new StartBroadcastPayload(
+                normalized,
+                profile.width(),
+                profile.height(),
+                profile.fps(),
+                4000
+            )
         );
 
         try {
             backend().start(
                 windows.get(windowIndex),
-                new CaptureOptions(192, 108, 12, true),
+                new CaptureOptions(
+                    profile.width(),
+                    profile.height(),
+                    profile.fps(),
+                    true
+                ),
                 new WindowCaptureBackend.Listener() {
                     @Override
                     public void onVideoFrame(CapturedVideoFrame frame) {
@@ -189,6 +203,22 @@ public final class CaptureBroadcastController {
         return activeCodec;
     }
 
+    public synchronized void setCaptureProfile(CaptureProfile profile) {
+        if (running()) {
+            throw new IllegalStateException(
+                "Stop the current TVtime broadcast before changing quality"
+            );
+        }
+
+        captureProfile = profile == null
+            ? CaptureProfile.LOW
+            : profile;
+    }
+
+    public CaptureProfile captureProfile() {
+        return captureProfile;
+    }
+
     public Stats stats() {
         long started = startedAtMillis;
         long elapsedMillis = started == 0
@@ -217,7 +247,8 @@ public final class CaptureBroadcastController {
             fps,
             kbps,
             compression,
-            activeCodec
+            activeCodec,
+            captureProfile
         );
     }
 
@@ -398,7 +429,8 @@ public final class CaptureBroadcastController {
         double fps,
         double kbps,
         double compressionRatio,
-        VideoCodecMode codec
+        VideoCodecMode codec,
+        CaptureProfile profile
     ) {
     }
 
