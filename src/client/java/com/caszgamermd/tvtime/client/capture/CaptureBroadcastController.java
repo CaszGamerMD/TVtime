@@ -6,6 +6,7 @@ import com.caszgamermd.tvtime.client.media.VideoFrameStore;
 import com.caszgamermd.tvtime.client.media.RawPcmAudioCodec;
 import com.caszgamermd.tvtime.client.media.AudioChunkStore;
 import com.caszgamermd.tvtime.client.media.DecodedAudioChunk;
+import com.caszgamermd.tvtime.client.audio.TvAudioBus;
 import com.caszgamermd.tvtime.client.media.MediaFragmenter;
 import com.caszgamermd.tvtime.client.media.DeflateVideoCodec;
 import com.caszgamermd.tvtime.client.network.ClientBroadcastState;
@@ -244,15 +245,15 @@ public final class CaptureBroadcastController {
 
         byte[] encoded = RawPcmAudioCodec.encode(chunk);
         audioBytes.addAndGet(encoded.length);
-        AudioChunkStore.offer(
-            active.sessionId(),
-            new DecodedAudioChunk(
-                chunk.sampleRate(),
-                chunk.channels(),
-                chunk.timestampMicros(),
-                chunk.samples().duplicate()
-            )
+        DecodedAudioChunk decoded = new DecodedAudioChunk(
+            chunk.sampleRate(),
+            chunk.channels(),
+            chunk.timestampMicros(),
+            chunk.samples().duplicate()
         );
+
+        AudioChunkStore.offer(active.sessionId(), decoded);
+        TvAudioBus.offer(active.sessionId(), decoded);
 
         long packetSequence = sequence.getAndIncrement();
         sendEncoded(
