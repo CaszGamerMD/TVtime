@@ -6,6 +6,7 @@ import com.caszgamermd.tvtime.client.media.VideoFrameStore;
 import com.caszgamermd.tvtime.client.media.RawPcmAudioCodec;
 import com.caszgamermd.tvtime.client.media.AudioChunkStore;
 import com.caszgamermd.tvtime.client.media.DecodedAudioChunk;
+import com.caszgamermd.tvtime.client.media.MediaFragmenter;
 import com.caszgamermd.tvtime.client.network.ClientBroadcastState;
 import com.caszgamermd.tvtime.network.MediaKind;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
@@ -172,30 +173,15 @@ public final class CaptureBroadcastController {
             rgba
         );
 
-        if (encoded.length > MediaRelayPayload.MAX_MEDIA_BYTES) {
-            return;
-        }
-
         long packetSequence = sequence.getAndIncrement();
-        Minecraft.getInstance().execute(() -> {
-            ClientBroadcastState.ActiveBroadcast current =
-                ClientBroadcastState.active();
-
-            if (current == null
-                || !current.sessionId().equals(active.sessionId())
-                || !ClientPlayNetworking.canSend(MediaRelayPayload.TYPE)) {
-                return;
-            }
-
-            ClientPlayNetworking.send(new MediaRelayPayload(
-                current.sessionId(),
-                MediaKind.VIDEO,
-                packetSequence,
-                frame.timestampMicros(),
-                true,
-                encoded
-            ));
-        });
+        sendEncoded(
+            active,
+            MediaKind.VIDEO,
+            packetSequence,
+            frame.timestampMicros(),
+            true,
+            encoded
+        );
     }
 
     private void handleAudio(CapturedAudioChunk chunk) {
@@ -210,10 +196,6 @@ public final class CaptureBroadcastController {
         }
 
         byte[] encoded = RawPcmAudioCodec.encode(chunk);
-        if (encoded.length > MediaRelayPayload.MAX_MEDIA_BYTES) {
-            return;
-        }
-
         AudioChunkStore.offer(
             active.sessionId(),
             new DecodedAudioChunk(
@@ -225,24 +207,48 @@ public final class CaptureBroadcastController {
         );
 
         long packetSequence = sequence.getAndIncrement();
+        sendEncoded(
+            active,
+            MediaKind.AUDIO,
+            packetSequence,
+            chunk.timestampMicros(),
+            false,
+            encoded
+        );
+    }
+
+    private void sendEncoded(
+        ClientBroadcastState.ActiveBroadcast active,
+        MediaKind kind,
+        long packetSequence,
+        long presentationTimeMicros,
+        boolean keyFrame,
+        byte[] encoded
+    ) {
+        final var fragments = MediaFragmenter.fragment(
+            active.sessionId(),
+            kind,
+            packetSequence,
+            presentationTimeMicros,
+            keyFrame,
+            encoded
+        );
+
         Minecraft.getInstance().execute(() -> {
             ClientBroadcastState.ActiveBroadcast current =
                 ClientBroadcastState.active();
 
             if (current == null
-                || !current.sessionId().equals(active.sessionId())
-                || !ClientPlayNetworking.canSend(MediaRelayPayload.TYPE)) {
+                || !current.sessionId().equals(active.sessionId())) {
                 return;
             }
 
-            ClientPlayNetworking.send(new MediaRelayPayload(
-                current.sessionId(),
-                MediaKind.AUDIO,
-                packetSequence,
-                chunk.timestampMicros(),
-                false,
-                encoded
-            ));
+            for (var fragment : fragments) {
+                if (!ClientPlayNetworking.canSend(fragment.type())) {
+                    return;
+                }
+                ClientPlayNetworking.send(fragment);
+            }
         });
     }
 
