@@ -102,7 +102,7 @@ public final class TVtimeClientNetworking {
         );
 
         if (rawAudio != null) {
-            AudioChunkStore.offer(sessionId, rawAudio);
+            TvAudioBus.offer(sessionId, rawAudio);
             return true;
         }
 
