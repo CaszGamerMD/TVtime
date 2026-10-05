@@ -278,16 +278,33 @@ int main() {
             capture.stop();
             return 0;
         } else if (line.rfind("START ", 0) == 0) {
-            std::uint64_t handle_value = 0;
-            const std::string_view text(line.data() + 6, line.size() - 6);
-            const auto parsed = std::from_chars(
-                text.data(),
-                text.data() + text.size(),
-                handle_value
-            );
+            std::istringstream args(line.substr(6));
 
-            if (parsed.ec != std::errc{} || parsed.ptr != text.data() + text.size()) {
-                write_error("invalid_handle", "START requires a numeric native window handle.");
+            std::uint64_t handle_value = 0;
+            int max_width = 0;
+            int max_height = 0;
+            int max_fps = 0;
+            int audio_flag = 0;
+
+            if (!(args
+                >> handle_value
+                >> max_width
+                >> max_height
+                >> max_fps
+                >> audio_flag)) {
+                write_error(
+                    "invalid_start",
+                    "START requires: handle width height fps audioFlag."
+                );
+                continue;
+            }
+
+            std::string trailing;
+            if (args >> trailing) {
+                write_error(
+                    "invalid_start",
+                    "START received unexpected trailing arguments."
+                );
                 continue;
             }
 
@@ -296,7 +313,14 @@ int main() {
                 static_cast<std::uintptr_t>(handle_value)
             );
 
-            if (!capture.start(hwnd, write_video_frame, error)) {
+            if (!capture.start(
+                hwnd,
+                max_width,
+                max_height,
+                max_fps,
+                write_video_frame,
+                error
+            )) {
                 write_error("capture_start_failed", error);
                 continue;
             }
@@ -305,8 +329,10 @@ int main() {
             GetWindowThreadProcessId(hwnd, &process_id);
 
             std::string audio_error;
+            const bool audio_requested = audio_flag != 0;
             const bool audio_started =
-                process_id != 0
+                audio_requested
+                && process_id != 0
                 && audio_capture.start(
                     process_id,
                     write_audio_chunk,
@@ -319,6 +345,8 @@ int main() {
                 << "\"processId\":" << process_id << ","
                 << "\"width\":" << capture.width() << ","
                 << "\"height\":" << capture.height() << ","
+                << "\"maxFps\":" << max_fps << ","
+                << "\"audioRequested\":" << (audio_requested ? "true" : "false") << ","
                 << "\"audio\":" << (audio_started ? "true" : "false");
 
             if (!audio_started && !audio_error.empty()) {
