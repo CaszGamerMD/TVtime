@@ -1,0 +1,88 @@
+name: Windows Test Bundle
+
+concurrency:
+  group: tvtime-windows-bundle-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "src/**"
+      - "native/windows/**"
+      - "build.gradle"
+      - "gradle.properties"
+      - "settings.gradle"
+      - ".github/workflows/windows-test-bundle.yml"
+
+jobs:
+  bundle:
+    runs-on: windows-2025
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Gradle 9.8.0
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.8.0"
+
+      - name: Configure native helper
+        shell: pwsh
+        run: cmake -S native/windows -B native/windows/build -A x64
+
+      - name: Build native helper
+        shell: pwsh
+        run: cmake --build native/windows/build --config Release
+
+      - name: Build Fabric mod
+        shell: pwsh
+        run: gradle build --stacktrace
+
+      - name: Assemble test bundle
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path bundle | Out-Null
+          Copy-Item native/windows/build/Release/tvtime-capture.exe bundle/tvtime-capture.exe
+
+          $jar = Get-ChildItem build/libs/*.jar |
+            Where-Object { $_.Name -notmatch "sources" } |
+            Select-Object -First 1
+
+          if (-not $jar) {
+            throw "No TVtime mod jar was produced."
+          }
+
+          Copy-Item $jar.FullName bundle/$($jar.Name)
+
+          @"
+          TVtime Windows development bundle
+
+          1. Put the TVtime JAR in your Minecraft mods folder.
+          2. Put tvtime-capture.exe in your Minecraft game folder
+             (the same folder that contains mods/), OR:
+             config/tvtime/tvtime-capture.exe
+          3. Start Minecraft.
+          4. /tvtime_capture windows
+          5. /tvtime_capture start <windowIndex> <channel>
+          6. Look at a connected TV wall and run:
+             /tvtime_capture tune <channel>
+
+          Current real-window test stream is intentionally limited to
+          128x72 at 10 FPS and has no audio yet. It is for validating the
+          full capture -> server relay -> remote TV path before H.264/Opus.
+          "@ | Set-Content -Encoding UTF8 bundle/TESTING.txt
+
+      - name: Upload Windows test bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: TVtime-Windows-Test
+          path: bundle/*
