@@ -34,6 +34,7 @@ public final class ClientBroadcastMedia {
             queue.clear();
         }
         VideoFrameStore.remove(sessionId);
+        DeltaVideoDecoderStore.remove(sessionId);
         TvAudioBus.removeSession(sessionId);
     }
 
@@ -41,6 +42,7 @@ public final class ClientBroadcastMedia {
         QUEUES.values().forEach(EncodedMediaQueue::clear);
         QUEUES.clear();
         VideoFrameStore.clear();
+        DeltaVideoDecoderStore.clear();
         TvAudioBus.clear();
     }
 }
