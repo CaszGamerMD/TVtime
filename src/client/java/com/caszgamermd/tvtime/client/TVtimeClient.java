@@ -10,6 +10,7 @@ import com.caszgamermd.tvtime.client.network.TestNetworkBroadcaster;
 import com.caszgamermd.tvtime.client.command.TVtimeClientCommands;
 import com.caszgamermd.tvtime.client.capture.CaptureBroadcastController;
 import com.caszgamermd.tvtime.client.audio.TvAudioPlaybackManager;
+import com.caszgamermd.tvtime.client.audio.NearbyAudioSourceScanner;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -32,6 +33,7 @@ public final class TVtimeClient implements ClientModInitializer {
             } else {
                 ClientChannelSubscriptions.tick();
                 TestNetworkBroadcaster.tick();
+                NearbyAudioSourceScanner.tick(client);
                 TvAudioPlaybackManager.tick();
             }
         });
