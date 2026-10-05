@@ -32,11 +32,13 @@ public final class ClientBroadcastMedia {
             queue.clear();
         }
         VideoFrameStore.remove(sessionId);
+        AudioChunkStore.remove(sessionId);
     }
 
     public static void clear() {
         QUEUES.values().forEach(EncodedMediaQueue::clear);
         QUEUES.clear();
         VideoFrameStore.clear();
+        AudioChunkStore.clear();
     }
 }
