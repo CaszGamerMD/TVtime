@@ -6,6 +6,7 @@ import com.caszgamermd.tvtime.block.TvBlockEntity;
 import com.caszgamermd.tvtime.client.media.TestPatternVideo;
 import com.caszgamermd.tvtime.client.media.VideoTexture;
 import com.caszgamermd.tvtime.client.media.VideoTextureManager;
+import com.caszgamermd.tvtime.client.network.ClientChannelSubscriptions;
 import com.caszgamermd.tvtime.display.DisplayRect;
 import com.caszgamermd.tvtime.display.VideoLayout;
 import com.caszgamermd.tvtime.display.VideoLayoutCalculator;
@@ -73,6 +74,10 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
     ) {
         if (!state.anchor) {
             return;
+        }
+
+        if (!state.channel.isBlank()) {
+            ClientChannelSubscriptions.markSeen(state.channel);
         }
 
         UUID sessionId = TestPatternVideo.sessionId(state.channel);
