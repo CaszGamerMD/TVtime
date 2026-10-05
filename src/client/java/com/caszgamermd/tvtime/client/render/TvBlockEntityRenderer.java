@@ -10,6 +10,7 @@ import com.caszgamermd.tvtime.client.network.ClientChannelSubscriptions;
 import com.caszgamermd.tvtime.client.network.ClientChannelDirectory;
 import com.caszgamermd.tvtime.client.audio.TvAudioAnchors;
 import com.caszgamermd.tvtime.display.DisplayRect;
+import com.caszgamermd.tvtime.audio.SpeakerChannel;
 import com.caszgamermd.tvtime.display.VideoLayout;
 import com.caszgamermd.tvtime.display.VideoLayoutCalculator;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -97,7 +98,10 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
             TvAudioAnchors.markSeen(
                 sessionId,
                 state.anchorPos,
-                displayWorldCenter(state)
+                displayWorldCenter(state),
+                SpeakerChannel.FULL,
+                1.0f,
+                24
             );
         }
 
