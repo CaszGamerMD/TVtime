@@ -1,4 +1,6 @@
 #include <windows.h>
+#include <winrt/base.h>
+#include "wgc_capture.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -7,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <charconv>
 
 namespace {
 
@@ -162,7 +165,10 @@ void write_error(std::string_view code, std::string_view message) {
 } // namespace
 
 int main() {
+    winrt::init_apartment(winrt::apartment_type::multi_threaded);
     SetConsoleOutputCP(CP_UTF8);
+
+    WgcCaptureSession capture;
     write_hello();
 
     std::string line;
@@ -172,12 +178,49 @@ int main() {
         } else if (line == "LIST_WINDOWS") {
             write_windows();
         } else if (line == "QUIT") {
+            capture.stop();
             return 0;
         } else if (line.rfind("START ", 0) == 0) {
-            write_error(
-                "capture_not_implemented",
-                "Windows Graphics Capture session creation is the next native milestone."
+            std::uint64_t handle_value = 0;
+            const std::string_view text(line.data() + 6, line.size() - 6);
+            const auto parsed = std::from_chars(
+                text.data(),
+                text.data() + text.size(),
+                handle_value
             );
+
+            if (parsed.ec != std::errc{} || parsed.ptr != text.data() + text.size()) {
+                write_error("invalid_handle", "START requires a numeric native window handle.");
+                continue;
+            }
+
+            std::string error;
+            const auto hwnd = reinterpret_cast<HWND>(
+                static_cast<std::uintptr_t>(handle_value)
+            );
+
+            if (!capture.start(hwnd, error)) {
+                write_error("capture_start_failed", error);
+                continue;
+            }
+
+            std::cout
+                << "{\"type\":\"capture_started\","
+                << "\"handle\":" << handle_value << ","
+                << "\"width\":" << capture.width() << ","
+                << "\"height\":" << capture.height()
+                << "}" << std::endl;
+        } else if (line == "STOP") {
+            capture.stop();
+            std::cout << "{\"type\":\"capture_stopped\"}" << std::endl;
+        } else if (line == "STATUS") {
+            std::cout
+                << "{\"type\":\"status\","
+                << "\"running\":" << (capture.running() ? "true" : "false") << ","
+                << "\"frames\":" << capture.frame_count() << ","
+                << "\"width\":" << capture.width() << ","
+                << "\"height\":" << capture.height()
+                << "}" << std::endl;
         } else {
             write_error("unknown_command", "Unknown TVtime capture-helper command.");
         }
