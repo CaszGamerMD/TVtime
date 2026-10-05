@@ -4,6 +4,7 @@ import com.caszgamermd.tvtime.broadcast.DisplayMode;
 import com.caszgamermd.tvtime.audio.SpeakerChannel;
 import com.caszgamermd.tvtime.client.capture.CaptureBroadcastController;
 import com.caszgamermd.tvtime.client.capture.CaptureWindow;
+import com.caszgamermd.tvtime.client.media.VideoCodecMode;
 import com.caszgamermd.tvtime.client.network.TestNetworkBroadcaster;
 import com.caszgamermd.tvtime.network.payload.ConfigureTvPayload;
 import com.caszgamermd.tvtime.network.payload.ConfigureSpeakerPayload;
@@ -150,6 +151,52 @@ public final class TVtimeClientCommands {
                             })
                     )
                     .then(
+                        ClientCommands.literal("codec")
+                            .then(
+                                ClientCommands.argument(
+                                    "mode",
+                                    StringArgumentType.word()
+                                ).executes(context -> {
+                                    String raw = StringArgumentType.getString(
+                                        context,
+                                        "mode"
+                                    );
+
+                                    final VideoCodecMode mode;
+                                    try {
+                                        mode = VideoCodecMode.valueOf(
+                                            raw.trim().toUpperCase()
+                                        );
+                                    } catch (IllegalArgumentException ex) {
+                                        context.getSource().sendFeedback(
+                                            Component.literal(
+                                                "Unknown codec. Use AUTO, H264, or DELTA."
+                                            )
+                                        );
+                                        return 0;
+                                    }
+
+                                    try {
+                                        CaptureBroadcastController.instance()
+                                            .setPreferredCodec(mode);
+                                    } catch (IllegalStateException ex) {
+                                        context.getSource().sendFeedback(
+                                            Component.literal(ex.getMessage())
+                                        );
+                                        return 0;
+                                    }
+
+                                    context.getSource().sendFeedback(
+                                        Component.literal(
+                                            "TVtime preferred video codec set to "
+                                                + mode + "."
+                                        )
+                                    );
+                                    return 1;
+                                })
+                            )
+                    )
+                    .then(
                         ClientCommands.literal("status")
                             .executes(context -> {
                                 CaptureBroadcastController controller =
@@ -167,6 +214,7 @@ public final class TVtimeClientCommands {
                                     "TVtime channel '" + controller.channel() + "'"
                                         + " | " + String.format("%.1f", stats.fps()) + " FPS"
                                         + " | " + String.format("%.0f", stats.kbps()) + " kbps"
+                                        + " | codec " + stats.codec()
                                         + " | video "
                                         + String.format("%.1f%%", stats.compressionRatio() * 100.0)
                                         + " of raw size"
