@@ -4,6 +4,7 @@ import com.caszgamermd.tvtime.broadcast.DisplayMode;
 import com.caszgamermd.tvtime.audio.SpeakerChannel;
 import com.caszgamermd.tvtime.client.capture.CaptureBroadcastController;
 import com.caszgamermd.tvtime.client.capture.CaptureWindow;
+import com.caszgamermd.tvtime.client.capture.CaptureProfile;
 import com.caszgamermd.tvtime.client.media.VideoCodecMode;
 import com.caszgamermd.tvtime.client.network.TestNetworkBroadcaster;
 import com.caszgamermd.tvtime.network.payload.ConfigureTvPayload;
@@ -151,6 +152,55 @@ public final class TVtimeClientCommands {
                             })
                     )
                     .then(
+                        ClientCommands.literal("quality")
+                            .then(
+                                ClientCommands.argument(
+                                    "profile",
+                                    StringArgumentType.word()
+                                ).executes(context -> {
+                                    String raw = StringArgumentType.getString(
+                                        context,
+                                        "profile"
+                                    );
+
+                                    final CaptureProfile profile;
+                                    try {
+                                        profile = CaptureProfile.valueOf(
+                                            raw.trim().toUpperCase()
+                                        );
+                                    } catch (IllegalArgumentException ex) {
+                                        context.getSource().sendFeedback(
+                                            Component.literal(
+                                                "Unknown quality. Use LOW, BALANCED, or HIGH."
+                                            )
+                                        );
+                                        return 0;
+                                    }
+
+                                    try {
+                                        CaptureBroadcastController.instance()
+                                            .setCaptureProfile(profile);
+                                    } catch (IllegalStateException ex) {
+                                        context.getSource().sendFeedback(
+                                            Component.literal(ex.getMessage())
+                                        );
+                                        return 0;
+                                    }
+
+                                    context.getSource().sendFeedback(
+                                        Component.literal(
+                                            "TVtime capture quality set to "
+                                                + profile + " ("
+                                                + profile.width() + "x"
+                                                + profile.height() + " @ "
+                                                + profile.fps() + " FPS)."
+                                        )
+                                    );
+                                    return 1;
+                                })
+                            )
+                    )
+                    .then(
                         ClientCommands.literal("codec")
                             .then(
                                 ClientCommands.argument(
@@ -215,6 +265,7 @@ public final class TVtimeClientCommands {
                                         + " | " + String.format("%.1f", stats.fps()) + " FPS"
                                         + " | " + String.format("%.0f", stats.kbps()) + " kbps"
                                         + " | codec " + stats.codec()
+                                        + " | profile " + stats.profile()
                                         + " | video "
                                         + String.format("%.1f%%", stats.compressionRatio() * 100.0)
                                         + " of raw size"
