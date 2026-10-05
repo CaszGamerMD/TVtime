@@ -27,10 +27,16 @@ public final class CaptureBackends {
             }
         }
 
+        Path bundled = BundledCaptureHelper.extractIfPresent();
+        if (bundled != null && Files.isRegularFile(bundled)) {
+            return new HelperProcessCaptureBackend(bundled);
+        }
+
         return new UnsupportedCaptureBackend(
-            "TVtime Windows capture helper was not found. Put tvtime-capture.exe "
-                + "in the Minecraft folder, config/tvtime/, or set "
-                + "-Dtvtime.capture.helper=<path> / TVTIME_CAPTURE_HELPER."
+            "TVtime Windows capture helper was not found. This build does not "
+                + "contain a bundled helper. Put tvtime-capture.exe in the Minecraft "
+                + "folder, config/tvtime/, or set -Dtvtime.capture.helper=<path> / "
+                + "TVTIME_CAPTURE_HELPER."
         );
     }
 
