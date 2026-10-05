@@ -1,0 +1,38 @@
+name: Windows Native Helper
+
+concurrency:
+  group: tvtime-native-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "native/windows/**"
+      - ".github/workflows/windows-native.yml"
+  pull_request:
+    paths:
+      - "native/windows/**"
+      - ".github/workflows/windows-native.yml"
+
+jobs:
+  build:
+    runs-on: windows-2025
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        shell: pwsh
+        run: cmake -S native/windows -B native/windows/build -A x64
+
+      - name: Build
+        shell: pwsh
+        run: cmake --build native/windows/build --config Release
+
+      - name: Upload helper
+        uses: actions/upload-artifact@v4
+        with:
+          name: tvtime-capture-windows-x64
+          path: native/windows/build/Release/tvtime-capture.exe
