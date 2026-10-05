@@ -1,5 +1,6 @@
 package com.caszgamermd.tvtime.client.audio;
 
+import com.caszgamermd.tvtime.audio.SpeakerChannel;
 import com.caszgamermd.tvtime.client.mixin.SoundEngineAccessor;
 import com.caszgamermd.tvtime.client.mixin.SoundManagerAccessor;
 import com.mojang.blaze3d.audio.Channel;
@@ -41,8 +42,16 @@ public final class TvAudioPlaybackManager {
 
         anchors.forEach((sourceKey, anchor) -> {
             Playback playback = PLAYBACKS.get(sourceKey);
+
+            if (playback != null
+                && playback.speakerChannel() != anchor.speakerChannel()) {
+                playback.stop();
+                PLAYBACKS.remove(sourceKey);
+                playback = null;
+            }
+
             if (playback == null || playback.stopped()) {
-                playback = create(sourceKey);
+                playback = create(sourceKey, anchor.speakerChannel());
                 if (playback == null) {
                     return;
                 }
@@ -59,7 +68,10 @@ public final class TvAudioPlaybackManager {
         TvAudioAnchors.clear();
     }
 
-    private static Playback create(TvAudioAnchors.SourceKey sourceKey) {
+    private static Playback create(
+        TvAudioAnchors.SourceKey sourceKey,
+        SpeakerChannel speakerChannel
+    ) {
         Minecraft client = Minecraft.getInstance();
         SoundManager soundManager = client.getSoundManager();
 
@@ -77,7 +89,10 @@ public final class TvAudioPlaybackManager {
         }
 
         TvPcmAudioStream stream =
-            new TvPcmAudioStream(sourceKey.sessionId());
+            new TvPcmAudioStream(
+                sourceKey.sessionId(),
+                speakerChannel
+            );
 
         handle.execute(channel -> {
             channel.setPitch(1.0f);
@@ -88,12 +103,13 @@ public final class TvAudioPlaybackManager {
             channel.play();
         });
 
-        return new Playback(handle, stream);
+        return new Playback(handle, stream, speakerChannel);
     }
 
     private record Playback(
         ChannelAccess.ChannelHandle handle,
-        TvPcmAudioStream stream
+        TvPcmAudioStream stream,
+        SpeakerChannel speakerChannel
     ) {
         private void update(TvAudioAnchors.Anchor anchor) {
             handle.execute(channel -> {
