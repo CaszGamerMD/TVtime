@@ -8,6 +8,7 @@ import com.caszgamermd.tvtime.client.network.TestNetworkBroadcaster;
 import com.caszgamermd.tvtime.network.payload.ConfigureTvPayload;
 import com.caszgamermd.tvtime.network.payload.ConfigureSpeakerPayload;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -174,6 +175,7 @@ public final class TVtimeClientCommands {
                             })
                     )
                     .then(tuneCommand())
+                    .then(speakerCommand())
             );
         });
     }
@@ -273,43 +275,92 @@ public final class TVtimeClientCommands {
         return ClientCommands.literal("tune")
             .then(
                 ClientCommands.argument("channel", StringArgumentType.word())
-                    .executes(context -> {
-                        String channel = StringArgumentType.getString(context, "channel");
-                        Minecraft client = Minecraft.getInstance();
-                        HitResult hit = client.hitResult;
+                    .executes(context ->
+                        configureTv(context, DisplayMode.FIT, true)
+                    )
+                    .then(
+                        ClientCommands.argument("mode", StringArgumentType.word())
+                            .executes(context -> {
+                                DisplayMode mode = parseDisplayMode(context);
+                                return mode == null
+                                    ? 0
+                                    : configureTv(context, mode, true);
+                            })
+                            .then(
+                                ClientCommands.argument(
+                                    "audio",
+                                    BoolArgumentType.bool()
+                                ).executes(context -> {
+                                    DisplayMode mode = parseDisplayMode(context);
+                                    if (mode == null) {
+                                        return 0;
+                                    }
 
-                        if (!(hit instanceof BlockHitResult blockHit)) {
-                            context.getSource().sendFeedback(
-                                Component.literal("Look directly at a TV block first.")
-                            );
-                            return 0;
-                        }
-
-                        if (!ClientPlayNetworking.canSend(ConfigureTvPayload.TYPE)) {
-                            context.getSource().sendFeedback(
-                                Component.literal(
-                                    "Server does not accept TVtime TV configuration packets."
-                                )
-                            );
-                            return 0;
-                        }
-
-                        ClientPlayNetworking.send(
-                            new ConfigureTvPayload(
-                                blockHit.getBlockPos(),
-                                channel,
-                                DisplayMode.FIT,
-                                true
+                                    return configureTv(
+                                        context,
+                                        mode,
+                                        BoolArgumentType.getBool(context, "audio")
+                                    );
+                                })
                             )
-                        );
-
-                        context.getSource().sendFeedback(
-                            Component.literal(
-                                "Tuning connected TV display to '" + channel + "'."
-                            )
-                        );
-                        return 1;
-                    })
+                    )
             );
+    }
+
+    private static DisplayMode parseDisplayMode(
+        CommandContext<FabricClientCommandSource> context
+    ) {
+        String raw = StringArgumentType.getString(context, "mode");
+
+        try {
+            return DisplayMode.valueOf(raw.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            context.getSource().sendFeedback(Component.literal(
+                "Unknown display mode. Use FIT, FILL, or STRETCH."
+            ));
+            return null;
+        }
+    }
+
+    private static int configureTv(
+        CommandContext<FabricClientCommandSource> context,
+        DisplayMode mode,
+        boolean audioEnabled
+    ) {
+        String channel = StringArgumentType.getString(context, "channel");
+        Minecraft client = Minecraft.getInstance();
+        HitResult hit = client.hitResult;
+
+        if (!(hit instanceof BlockHitResult blockHit)) {
+            context.getSource().sendFeedback(
+                Component.literal("Look directly at a TV block first.")
+            );
+            return 0;
+        }
+
+        if (!ClientPlayNetworking.canSend(ConfigureTvPayload.TYPE)) {
+            context.getSource().sendFeedback(
+                Component.literal(
+                    "Server does not accept TVtime TV configuration packets."
+                )
+            );
+            return 0;
+        }
+
+        ClientPlayNetworking.send(
+            new ConfigureTvPayload(
+                blockHit.getBlockPos(),
+                channel,
+                mode,
+                audioEnabled
+            )
+        );
+
+        context.getSource().sendFeedback(Component.literal(
+            "Tuning connected TV display to '" + channel
+                + "' (" + mode
+                + ", TV audio " + (audioEnabled ? "on" : "off") + ")."
+        ));
+        return 1;
     }
 }
