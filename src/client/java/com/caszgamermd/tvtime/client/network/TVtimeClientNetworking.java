@@ -7,6 +7,8 @@ import com.caszgamermd.tvtime.client.media.RawPcmAudioCodec;
 import com.caszgamermd.tvtime.client.audio.TvAudioBus;
 import com.caszgamermd.tvtime.client.media.DeflateVideoCodec;
 import com.caszgamermd.tvtime.client.media.DeltaVideoDecoderStore;
+import com.caszgamermd.tvtime.client.media.H264VideoCodec;
+import com.caszgamermd.tvtime.client.media.H264VideoDecoderStore;
 import com.caszgamermd.tvtime.network.MediaKind;
 import com.caszgamermd.tvtime.client.media.MediaReassembler;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
@@ -88,6 +90,23 @@ public final class TVtimeClientNetworking {
         byte[] encoded
     ) {
         if (kind == MediaKind.VIDEO) {
+            if (H264VideoCodec.isH264Packet(encoded)) {
+                var h264Frame = H264VideoDecoderStore.decode(
+                    sessionId,
+                    sequence,
+                    presentationTimeMicros,
+                    keyFrame,
+                    encoded
+                );
+
+                if (h264Frame != null) {
+                    VideoFrameStore.publish(sessionId, h264Frame);
+                    return true;
+                }
+
+                return true;
+            }
+
             var deltaFrame = DeltaVideoDecoderStore.decode(
                 sessionId,
                 sequence,
