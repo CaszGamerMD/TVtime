@@ -1,6 +1,8 @@
 package com.caszgamermd.tvtime.client.capture;
 
 import com.caszgamermd.tvtime.client.media.RawTestFrameCodec;
+import com.caszgamermd.tvtime.client.media.DecodedVideoFrame;
+import com.caszgamermd.tvtime.client.media.VideoFrameStore;
 import com.caszgamermd.tvtime.client.network.ClientBroadcastState;
 import com.caszgamermd.tvtime.network.MediaKind;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
@@ -145,6 +147,16 @@ public final class CaptureBroadcastController {
         }
 
         ByteBuffer rgba = toRgba(frame);
+        VideoFrameStore.publish(
+            active.sessionId(),
+            new DecodedVideoFrame(
+                frame.width(),
+                frame.height(),
+                frame.timestampMicros(),
+                rgba.duplicate()
+            )
+        );
+
         byte[] encoded = RawTestFrameCodec.encode(
             frame.width(),
             frame.height(),
