@@ -82,11 +82,27 @@ jobs:
              /tvtime_capture tune <channel>
 
           Current real-window development stream:
-          - 192x108 at 12 FPS
-          - dependency-free Deflate video compression
+          - AUTO video codec prefers H.264 (JCodec baseline)
+          - automatic fallback to delta-Deflate
+          - periodic keyframes + packet-loss recovery
           - bounded media fragmentation/reassembly
           - selected-process PCM audio
           - positional mono TV/speaker playback
+
+          Capture quality controls:
+          /tvtime_capture quality LOW
+            192x108 @ 12 FPS
+          /tvtime_capture quality BALANCED
+            320x180 @ 15 FPS
+          /tvtime_capture quality HIGH
+            640x360 @ 20 FPS
+
+          Codec controls:
+          /tvtime_capture codec AUTO
+          /tvtime_capture codec H264
+          /tvtime_capture codec DELTA
+
+          AUTO is the recommended test mode.
 
           Speaker test:
           1. Place a TVtime Speaker block.
@@ -102,11 +118,12 @@ jobs:
           FULL/CENTER/LFE currently downmix both channels to mono.
 
           /tvtime_capture status shows current FPS, combined kbps,
-          and video compression ratio.
+          active codec, quality profile, and video compression ratio.
 
           This build validates the full capture -> compression -> server
           relay -> remote connected-TV video + multi-speaker positional
-          audio path before H.264/Opus compression.
+          audio path while H.264 is being validated. Opus audio compression
+          remains the next production-codec milestone.
           "@ | Set-Content -Encoding UTF8 bundle/TESTING.txt
 
       - name: Upload Windows test bundle
