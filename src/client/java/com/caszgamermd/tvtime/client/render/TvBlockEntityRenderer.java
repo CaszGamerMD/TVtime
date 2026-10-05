@@ -96,6 +96,7 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
         if (sessionId != null && state.tvAudioEnabled && !state.channel.isBlank()) {
             TvAudioAnchors.markSeen(
                 sessionId,
+                state.anchorPos,
                 displayWorldCenter(state)
             );
         }
