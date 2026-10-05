@@ -69,39 +69,45 @@ public final class CaptureBroadcastController {
             new StartBroadcastPayload(normalized, 128, 72, 10, 4000)
         );
 
-        backend().start(
-            windows.get(windowIndex),
-            new CaptureOptions(128, 72, 10, false),
-            new WindowCaptureBackend.Listener() {
-                @Override
-                public void onVideoFrame(CapturedVideoFrame frame) {
-                    handleFrame(frame);
-                }
+        try {
+            backend().start(
+                windows.get(windowIndex),
+                new CaptureOptions(128, 72, 10, false),
+                new WindowCaptureBackend.Listener() {
+                    @Override
+                    public void onVideoFrame(CapturedVideoFrame frame) {
+                        handleFrame(frame);
+                    }
 
-                @Override
-                public void onAudioChunk(CapturedAudioChunk chunk) {
-                    // Audio is added once the process-loopback path is wired.
-                }
+                    @Override
+                    public void onAudioChunk(CapturedAudioChunk chunk) {
+                        // Audio is added once the process-loopback path is wired.
+                    }
 
-                @Override
-                public void onCaptureStopped(String reason) {
-                    Minecraft.getInstance().execute(() -> {
-                        if (requestedChannel != null) {
-                            requestedChannel = null;
-                            ClientBroadcastState.ActiveBroadcast active =
-                                ClientBroadcastState.active();
-                            if (active != null
-                                && ClientPlayNetworking.canSend(StopBroadcastPayload.TYPE)) {
-                                ClientPlayNetworking.send(
-                                    new StopBroadcastPayload(active.sessionId())
-                                );
+                    @Override
+                    public void onCaptureStopped(String reason) {
+                        Minecraft.getInstance().execute(() -> {
+                            if (requestedChannel != null) {
+                                requestedChannel = null;
+                                ClientBroadcastState.ActiveBroadcast active =
+                                    ClientBroadcastState.active();
+                                if (active != null
+                                    && ClientPlayNetworking.canSend(StopBroadcastPayload.TYPE)) {
+                                    ClientPlayNetworking.send(
+                                        new StopBroadcastPayload(active.sessionId())
+                                    );
+                                }
+                                ClientBroadcastState.clear();
                             }
-                            ClientBroadcastState.clear();
-                        }
-                    });
+                        });
+                    }
                 }
-            }
-        );
+            );
+        } catch (Exception ex) {
+            requestedChannel = null;
+            ClientBroadcastState.clear();
+            throw new IllegalStateException("Unable to start window capture", ex);
+        }
     }
 
     public synchronized void stop() {
