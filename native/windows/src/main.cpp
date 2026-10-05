@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <winrt/base.h>
 #include "wgc_capture.h"
+#include "process_audio_capture.h"
 
 #include <algorithm>
 #include <array>
@@ -74,6 +75,37 @@ void write_video_frame(
 
     write_all(output, header.data(), static_cast<DWORD>(header.size()));
     write_all(output, bgra.data(), static_cast<DWORD>(bgra.size()));
+}
+
+void write_audio_chunk(
+    int sample_rate,
+    int channels,
+    std::int64_t timestamp_micros,
+    const std::vector<std::uint8_t>& pcm
+) {
+    if (pcm.empty()) return;
+
+    std::scoped_lock lock(media_output_mutex);
+    HANDLE output = GetStdHandle(STD_ERROR_HANDLE);
+    if (output == nullptr || output == INVALID_HANDLE_VALUE) return;
+
+    std::array<std::uint8_t, 28> header{};
+    header[0] = 'T';
+    header[1] = 'V';
+    header[2] = 'F';
+    header[3] = '1';
+    header[4] = 2; // audio
+    header[5] = 0; // S16_LE
+    write_u32_le(header.data() + 8, static_cast<std::uint32_t>(pcm.size()));
+    write_u64_le(
+        header.data() + 12,
+        static_cast<std::uint64_t>(timestamp_micros)
+    );
+    write_u32_le(header.data() + 20, static_cast<std::uint32_t>(sample_rate));
+    write_u32_le(header.data() + 24, static_cast<std::uint32_t>(channels));
+
+    write_all(output, header.data(), static_cast<DWORD>(header.size()));
+    write_all(output, pcm.data(), static_cast<DWORD>(pcm.size()));
 }
 
 struct WindowInfo {
@@ -232,6 +264,7 @@ int main() {
     SetConsoleOutputCP(CP_UTF8);
 
     WgcCaptureSession capture;
+    ProcessAudioCapture audio_capture;
     write_hello();
 
     std::string line;
@@ -241,6 +274,7 @@ int main() {
         } else if (line == "LIST_WINDOWS") {
             write_windows();
         } else if (line == "QUIT") {
+            audio_capture.stop();
             capture.stop();
             return 0;
         } else if (line.rfind("START ", 0) == 0) {
@@ -267,13 +301,36 @@ int main() {
                 continue;
             }
 
+            DWORD process_id = 0;
+            GetWindowThreadProcessId(hwnd, &process_id);
+
+            std::string audio_error;
+            const bool audio_started =
+                process_id != 0
+                && audio_capture.start(
+                    process_id,
+                    write_audio_chunk,
+                    audio_error
+                );
+
             std::cout
                 << "{\"type\":\"capture_started\","
                 << "\"handle\":" << handle_value << ","
+                << "\"processId\":" << process_id << ","
                 << "\"width\":" << capture.width() << ","
-                << "\"height\":" << capture.height()
-                << "}" << std::endl;
+                << "\"height\":" << capture.height() << ","
+                << "\"audio\":" << (audio_started ? "true" : "false");
+
+            if (!audio_started && !audio_error.empty()) {
+                std::cout
+                    << ",\"audioError\":\""
+                    << json_escape(audio_error)
+                    << "\"";
+            }
+
+            std::cout << "}" << std::endl;
         } else if (line == "STOP") {
+            audio_capture.stop();
             capture.stop();
             std::cout << "{\"type\":\"capture_stopped\"}" << std::endl;
         } else if (line == "STATUS") {
@@ -282,7 +339,8 @@ int main() {
                 << "\"running\":" << (capture.running() ? "true" : "false") << ","
                 << "\"frames\":" << capture.frame_count() << ","
                 << "\"width\":" << capture.width() << ","
-                << "\"height\":" << capture.height()
+                << "\"height\":" << capture.height() << ","
+                << "\"audio\":" << (audio_capture.running() ? "true" : "false")
                 << "}" << std::endl;
         } else {
             write_error("unknown_command", "Unknown TVtime capture-helper command.");
