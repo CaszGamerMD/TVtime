@@ -3,6 +3,9 @@ package com.caszgamermd.tvtime.client.capture;
 import com.caszgamermd.tvtime.client.media.RawTestFrameCodec;
 import com.caszgamermd.tvtime.client.media.DecodedVideoFrame;
 import com.caszgamermd.tvtime.client.media.VideoFrameStore;
+import com.caszgamermd.tvtime.client.media.RawPcmAudioCodec;
+import com.caszgamermd.tvtime.client.media.AudioChunkStore;
+import com.caszgamermd.tvtime.client.media.DecodedAudioChunk;
 import com.caszgamermd.tvtime.client.network.ClientBroadcastState;
 import com.caszgamermd.tvtime.network.MediaKind;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
@@ -72,7 +75,7 @@ public final class CaptureBroadcastController {
         try {
             backend().start(
                 windows.get(windowIndex),
-                new CaptureOptions(128, 72, 10, false),
+                new CaptureOptions(128, 72, 10, true),
                 new WindowCaptureBackend.Listener() {
                     @Override
                     public void onVideoFrame(CapturedVideoFrame frame) {
@@ -81,7 +84,7 @@ public final class CaptureBroadcastController {
 
                     @Override
                     public void onAudioChunk(CapturedAudioChunk chunk) {
-                        // Audio is added once the process-loopback path is wired.
+                        handleAudio(chunk);
                     }
 
                     @Override
@@ -190,6 +193,54 @@ public final class CaptureBroadcastController {
                 packetSequence,
                 frame.timestampMicros(),
                 true,
+                encoded
+            ));
+        });
+    }
+
+    private void handleAudio(CapturedAudioChunk chunk) {
+        String expectedChannel = requestedChannel;
+        if (expectedChannel == null) {
+            return;
+        }
+
+        ClientBroadcastState.ActiveBroadcast active = ClientBroadcastState.active();
+        if (active == null || !expectedChannel.equals(active.channel())) {
+            return;
+        }
+
+        byte[] encoded = RawPcmAudioCodec.encode(chunk);
+        if (encoded.length > MediaRelayPayload.MAX_MEDIA_BYTES) {
+            return;
+        }
+
+        AudioChunkStore.offer(
+            active.sessionId(),
+            new DecodedAudioChunk(
+                chunk.sampleRate(),
+                chunk.channels(),
+                chunk.timestampMicros(),
+                chunk.samples().duplicate()
+            )
+        );
+
+        long packetSequence = sequence.getAndIncrement();
+        Minecraft.getInstance().execute(() -> {
+            ClientBroadcastState.ActiveBroadcast current =
+                ClientBroadcastState.active();
+
+            if (current == null
+                || !current.sessionId().equals(active.sessionId())
+                || !ClientPlayNetworking.canSend(MediaRelayPayload.TYPE)) {
+                return;
+            }
+
+            ClientPlayNetworking.send(new MediaRelayPayload(
+                current.sessionId(),
+                MediaKind.AUDIO,
+                packetSequence,
+                chunk.timestampMicros(),
+                false,
                 encoded
             ));
         });
