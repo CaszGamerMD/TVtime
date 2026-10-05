@@ -19,6 +19,7 @@ import java.util.UUID;
 public final class TVtimeNetworking {
     private static final StreamLimits LIMITS = StreamLimits.defaults();
     private static final BroadcastSubscriptions SUBSCRIPTIONS = new BroadcastSubscriptions();
+    private static final MediaRateLimiter RATE_LIMITER = new MediaRateLimiter();
 
     private TVtimeNetworking() {
     }
@@ -83,6 +84,7 @@ public final class TVtimeNetworking {
                 .toList()
                 .forEach(sessionId -> {
                     SUBSCRIPTIONS.removeSession(sessionId);
+                    RATE_LIMITER.remove(sessionId);
                     TVtime.broadcasts().remove(sessionId);
                 });
 
@@ -155,6 +157,7 @@ public final class TVtimeNetworking {
             }
 
             SUBSCRIPTIONS.removeSession(session.id());
+            RATE_LIMITER.remove(session.id());
             TVtime.broadcasts().remove(session.id());
         });
     }
@@ -182,6 +185,14 @@ public final class TVtimeNetworking {
                     sender.getGameProfile().name(),
                     payload.sessionId()
                 );
+                return;
+            }
+
+            if (!RATE_LIMITER.allow(
+                session.id(),
+                session.videoBitrateKbps(),
+                payload.payload().length
+            )) {
                 return;
             }
 
