@@ -1,5 +1,7 @@
 package com.caszgamermd.tvtime.client.media;
 
+import com.caszgamermd.tvtime.client.audio.TvAudioBus;
+
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,6 +35,7 @@ public final class ClientBroadcastMedia {
         }
         VideoFrameStore.remove(sessionId);
         AudioChunkStore.remove(sessionId);
+        TvAudioBus.removeSession(sessionId);
     }
 
     public static void clear() {
@@ -40,5 +43,6 @@ public final class ClientBroadcastMedia {
         QUEUES.clear();
         VideoFrameStore.clear();
         AudioChunkStore.clear();
+        TvAudioBus.clear();
     }
 }
