@@ -3,19 +3,29 @@ package com.caszgamermd.tvtime.client.render;
 import org.jetbrains.annotations.Nullable;
 
 import com.caszgamermd.tvtime.block.TvBlockEntity;
+import com.caszgamermd.tvtime.client.media.TestPatternVideo;
+import com.caszgamermd.tvtime.client.media.VideoTexture;
+import com.caszgamermd.tvtime.client.media.VideoTextureManager;
 import com.caszgamermd.tvtime.display.DisplayRect;
+import com.caszgamermd.tvtime.display.VideoLayout;
+import com.caszgamermd.tvtime.display.VideoLayoutCalculator;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.UUID;
 
 public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockEntity, TvBlockEntityRenderState> {
     private final Font font;
@@ -65,12 +75,75 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
             return;
         }
 
-        String title = state.channel.isBlank() ? "TVtime TEST" : "TVtime • " + state.channel;
-        String detail = state.widthBlocks + "x" + state.heightBlocks + " • " + state.displayMode.name();
+        UUID sessionId = TestPatternVideo.sessionId(state.channel);
+        TestPatternVideo.publishIfDue(sessionId);
+
+        VideoTexture videoTexture = VideoTextureManager.get(sessionId);
+        videoTexture.updateFromLatest();
 
         matrices.pushPose();
         moveToDisplayCenter(matrices, state);
         rotateToFacing(matrices, state.facing);
+
+        if (videoTexture.ready()) {
+            submitVideoSurface(state, matrices, queue, videoTexture);
+        } else {
+            submitFallbackText(state, matrices, queue);
+        }
+
+        matrices.popPose();
+    }
+
+    private static void submitVideoSurface(
+        TvBlockEntityRenderState state,
+        PoseStack matrices,
+        SubmitNodeCollector queue,
+        VideoTexture videoTexture
+    ) {
+        float canvasWidth = Math.max(0.1f, state.widthBlocks - 0.10f);
+        float canvasHeight = Math.max(0.1f, state.heightBlocks - 0.10f);
+
+        VideoLayout layout = VideoLayoutCalculator.calculate(
+            videoTexture.width(),
+            videoTexture.height(),
+            canvasWidth,
+            canvasHeight,
+            state.displayMode
+        );
+
+        float canvasLeft = -canvasWidth / 2.0f;
+        float canvasBottom = -canvasHeight / 2.0f;
+
+        float left = canvasLeft + layout.x();
+        float bottom = canvasBottom + layout.y();
+        float right = left + layout.width();
+        float top = bottom + layout.height();
+
+        float u0 = layout.u0();
+        float v0 = layout.v0();
+        float u1 = layout.u1();
+        float v1 = layout.v1();
+
+        queue.submitCustomGeometry(
+            matrices,
+            RenderTypes.entityTranslucent(videoTexture.textureId()),
+            (pose, buffer) -> {
+                // UV origin is top-left; world-space Y grows upward.
+                vertex(pose, buffer, left, bottom, 0.002f, u0, v1, state.lightCoords);
+                vertex(pose, buffer, right, bottom, 0.002f, u1, v1, state.lightCoords);
+                vertex(pose, buffer, right, top, 0.002f, u1, v0, state.lightCoords);
+                vertex(pose, buffer, left, top, 0.002f, u0, v0, state.lightCoords);
+            }
+        );
+    }
+
+    private void submitFallbackText(
+        TvBlockEntityRenderState state,
+        PoseStack matrices,
+        SubmitNodeCollector queue
+    ) {
+        String title = state.channel.isBlank() ? "TVtime TEST" : "TVtime • " + state.channel;
+        String detail = state.widthBlocks + "x" + state.heightBlocks + " • " + state.displayMode.name();
 
         float availableWidth = Math.max(0.25f, state.widthBlocks - 0.20f);
         float titleScale = Math.min(0.16f, availableWidth / Math.max(1, font.width(title)));
@@ -109,8 +182,24 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
             0
         );
         matrices.popPose();
+    }
 
-        matrices.popPose();
+    private static void vertex(
+        PoseStack.Pose pose,
+        VertexConsumer buffer,
+        float x,
+        float y,
+        float z,
+        float u,
+        float v,
+        int light
+    ) {
+        buffer.addVertex(pose, x, y, z)
+            .setColor(-1)
+            .setUv(u, v)
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(light)
+            .setNormal(pose, 0, 0, 1);
     }
 
     private static void moveToDisplayCenter(PoseStack matrices, TvBlockEntityRenderState state) {
