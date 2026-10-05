@@ -7,6 +7,7 @@ import com.caszgamermd.tvtime.display.TvDisplaySettings;
 import com.caszgamermd.tvtime.block.ModBlocks;
 import com.caszgamermd.tvtime.block.SpeakerBlockEntity;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
+import com.caszgamermd.tvtime.network.payload.MediaFragmentPayload;
 import com.caszgamermd.tvtime.network.payload.ConfigureTvPayload;
 import com.caszgamermd.tvtime.network.payload.ConfigureSpeakerPayload;
 import com.caszgamermd.tvtime.network.payload.ChannelSessionPayload;
@@ -52,6 +53,10 @@ public final class TVtimeNetworking {
             MediaRelayPayload.CODEC
         );
         PayloadTypeRegistry.serverboundPlay().register(
+            MediaFragmentPayload.TYPE,
+            MediaFragmentPayload.CODEC
+        );
+        PayloadTypeRegistry.serverboundPlay().register(
             ConfigureTvPayload.TYPE,
             ConfigureTvPayload.CODEC
         );
@@ -67,6 +72,10 @@ public final class TVtimeNetworking {
         PayloadTypeRegistry.clientboundPlay().register(
             MediaRelayPayload.TYPE,
             MediaRelayPayload.CODEC
+        );
+        PayloadTypeRegistry.clientboundPlay().register(
+            MediaFragmentPayload.TYPE,
+            MediaFragmentPayload.CODEC
         );
         PayloadTypeRegistry.clientboundPlay().register(
             ChannelSessionPayload.TYPE,
@@ -91,6 +100,11 @@ public final class TVtimeNetworking {
         ServerPlayNetworking.registerGlobalReceiver(
             MediaRelayPayload.TYPE,
             (payload, context) -> handleMedia(context.player(), payload)
+        );
+
+        ServerPlayNetworking.registerGlobalReceiver(
+            MediaFragmentPayload.TYPE,
+            (payload, context) -> handleMediaFragment(context.player(), payload)
         );
 
         ServerPlayNetworking.registerGlobalReceiver(
@@ -301,6 +315,46 @@ public final class TVtimeNetworking {
             payload.displayMode(),
             payload.tvAudioEnabled()
         );
+    }
+
+    private static void handleMediaFragment(
+        ServerPlayer sender,
+        MediaFragmentPayload payload
+    ) {
+        try {
+            MediaFragmentPayload.validate(payload);
+        } catch (IllegalArgumentException invalid) {
+            return;
+        }
+
+        TVtime.broadcasts().byId(payload.sessionId()).ifPresent(session -> {
+            if (!session.broadcaster().equals(sender.getUUID())) {
+                TVtime.LOGGER.warn(
+                    "Rejected spoofed TVtime media fragment from {} for session {}",
+                    sender.getGameProfile().name(),
+                    payload.sessionId()
+                );
+                return;
+            }
+
+            if (!RATE_LIMITER.allow(
+                session.id(),
+                session.videoBitrateKbps(),
+                payload.payload().length
+            )) {
+                return;
+            }
+
+            for (UUID viewerId : SUBSCRIPTIONS.viewers(session.id())) {
+                ServerPlayer viewer =
+                    sender.level().getServer().getPlayerList().getPlayer(viewerId);
+
+                if (viewer != null
+                    && !viewer.getUUID().equals(sender.getUUID())) {
+                    ServerPlayNetworking.send(viewer, payload);
+                }
+            }
+        });
     }
 
     private static void handleMedia(ServerPlayer sender, MediaRelayPayload payload) {
