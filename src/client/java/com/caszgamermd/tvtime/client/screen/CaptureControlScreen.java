@@ -15,7 +15,7 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 public final class CaptureControlScreen extends Screen {
-    private static final int MAX_VISIBLE_WINDOWS = 6;
+    private static final int MAX_VISIBLE_WINDOWS = 5;
 
     private final Screen parent;
     private final String suggestedChannel;
@@ -24,7 +24,10 @@ public final class CaptureControlScreen extends Screen {
     private CaptureProfile profile;
     private VideoCodecMode codec;
     private EditBox channelBox;
+    private String channelValue;
     private String status = "";
+    private int page;
+    private boolean windowsLoaded;
 
     public CaptureControlScreen(
         Screen parent,
@@ -34,6 +37,7 @@ public final class CaptureControlScreen extends Screen {
         this.parent = parent;
         this.suggestedChannel =
             suggestedChannel == null ? "" : suggestedChannel.trim();
+        this.channelValue = this.suggestedChannel;
 
         CaptureBroadcastController controller =
             CaptureBroadcastController.instance();
@@ -63,7 +67,7 @@ public final class CaptureControlScreen extends Screen {
         this.channelBox.setValue(
             activeChannel != null && !activeChannel.isBlank()
                 ? activeChannel
-                : suggestedChannel
+                : channelValue
         );
         this.channelBox.setHint(Component.literal("broadcast channel"));
         this.addWidget(this.channelBox);
@@ -100,19 +104,34 @@ public final class CaptureControlScreen extends Screen {
                 )
         );
 
-        loadWindows();
+        if (!windowsLoaded) {
+            loadWindows();
+            windowsLoaded = true;
+        }
+
+        int pageCount = Math.max(
+            1,
+            (windows.size() + MAX_VISIBLE_WINDOWS - 1)
+                / MAX_VISIBLE_WINDOWS
+        );
+        page = Math.max(0, Math.min(page, pageCount - 1));
+
+        int startIndex = page * MAX_VISIBLE_WINDOWS;
+        int endIndex = Math.min(
+            windows.size(),
+            startIndex + MAX_VISIBLE_WINDOWS
+        );
 
         int y = 106;
-        int count = Math.min(MAX_VISIBLE_WINDOWS, windows.size());
 
-        for (int i = 0; i < count; i++) {
+        for (int i = startIndex; i < endIndex; i++) {
             final int windowIndex = i;
             CaptureWindow window = windows.get(i);
 
             this.addRenderableWidget(
                 Button.builder(
                         Component.literal(
-                            "[" + i + "] " + window.displayName()
+                            "[" + i + "] " + shortName(window.displayName())
                         ),
                         button -> start(windowIndex)
                     )
@@ -123,16 +142,55 @@ public final class CaptureControlScreen extends Screen {
             y += 22;
         }
 
+        this.addRenderableWidget(
+            Button.builder(
+                    Component.literal("< Prev"),
+                    button -> changePage(-1)
+                )
+                .bounds(left, 218, 76, 20)
+                .build()
+        );
+
+        this.addRenderableWidget(
+            Button.builder(
+                    Component.literal(
+                        (page + 1) + " / " + pageCount
+                    ),
+                    button -> {
+                    }
+                )
+                .bounds(left + 82, 218, 76, 20)
+                .build()
+        );
+
+        this.addRenderableWidget(
+            Button.builder(
+                    Component.literal("Next >"),
+                    button -> changePage(1)
+                )
+                .bounds(left + 164, 218, 76, 20)
+                .build()
+        );
+
+        this.addRenderableWidget(
+            Button.builder(
+                    Component.literal("Refresh"),
+                    button -> refreshWindows()
+                )
+                .bounds(left, 242, 76, 20)
+                .build()
+        );
+
         if (controller.running()) {
             this.addRenderableWidget(
                 Button.builder(
-                        Component.literal("Stop Broadcast"),
+                        Component.literal("Stop"),
                         button -> {
                             controller.stop();
                             status = "Broadcast stopped.";
                         }
                     )
-                    .bounds(left, 264, 118, 20)
+                    .bounds(left + 82, 242, 76, 20)
                     .build()
             );
         }
@@ -143,13 +201,27 @@ public final class CaptureControlScreen extends Screen {
                     button -> onClose()
                 )
                 .bounds(
-                    controller.running() ? left + 122 : left,
-                    264,
-                    controller.running() ? 118 : 240,
+                    controller.running() ? left + 164 : left + 82,
+                    242,
+                    controller.running() ? 76 : 158,
                     20
                 )
                 .build()
         );
+    }
+
+    private void changePage(int delta) {
+        channelValue = channelBox.getValue();
+        page += delta;
+        rebuildWidgets();
+    }
+
+    private void refreshWindows() {
+        channelValue = channelBox.getValue();
+        page = 0;
+        loadWindows();
+        windowsLoaded = true;
+        rebuildWidgets();
     }
 
     private void loadWindows() {
@@ -162,6 +234,17 @@ public final class CaptureControlScreen extends Screen {
             windows = List.of();
             status = "Capture unavailable: " + ex.getMessage();
         }
+    }
+
+    private static String shortName(String value) {
+        if (value == null || value.isBlank()) {
+            return "(untitled window)";
+        }
+
+        String normalized = value.trim();
+        return normalized.length() <= 42
+            ? normalized
+            : normalized.substring(0, 39) + "...";
     }
 
     private void start(int windowIndex) {
@@ -183,6 +266,7 @@ public final class CaptureControlScreen extends Screen {
             controller.setPreferredCodec(codec);
             controller.start(windowIndex, channel);
 
+            channelValue = channel;
             status = "Broadcast requested on channel '" + channel + "'.";
         } catch (RuntimeException ex) {
             status = "Unable to start: " + ex.getMessage();
@@ -234,22 +318,8 @@ public final class CaptureControlScreen extends Screen {
                 this.font,
                 Component.literal(status),
                 this.width / 2,
-                248,
+                278,
                 -1
-            );
-        }
-
-        if (windows.size() > MAX_VISIBLE_WINDOWS) {
-            graphics.centeredText(
-                this.font,
-                Component.literal(
-                    "Showing first " + MAX_VISIBLE_WINDOWS
-                        + " of " + windows.size()
-                        + " windows. Use /tvtime_capture windows for the full list."
-                ),
-                this.width / 2,
-                232,
-                -6250336
             );
         }
 
