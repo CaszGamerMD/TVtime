@@ -264,7 +264,8 @@ public final class TVtimeClientCommands {
                                     "TVtime channel '" + controller.channel() + "'"
                                         + " | " + String.format("%.1f", stats.fps()) + " FPS"
                                         + " | " + String.format("%.0f", stats.kbps()) + " kbps"
-                                        + " | codec " + stats.codec()
+                                        + " | video " + stats.codec()
+                                        + " | audio " + stats.audioCodec()
                                         + " | profile " + stats.profile()
                                         + " | video "
                                         + String.format("%.1f%%", stats.compressionRatio() * 100.0)
