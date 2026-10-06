@@ -3,6 +3,7 @@ package com.caszgamermd.tvtime.client.network;
 import com.caszgamermd.tvtime.client.media.ClientBroadcastMedia;
 import com.caszgamermd.tvtime.client.media.RawTestFrameCodec;
 import com.caszgamermd.tvtime.client.media.VideoFrameStore;
+import com.caszgamermd.tvtime.client.media.VideoDecodeScheduler;
 import com.caszgamermd.tvtime.client.media.RawPcmAudioCodec;
 import com.caszgamermd.tvtime.client.audio.TvAudioBus;
 import com.caszgamermd.tvtime.client.media.DeflateVideoCodec;
@@ -92,57 +93,14 @@ public final class TVtimeClientNetworking {
         byte[] encoded
     ) {
         if (kind == MediaKind.VIDEO) {
-            if (H264VideoCodec.isH264Packet(encoded)) {
-                var h264Frame = H264VideoDecoderStore.decode(
-                    sessionId,
-                    sequence,
-                    presentationTimeMicros,
-                    keyFrame,
-                    encoded
-                );
-
-                if (h264Frame != null) {
-                    VideoFrameStore.publish(sessionId, h264Frame);
-                    return true;
-                }
-
-                return true;
-            }
-
-            var deltaFrame = DeltaVideoDecoderStore.decode(
+            VideoDecodeScheduler.submit(
                 sessionId,
                 sequence,
                 presentationTimeMicros,
                 keyFrame,
                 encoded
             );
-
-            if (deltaFrame != null) {
-                VideoFrameStore.publish(sessionId, deltaFrame);
-                return true;
-            }
-
-            var compressedFrame = DeflateVideoCodec.decode(
-                encoded,
-                presentationTimeMicros
-            );
-
-            if (compressedFrame != null) {
-                VideoFrameStore.publish(sessionId, compressedFrame);
-                return true;
-            }
-
-            var rawFrame = RawTestFrameCodec.decode(
-                encoded,
-                presentationTimeMicros
-            );
-
-            if (rawFrame != null) {
-                VideoFrameStore.publish(sessionId, rawFrame);
-                return true;
-            }
-
-            return false;
+            return true;
         }
 
         if (OpusAudioCodec.isOpusPacket(encoded)) {
