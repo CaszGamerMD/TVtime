@@ -1,0 +1,238 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "side_style": "iron"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_iron"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "side_style": "iron"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_iron",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "side_style": "iron"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_iron",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "side_style": "iron"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_iron",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "side_style": "spruce"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_spruce"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "side_style": "spruce"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_spruce",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "side_style": "spruce"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_spruce",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "side_style": "spruce"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_spruce",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "side_style": "black"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_black"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "side_style": "black"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_black",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "side_style": "black"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_black",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "side_style": "black"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_black",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "side_style": "white"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_white"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "side_style": "white"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_white",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "side_style": "white"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_white",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "side_style": "white"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_white",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "side_style": "copper"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_copper"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "side_style": "copper"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_copper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "side_style": "copper"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_copper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "side_style": "copper"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_copper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "side_style": "stone"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_stone"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "side_style": "stone"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_stone",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "side_style": "stone"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_stone",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "side_style": "stone"
+      },
+      "apply": {
+        "model": "tvtime:block/custom_speaker_stone",
+        "y": 270
+      }
+    }
+  ]
+}
