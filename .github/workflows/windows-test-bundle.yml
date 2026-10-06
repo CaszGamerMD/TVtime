@@ -4,6 +4,9 @@ concurrency:
   group: tvtime-windows-bundle-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
   push:
@@ -157,3 +160,34 @@ jobs:
         with:
           name: TVtime-Windows-Test
           path: bundle/*
+
+      - name: Publish verified package to repository
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: pwsh
+        run: |
+          $jar = Get-ChildItem build/libs/*.jar |
+            Where-Object { $_.Name -notmatch "sources" } |
+            Select-Object -First 1
+
+          if (-not $jar) {
+            throw "No verified TVtime mod jar was produced."
+          }
+
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+
+          $packageName = "TVtime-0.1.0-alpha.1.jar"
+          Copy-Item $jar.FullName "dist/$packageName" -Force
+          Copy-Item bundle/TESTING.txt dist/TESTING.txt -Force
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add dist/$packageName dist/TESTING.txt
+
+          if (git diff --cached --quiet) {
+            Write-Host "Verified package is already current in dist/."
+            exit 0
+          }
+
+          git commit -m "Package TVtime 0.1.0-alpha.1"
+          git push origin HEAD:main
