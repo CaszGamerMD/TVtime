@@ -34,6 +34,7 @@ public final class ClientBroadcastMedia {
             queue.clear();
         }
         VideoFrameStore.remove(sessionId);
+        VideoDecodeScheduler.remove(sessionId);
         DeltaVideoDecoderStore.remove(sessionId);
         H264VideoDecoderStore.remove(sessionId);
         OpusAudioDecoderStore.remove(sessionId);
@@ -44,6 +45,7 @@ public final class ClientBroadcastMedia {
         QUEUES.values().forEach(EncodedMediaQueue::clear);
         QUEUES.clear();
         VideoFrameStore.clear();
+        VideoDecodeScheduler.clear();
         DeltaVideoDecoderStore.clear();
         H264VideoDecoderStore.clear();
         OpusAudioDecoderStore.clear();
