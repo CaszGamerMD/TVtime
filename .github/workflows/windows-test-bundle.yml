@@ -54,6 +54,31 @@ jobs:
         shell: pwsh
         run: gradle build --stacktrace
 
+      - name: Verify self-contained mod jar
+        shell: pwsh
+        run: |
+          $jar = Get-ChildItem build/libs/*.jar |
+            Where-Object { $_.Name -notmatch "sources" } |
+            Select-Object -First 1
+
+          if (-not $jar) {
+            throw "No TVtime mod jar was produced."
+          }
+
+          $entries = jar tf $jar.FullName
+
+          if (-not ($entries -contains "tvtime/native/windows-x64/tvtime-capture.exe")) {
+            throw "TVtime JAR is missing bundled tvtime-capture.exe"
+          }
+
+          if (-not ($entries | Where-Object { $_ -match "^META-INF/jars/.*jcodec.*\\.jar$" })) {
+            throw "TVtime JAR is missing bundled JCodec"
+          }
+
+          if (-not ($entries | Where-Object { $_ -match "^META-INF/jars/.*[Cc]oncentus.*\\.jar$" })) {
+            throw "TVtime JAR is missing bundled Concentus"
+          }
+
       - name: Assemble test bundle
         shell: pwsh
         run: |
