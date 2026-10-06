@@ -119,6 +119,7 @@ bool WgcCaptureSession::start(
         frame_callback_ = std::move(callback);
 
         auto device = create_direct3d_device(d3d_device_, d3d_context_);
+        capture_device_ = device;
         item_ = create_capture_item(hwnd);
 
         const auto size = item_.Size();
@@ -137,11 +138,13 @@ bool WgcCaptureSession::start(
         using namespace winrt::Windows::Graphics::DirectX;
 
         frame_pool_ = Direct3D11CaptureFramePool::CreateFreeThreaded(
-            device,
+            capture_device_,
             DirectXPixelFormat::B8G8R8A8UIntNormalized,
             2,
             size
         );
+        frame_pool_width_ = size.Width;
+        frame_pool_height_ = size.Height;
 
         frame_arrived_token_ = frame_pool_.FrameArrived(
             [this](
@@ -183,6 +186,34 @@ void WgcCaptureSession::handle_frame(
     width_.store(content_size.Width);
     height_.store(content_size.Height);
     frame_count_.fetch_add(1, std::memory_order_relaxed);
+
+    if (content_size.Width > 0
+        && content_size.Height > 0
+        && (content_size.Width != frame_pool_width_
+            || content_size.Height != frame_pool_height_)) {
+        frame.Close();
+
+        using namespace winrt::Windows::Graphics::DirectX;
+
+        frame_pool_.Recreate(
+            capture_device_,
+            DirectXPixelFormat::B8G8R8A8UIntNormalized,
+            2,
+            content_size
+        );
+
+        frame_pool_width_ = content_size.Width;
+        frame_pool_height_ = content_size.Height;
+
+        staging_texture_ = nullptr;
+        staging_width_ = 0;
+        staging_height_ = 0;
+
+        // The first frame after maximize/fullscreen can still reference the
+        // old surface. Skip it and let the recreated pool deliver the next
+        // frame at the new dimensions.
+        return;
+    }
 
     const std::int64_t now = now_micros();
     const std::int64_t last = last_emit_micros_.load(std::memory_order_relaxed);
@@ -318,6 +349,9 @@ void WgcCaptureSession::stop() {
 
     staging_width_ = 0;
     staging_height_ = 0;
+    frame_pool_width_ = 0;
+    frame_pool_height_ = 0;
+    capture_device_ = nullptr;
     width_.store(0);
     height_.store(0);
     last_emit_micros_.store(0);
