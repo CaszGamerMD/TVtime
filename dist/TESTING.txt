@@ -1,0 +1,55 @@
+TVtime Windows development bundle
+
+1. Put the TVtime JAR in your Minecraft mods folder.
+2. Start Minecraft. The Windows capture helper is bundled inside
+   the JAR and is extracted automatically to:
+   config/tvtime/native/tvtime-capture.exe
+3. /tvtime_capture windows
+4. /tvtime_capture start <windowIndex> <channel>
+5. Look at a connected TV wall and run:
+   /tvtime_capture tune <channel>
+
+Current real-window development stream:
+- AUTO video codec prefers H.264 (JCodec baseline)
+- automatic fallback to delta-Deflate
+- periodic keyframes + packet-loss recovery
+- bounded media fragmentation/reassembly
+- selected-process Opus audio (48 kHz stereo)
+- automatic raw PCM fallback
+- positional mono TV/speaker playback
+
+Capture quality controls:
+/tvtime_capture quality LOW
+  192x108 @ 12 FPS
+/tvtime_capture quality BALANCED
+  320x180 @ 15 FPS (default)
+/tvtime_capture quality HIGH
+  640x360 @ 20 FPS
+
+Codec controls:
+/tvtime_capture codec AUTO
+/tvtime_capture codec H264
+/tvtime_capture codec DELTA
+
+AUTO is the recommended test mode.
+
+Speaker test:
+1. Place a TVtime Speaker block.
+2. Look directly at it.
+3. Run:
+   /tvtime_test speaker <channel> <role> [volume] [range]
+
+Roles:
+FULL, LEFT, RIGHT, CENTER, REAR_LEFT, REAR_RIGHT, LFE
+
+LEFT/REAR_LEFT use the captured left stereo channel.
+RIGHT/REAR_RIGHT use the captured right stereo channel.
+FULL/CENTER/LFE currently downmix both channels to mono.
+
+/tvtime_capture status shows current FPS, combined kbps,
+active video codec, audio codec, quality profile, and video compression ratio.
+
+This build validates the full capture -> compression -> server
+relay -> remote connected-TV video + multi-speaker positional
+audio path with H.264 + Opus enabled by default, while both retain
+safe fallback paths for troubleshooting.
