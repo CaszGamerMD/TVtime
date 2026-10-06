@@ -80,10 +80,24 @@ public final class TvConfigScreen extends Screen {
 
         this.addRenderableWidget(
             Button.builder(
+                    Component.literal("Broadcast source..."),
+                    button -> this.minecraft.gui.setScreen(
+                        new CaptureControlScreen(
+                            this,
+                            channelBox.getValue().trim()
+                        )
+                    )
+                )
+                .bounds(left, 150, 200, 20)
+                .build()
+        );
+
+        this.addRenderableWidget(
+            Button.builder(
                     CommonComponents.GUI_DONE,
                     button -> applyAndClose()
                 )
-                .bounds(left, 160, 98, 20)
+                .bounds(left, 178, 98, 20)
                 .build()
         );
 
@@ -92,7 +106,7 @@ public final class TvConfigScreen extends Screen {
                     CommonComponents.GUI_CANCEL,
                     button -> onClose()
                 )
-                .bounds(left + 102, 160, 98, 20)
+                .bounds(left + 102, 178, 98, 20)
                 .build()
         );
     }
