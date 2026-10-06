@@ -37,7 +37,7 @@ public final class CaptureBroadcastController {
     private final AtomicLong audioBytes = new AtomicLong();
     private volatile long startedAtMillis;
     private volatile VideoCodecMode preferredCodec = VideoCodecMode.AUTO;
-    private volatile CaptureProfile captureProfile = CaptureProfile.LOW;
+    private volatile CaptureProfile captureProfile = CaptureProfile.BALANCED;
     private volatile VideoCodecMode activeCodec = VideoCodecMode.DELTA;
     private H264VideoCodec.Encoder h264Encoder;
     private OpusAudioCodec.Encoder opusEncoder;
@@ -223,7 +223,7 @@ public final class CaptureBroadcastController {
         }
 
         captureProfile = profile == null
-            ? CaptureProfile.LOW
+            ? CaptureProfile.BALANCED
             : profile;
     }
 
