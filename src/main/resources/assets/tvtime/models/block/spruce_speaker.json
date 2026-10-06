@@ -1,0 +1,20 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "body": "minecraft:block/spruce_planks",
+    "front": "minecraft:block/dark_oak_planks",
+    "cone": "minecraft:block/black_concrete",
+    "inner": "minecraft:block/gray_concrete",
+    "particle": "minecraft:block/spruce_planks"
+  },
+  "elements": [
+    {"from":[2,1,6],"to":[14,15,16],"faces":{
+      "north":{"texture":"#front"},"south":{"texture":"#body"},
+      "east":{"texture":"#body"},"west":{"texture":"#body"},
+      "up":{"texture":"#body"},"down":{"texture":"#body"}}},
+    {"from":[4,3,5.50],"to":[12,10.5,6],"faces":{"north":{"texture":"#cone"}}},
+    {"from":[5.5,4.5,5.25],"to":[10.5,9,5.50],"faces":{"north":{"texture":"#inner"}}},
+    {"from":[6,11.5,5.50],"to":[10,14,6],"faces":{"north":{"texture":"#cone"}}},
+    {"from":[7.25,12.25,5.25],"to":[8.75,13.5,5.50],"faces":{"north":{"texture":"#inner"}}}
+  ]
+}
