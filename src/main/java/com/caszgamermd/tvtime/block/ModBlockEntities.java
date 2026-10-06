@@ -18,7 +18,11 @@ public final class ModBlockEntities {
     public static final BlockEntityType<SpeakerBlockEntity> SPEAKER = register(
         "speaker",
         SpeakerBlockEntity::new,
-        ModBlocks.SPEAKER
+        ModBlocks.SPEAKER,
+        ModBlocks.IRON_SPEAKER,
+        ModBlocks.SPRUCE_SPEAKER,
+        ModBlocks.MODERN_SPEAKER,
+        ModBlocks.CUSTOM_SPEAKER
     );
 
     private ModBlockEntities() {
