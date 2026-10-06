@@ -4,6 +4,7 @@ import com.caszgamermd.tvtime.broadcast.DisplayMode;
 import com.caszgamermd.tvtime.display.DisplayRect;
 import com.caszgamermd.tvtime.display.TvDisplayScanner;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -37,9 +38,19 @@ public final class TvBlockEntity extends BlockEntity {
     }
 
     public DisplayRect displayRect() {
-        if (level == null) {
-            return new DisplayRect(worldPosition, 1, 1, getBlockState().getValue(TvBlock.FACING));
+        Direction fallbackFacing = getBlockState().hasProperty(TvBlock.FACING)
+            ? getBlockState().getValue(TvBlock.FACING)
+            : Direction.NORTH;
+
+        if (level == null || !level.getBlockState(worldPosition).is(ModBlocks.TV)) {
+            return new DisplayRect(
+                worldPosition.immutable(),
+                1,
+                1,
+                fallbackFacing
+            );
         }
+
         return TvDisplayScanner.scan(level, worldPosition);
     }
 
