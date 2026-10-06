@@ -1,4 +1,5 @@
 {
   "block.tvtime.tv": "TV Screen",
-  "block.tvtime.speaker": "Speaker"
+  "block.tvtime.speaker": "Speaker",
+  "item.tvtime.tv_remote": "TV Remote"
 }
