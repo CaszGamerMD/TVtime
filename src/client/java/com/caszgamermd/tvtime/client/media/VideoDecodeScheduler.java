@@ -126,7 +126,17 @@ public final class VideoDecodeScheduler {
 
         private synchronized void offer(Job job) {
             if (jobs.size() >= MAX_QUEUED_FRAMES) {
-                trimBacklog(job);
+                jobs.clear();
+
+                // Inter-frame state is no longer trustworthy after dropping
+                // queued frames. Reset codec history and only resume
+                // immediately if this packet itself is a keyframe.
+                H264VideoDecoderStore.remove(sessionId);
+                DeltaVideoDecoderStore.remove(sessionId);
+
+                if (!job.keyFrame()) {
+                    return;
+                }
             }
 
             jobs.addLast(job);
@@ -134,30 +144,6 @@ public final class VideoDecodeScheduler {
             if (!running) {
                 running = true;
                 EXECUTOR.execute(this::drain);
-            }
-        }
-
-        private void trimBacklog(Job incoming) {
-            Job newestKeyFrame = incoming.keyFrame()
-                ? incoming
-                : null;
-
-            for (Job queued : jobs) {
-                if (queued.keyFrame()) {
-                    newestKeyFrame = queued;
-                }
-            }
-
-            jobs.clear();
-
-            if (newestKeyFrame != null
-                && newestKeyFrame != incoming) {
-                jobs.addLast(newestKeyFrame);
-            } else {
-                // Inter-frame state is no longer trustworthy after dropping
-                // arbitrary frames. Reset and wait for the next keyframe.
-                H264VideoDecoderStore.remove(sessionId);
-                DeltaVideoDecoderStore.remove(sessionId);
             }
         }
 
