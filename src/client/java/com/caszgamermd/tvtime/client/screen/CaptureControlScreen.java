@@ -15,7 +15,7 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 public final class CaptureControlScreen extends Screen {
-    private static final int MAX_VISIBLE_WINDOWS = 8;
+    private static final int MAX_VISIBLE_WINDOWS = 6;
 
     private final Screen parent;
     private final String suggestedChannel;
@@ -132,7 +132,7 @@ public final class CaptureControlScreen extends Screen {
                             status = "Broadcast stopped.";
                         }
                     )
-                    .bounds(left, 290, 118, 20)
+                    .bounds(left, 264, 118, 20)
                     .build()
             );
         }
@@ -144,7 +144,7 @@ public final class CaptureControlScreen extends Screen {
                 )
                 .bounds(
                     controller.running() ? left + 122 : left,
-                    290,
+                    264,
                     controller.running() ? 118 : 240,
                     20
                 )
@@ -234,7 +234,7 @@ public final class CaptureControlScreen extends Screen {
                 this.font,
                 Component.literal(status),
                 this.width / 2,
-                274,
+                248,
                 -1
             );
         }
@@ -248,7 +248,7 @@ public final class CaptureControlScreen extends Screen {
                         + " windows. Use /tvtime_capture windows for the full list."
                 ),
                 this.width / 2,
-                260,
+                232,
                 -6250336
             );
         }
