@@ -2,6 +2,7 @@ package com.caszgamermd.tvtime.client;
 
 import com.caszgamermd.tvtime.block.ModBlockEntities;
 import com.caszgamermd.tvtime.block.TvBlockEntity;
+import com.caszgamermd.tvtime.block.SpeakerBlockEntity;
 import com.caszgamermd.tvtime.client.render.TvBlockEntityRenderer;
 import com.caszgamermd.tvtime.client.render.SpeakerBlockEntityRenderer;
 import com.caszgamermd.tvtime.client.network.TVtimeClientNetworking;
@@ -13,6 +14,7 @@ import com.caszgamermd.tvtime.client.capture.CaptureBroadcastController;
 import com.caszgamermd.tvtime.client.audio.TvAudioPlaybackManager;
 import com.caszgamermd.tvtime.client.audio.NearbyAudioSourceScanner;
 import com.caszgamermd.tvtime.client.screen.TvConfigScreen;
+import com.caszgamermd.tvtime.client.screen.SpeakerConfigScreen;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
@@ -37,10 +39,19 @@ public final class TVtimeClient implements ClientModInitializer {
                     return InteractionResult.PASS;
                 }
 
-                if (level.getBlockEntity(hitResult.getBlockPos())
-                    instanceof TvBlockEntity tv) {
+                var blockEntity =
+                    level.getBlockEntity(hitResult.getBlockPos());
+
+                if (blockEntity instanceof TvBlockEntity tv) {
                     Minecraft.getInstance().gui.setScreen(
                         new TvConfigScreen(tv)
+                    );
+                    return InteractionResult.SUCCESS;
+                }
+
+                if (blockEntity instanceof SpeakerBlockEntity speaker) {
+                    Minecraft.getInstance().gui.setScreen(
+                        new SpeakerConfigScreen(speaker)
                     );
                     return InteractionResult.SUCCESS;
                 }
