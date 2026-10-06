@@ -2,6 +2,7 @@ package com.caszgamermd.tvtime.client.media;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -13,12 +14,16 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class VideoFrameStore {
     private static final ConcurrentHashMap<UUID, AtomicReference<DecodedVideoFrame>> FRAMES =
         new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<UUID, AtomicLong> LATEST_PTS =
+        new ConcurrentHashMap<>();
 
     private VideoFrameStore() {
     }
 
     public static void publish(UUID sessionId, DecodedVideoFrame frame) {
         FRAMES.computeIfAbsent(sessionId, ignored -> new AtomicReference<>()).set(frame);
+        LATEST_PTS.computeIfAbsent(sessionId, ignored -> new AtomicLong())
+            .set(frame.presentationTimeMicros());
     }
 
     public static DecodedVideoFrame latest(UUID sessionId) {
@@ -31,11 +36,18 @@ public final class VideoFrameStore {
         return ref == null ? null : ref.getAndSet(null);
     }
 
+    public static long latestPresentationTimeMicros(UUID sessionId) {
+        AtomicLong pts = LATEST_PTS.get(sessionId);
+        return pts == null ? Long.MIN_VALUE : pts.get();
+    }
+
     public static void remove(UUID sessionId) {
         FRAMES.remove(sessionId);
+        LATEST_PTS.remove(sessionId);
     }
 
     public static void clear() {
         FRAMES.clear();
+        LATEST_PTS.clear();
     }
 }
