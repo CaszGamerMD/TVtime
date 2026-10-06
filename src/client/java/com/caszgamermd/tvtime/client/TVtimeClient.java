@@ -15,6 +15,7 @@ import com.caszgamermd.tvtime.client.audio.TvAudioPlaybackManager;
 import com.caszgamermd.tvtime.client.audio.NearbyAudioSourceScanner;
 import com.caszgamermd.tvtime.client.screen.TvConfigScreen;
 import com.caszgamermd.tvtime.client.screen.SpeakerConfigScreen;
+import com.caszgamermd.tvtime.item.ModItems;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
@@ -36,6 +37,10 @@ public final class TVtimeClient implements ClientModInitializer {
             (player, level, hand, hitResult) -> {
                 if (!level.isClientSide()
                     || hand != InteractionHand.MAIN_HAND) {
+                    return InteractionResult.PASS;
+                }
+
+                if (!player.getItemInHand(hand).is(ModItems.TV_REMOTE)) {
                     return InteractionResult.PASS;
                 }
 
