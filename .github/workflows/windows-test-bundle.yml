@@ -94,7 +94,7 @@ jobs:
           /tvtime_capture quality LOW
             192x108 @ 12 FPS
           /tvtime_capture quality BALANCED
-            320x180 @ 15 FPS
+            320x180 @ 15 FPS (default)
           /tvtime_capture quality HIGH
             640x360 @ 20 FPS
 
