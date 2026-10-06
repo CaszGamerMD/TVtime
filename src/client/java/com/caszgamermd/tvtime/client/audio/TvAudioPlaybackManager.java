@@ -13,6 +13,7 @@ import net.minecraft.client.sounds.SoundManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public final class TvAudioPlaybackManager {
     private static final Map<TvAudioAnchors.SourceKey, Playback> PLAYBACKS =
@@ -40,6 +41,18 @@ public final class TvAudioPlaybackManager {
             return true;
         });
 
+        Map<RoleKey, Integer> duplicateCounts = new HashMap<>();
+        anchors.forEach((sourceKey, anchor) ->
+            duplicateCounts.merge(
+                new RoleKey(
+                    sourceKey.sessionId(),
+                    anchor.speakerChannel()
+                ),
+                1,
+                Integer::sum
+            )
+        );
+
         anchors.forEach((sourceKey, anchor) -> {
             Playback playback = PLAYBACKS.get(sourceKey);
 
@@ -58,7 +71,18 @@ public final class TvAudioPlaybackManager {
                 PLAYBACKS.put(sourceKey, playback);
             }
 
-            playback.update(anchor);
+            int duplicateCount = duplicateCounts.getOrDefault(
+                new RoleKey(
+                    sourceKey.sessionId(),
+                    anchor.speakerChannel()
+                ),
+                1
+            );
+
+            playback.update(
+                anchor,
+                1.0f / Math.max(1, duplicateCount)
+            );
         });
     }
 
@@ -106,15 +130,26 @@ public final class TvAudioPlaybackManager {
         return new Playback(handle, stream, speakerChannel);
     }
 
+    private record RoleKey(
+        UUID sessionId,
+        SpeakerChannel speakerChannel
+    ) {
+    }
+
     private record Playback(
         ChannelAccess.ChannelHandle handle,
         TvPcmAudioStream stream,
         SpeakerChannel speakerChannel
     ) {
-        private void update(TvAudioAnchors.Anchor anchor) {
+        private void update(
+            TvAudioAnchors.Anchor anchor,
+            float normalization
+        ) {
             handle.execute(channel -> {
                 channel.setSelfPosition(anchor.position());
-                channel.setVolume(anchor.volume());
+                channel.setVolume(
+                    anchor.volume() * normalization
+                );
                 channel.linearAttenuation(anchor.range());
             });
         }
