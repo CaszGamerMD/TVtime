@@ -34,6 +34,8 @@ public final class TvPcmAudioStream implements AudioStream {
     private final UUID sessionId;
     private final SpeakerChannel speakerChannel;
     private final TvAudioBus.Reader reader;
+    private ByteBuffer pendingMono = ByteBuffer.allocateDirect(0);
+
     private final AudioFormat format =
         new AudioFormat(
             SAMPLE_RATE,
@@ -73,6 +75,11 @@ public final class TvPcmAudioStream implements AudioStream {
 
         boolean receivedAudio = false;
 
+        if (pendingMono.hasRemaining()) {
+            copyInto(output, pendingMono);
+            receivedAudio = true;
+        }
+
         while (output.hasRemaining() && !closed) {
             long waitMillis = receivedAudio
                 ? NEXT_PACKET_WAIT_MILLIS
@@ -90,15 +97,15 @@ public final class TvPcmAudioStream implements AudioStream {
             }
 
             ByteBuffer mono = toMono(chunk);
-            int copy = Math.min(
-                output.remaining(),
-                mono.remaining()
-            );
+            copyInto(output, mono);
 
-            int oldLimit = mono.limit();
-            mono.limit(mono.position() + copy);
-            output.put(mono);
-            mono.limit(oldLimit);
+            if (mono.hasRemaining()) {
+                ByteBuffer remainder =
+                    ByteBuffer.allocateDirect(mono.remaining());
+                remainder.put(mono);
+                remainder.flip();
+                pendingMono = remainder;
+            }
 
             receivedAudio = true;
         }
@@ -114,6 +121,21 @@ public final class TvPcmAudioStream implements AudioStream {
 
         output.flip();
         return output;
+    }
+
+    private static void copyInto(
+        ByteBuffer destination,
+        ByteBuffer source
+    ) {
+        int copy = Math.min(
+            destination.remaining(),
+            source.remaining()
+        );
+
+        int oldLimit = source.limit();
+        source.limit(source.position() + copy);
+        destination.put(source);
+        source.limit(oldLimit);
     }
 
     private ByteBuffer toMono(DecodedAudioChunk chunk) {
@@ -157,6 +179,7 @@ public final class TvPcmAudioStream implements AudioStream {
     @Override
     public void close() {
         closed = true;
+        pendingMono = ByteBuffer.allocateDirect(0);
         reader.close();
     }
 }
