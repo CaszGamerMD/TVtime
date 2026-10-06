@@ -11,7 +11,7 @@ import java.nio.ByteOrder;
 import java.util.UUID;
 
 public final class TvPcmAudioStream implements AudioStream {
-    private static final int SAMPLE_RATE = 44_100;
+    private static final int SAMPLE_RATE = 48_000;
     private static final int OUTPUT_CHANNELS = 1;
     private static final int BYTES_PER_SAMPLE = 2;
     private static final int SILENCE_MILLIS = 20;
