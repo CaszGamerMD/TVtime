@@ -12,12 +12,20 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 public final class TvBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
+
+    private static final VoxelShape NORTH_SHAPE = box(0, 0, 0, 16, 16, 3);
+    private static final VoxelShape SOUTH_SHAPE = box(0, 0, 13, 16, 16, 16);
+    private static final VoxelShape WEST_SHAPE = box(0, 0, 0, 3, 16, 16);
+    private static final VoxelShape EAST_SHAPE = box(13, 0, 0, 16, 16, 16);
     public static final MapCodec<TvBlock> CODEC = simpleCodec(TvBlock::new);
 
     public TvBlock(Properties properties) {
@@ -33,6 +41,36 @@ public final class TvBlock extends BaseEntityBlock {
     @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
+    }
+
+    @Override
+    protected VoxelShape getShape(
+        BlockState state,
+        BlockGetter level,
+        BlockPos pos,
+        CollisionContext context
+    ) {
+        return shapeFor(state.getValue(FACING));
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(
+        BlockState state,
+        BlockGetter level,
+        BlockPos pos,
+        CollisionContext context
+    ) {
+        return shapeFor(state.getValue(FACING));
+    }
+
+    private static VoxelShape shapeFor(Direction facing) {
+        return switch (facing) {
+            case NORTH -> NORTH_SHAPE;
+            case SOUTH -> SOUTH_SHAPE;
+            case WEST -> WEST_SHAPE;
+            case EAST -> EAST_SHAPE;
+            default -> NORTH_SHAPE;
+        };
     }
 
     @Nullable
