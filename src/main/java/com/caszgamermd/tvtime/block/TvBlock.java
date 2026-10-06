@@ -22,10 +22,10 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 public final class TvBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
-    private static final VoxelShape NORTH_SHAPE = box(0, 0, 0, 16, 16, 3);
-    private static final VoxelShape SOUTH_SHAPE = box(0, 0, 13, 16, 16, 16);
-    private static final VoxelShape WEST_SHAPE = box(0, 0, 0, 3, 16, 16);
-    private static final VoxelShape EAST_SHAPE = box(13, 0, 0, 16, 16, 16);
+    private static final VoxelShape NORTH_SHAPE = box(0, 0, 13, 16, 16, 16);
+    private static final VoxelShape SOUTH_SHAPE = box(0, 0, 0, 16, 16, 3);
+    private static final VoxelShape WEST_SHAPE = box(13, 0, 0, 16, 16, 16);
+    private static final VoxelShape EAST_SHAPE = box(0, 0, 0, 3, 16, 16);
     public static final MapCodec<TvBlock> CODEC = simpleCodec(TvBlock::new);
 
     public TvBlock(Properties properties) {
