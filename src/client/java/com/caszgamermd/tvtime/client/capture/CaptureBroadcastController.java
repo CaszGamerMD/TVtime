@@ -11,6 +11,7 @@ import com.caszgamermd.tvtime.client.media.DeflateVideoCodec;
 import com.caszgamermd.tvtime.client.media.DeltaDeflateVideoCodec;
 import com.caszgamermd.tvtime.client.media.H264VideoCodec;
 import com.caszgamermd.tvtime.client.media.VideoCodecMode;
+import com.caszgamermd.tvtime.client.media.OpusAudioCodec;
 import com.caszgamermd.tvtime.client.network.ClientBroadcastState;
 import com.caszgamermd.tvtime.network.MediaKind;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
@@ -39,6 +40,7 @@ public final class CaptureBroadcastController {
     private volatile CaptureProfile captureProfile = CaptureProfile.LOW;
     private volatile VideoCodecMode activeCodec = VideoCodecMode.DELTA;
     private H264VideoCodec.Encoder h264Encoder;
+    private OpusAudioCodec.Encoder opusEncoder;
 
     private WindowCaptureBackend backend;
     private String requestedChannel;
@@ -86,6 +88,11 @@ public final class CaptureBroadcastController {
         h264Encoder = activeCodec == VideoCodecMode.H264
             ? new H264VideoCodec.Encoder(24)
             : null;
+        try {
+            opusEncoder = new OpusAudioCodec.Encoder();
+        } catch (RuntimeException opusUnavailable) {
+            opusEncoder = null;
+        }
         videoFrames.set(0);
         rawVideoBytes.set(0);
         encodedVideoBytes.set(0);
@@ -170,6 +177,7 @@ public final class CaptureBroadcastController {
         audioSequence.set(0);
         previousVideoFrame = null;
         h264Encoder = null;
+        opusEncoder = null;
         activeCodec = VideoCodecMode.DELTA;
         startedAtMillis = 0;
         ClientBroadcastState.clear();
@@ -313,8 +321,6 @@ public final class CaptureBroadcastController {
             return;
         }
 
-        byte[] encoded = RawPcmAudioCodec.encode(chunk);
-        audioBytes.addAndGet(encoded.length);
         DecodedAudioChunk decoded = new DecodedAudioChunk(
             chunk.sampleRate(),
             chunk.channels(),
@@ -323,6 +329,35 @@ public final class CaptureBroadcastController {
         );
 
         TvAudioBus.offer(active.sessionId(), decoded);
+
+        OpusAudioCodec.Encoder encoder = opusEncoder;
+        if (encoder != null) {
+            try {
+                var packets = encoder.encode(chunk);
+
+                for (var packet : packets) {
+                    audioBytes.addAndGet(packet.payload().length);
+
+                    long packetSequence =
+                        audioSequence.getAndIncrement();
+
+                    sendEncoded(
+                        active,
+                        MediaKind.AUDIO,
+                        packetSequence,
+                        packet.presentationTimeMicros(),
+                        false,
+                        packet.payload()
+                    );
+                }
+                return;
+            } catch (RuntimeException opusFailure) {
+                opusEncoder = null;
+            }
+        }
+
+        byte[] encoded = RawPcmAudioCodec.encode(chunk);
+        audioBytes.addAndGet(encoded.length);
 
         long packetSequence = audioSequence.getAndIncrement();
         sendEncoded(
