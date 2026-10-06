@@ -9,6 +9,8 @@ import com.caszgamermd.tvtime.client.media.DeflateVideoCodec;
 import com.caszgamermd.tvtime.client.media.DeltaVideoDecoderStore;
 import com.caszgamermd.tvtime.client.media.H264VideoCodec;
 import com.caszgamermd.tvtime.client.media.H264VideoDecoderStore;
+import com.caszgamermd.tvtime.client.media.OpusAudioCodec;
+import com.caszgamermd.tvtime.client.media.OpusAudioDecoderStore;
 import com.caszgamermd.tvtime.network.MediaKind;
 import com.caszgamermd.tvtime.client.media.MediaReassembler;
 import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
@@ -141,6 +143,21 @@ public final class TVtimeClientNetworking {
             }
 
             return false;
+        }
+
+        if (OpusAudioCodec.isOpusPacket(encoded)) {
+            var opusChunks = OpusAudioDecoderStore.decode(
+                sessionId,
+                sequence,
+                presentationTimeMicros,
+                encoded
+            );
+
+            for (var chunk : opusChunks) {
+                TvAudioBus.offer(sessionId, chunk);
+            }
+
+            return true;
         }
 
         var rawAudio = RawPcmAudioCodec.decode(
