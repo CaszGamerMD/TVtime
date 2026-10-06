@@ -1,5 +1,9 @@
 {
   "block.tvtime.tv": "TV Screen",
-  "block.tvtime.speaker": "Speaker",
-  "item.tvtime.tv_remote": "TV Remote"
+  "block.tvtime.speaker": "Legacy Speaker",
+  "item.tvtime.tv_remote": "TV Remote",
+  "block.tvtime.iron_speaker": "Iron Speaker",
+  "block.tvtime.spruce_speaker": "Spruce Speaker",
+  "block.tvtime.modern_speaker": "Modern Speaker",
+  "block.tvtime.custom_speaker": "Custom Speaker"
 }
