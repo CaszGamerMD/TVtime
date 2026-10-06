@@ -1,0 +1,20 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "body": "minecraft:block/black_concrete",
+    "front": "minecraft:block/gray_concrete",
+    "cone": "minecraft:block/black_wool",
+    "inner": "minecraft:block/light_gray_concrete",
+    "bracket": "minecraft:block/iron_block",
+    "particle": "minecraft:block/black_concrete"
+  },
+  "elements": [
+    {"from":[3,3,13],"to":[13,13,16],"faces":{
+      "north":{"texture":"#front"},"south":{"texture":"#body"},
+      "east":{"texture":"#body"},"west":{"texture":"#body"},
+      "up":{"texture":"#body"},"down":{"texture":"#body"}}},
+    {"from":[4.5,5,12.50],"to":[11.5,11.5,13],"faces":{"north":{"texture":"#cone"}}},
+    {"from":[6,6.5,12.25],"to":[10,10,12.50],"faces":{"north":{"texture":"#inner"}}},
+    {"from":[7,3.5,15.5],"to":[9,4.5,16],"faces":{"south":{"texture":"#bracket"}}}
+  ]
+}
