@@ -2,6 +2,7 @@ package com.caszgamermd.tvtime.client.audio;
 
 import com.caszgamermd.tvtime.audio.SpeakerChannel;
 import com.caszgamermd.tvtime.client.media.DecodedAudioChunk;
+import com.caszgamermd.tvtime.client.media.VideoFrameStore;
 import net.minecraft.client.sounds.AudioStream;
 
 import javax.sound.sampled.AudioFormat;
@@ -30,6 +31,7 @@ public final class TvPcmAudioStream implements AudioStream {
 
     private static final int FIRST_PACKET_WAIT_MILLIS = 80;
     private static final int NEXT_PACKET_WAIT_MILLIS = 24;
+    private static final long MAX_AUDIO_BEHIND_VIDEO_MICROS = 120_000L;
 
     private final UUID sessionId;
     private final SpeakerChannel speakerChannel;
@@ -87,6 +89,24 @@ public final class TvPcmAudioStream implements AudioStream {
 
             DecodedAudioChunk chunk =
                 reader.pollWaiting(waitMillis);
+
+            if (chunk == null) {
+                break;
+            }
+
+            long videoPts =
+                VideoFrameStore.latestPresentationTimeMicros(sessionId);
+
+            while (videoPts != Long.MIN_VALUE
+                && chunk.presentationTimeMicros()
+                    < videoPts - MAX_AUDIO_BEHIND_VIDEO_MICROS) {
+                DecodedAudioChunk newer = reader.poll();
+                if (newer == null) {
+                    chunk = null;
+                    break;
+                }
+                chunk = newer;
+            }
 
             if (chunk == null) {
                 break;
