@@ -41,6 +41,7 @@ public final class CaptureBroadcastController {
     private volatile VideoCodecMode activeCodec = VideoCodecMode.DELTA;
     private H264VideoCodec.Encoder h264Encoder;
     private OpusAudioCodec.Encoder opusEncoder;
+    private volatile String activeAudioCodec = "PCM";
 
     private WindowCaptureBackend backend;
     private String requestedChannel;
@@ -90,8 +91,10 @@ public final class CaptureBroadcastController {
             : null;
         try {
             opusEncoder = new OpusAudioCodec.Encoder();
+            activeAudioCodec = "OPUS";
         } catch (RuntimeException opusUnavailable) {
             opusEncoder = null;
+            activeAudioCodec = "PCM";
         }
         videoFrames.set(0);
         rawVideoBytes.set(0);
@@ -178,6 +181,7 @@ public final class CaptureBroadcastController {
         previousVideoFrame = null;
         h264Encoder = null;
         opusEncoder = null;
+        activeAudioCodec = "PCM";
         activeCodec = VideoCodecMode.DELTA;
         startedAtMillis = 0;
         ClientBroadcastState.clear();
@@ -256,6 +260,7 @@ public final class CaptureBroadcastController {
             kbps,
             compression,
             activeCodec,
+            activeAudioCodec,
             captureProfile
         );
     }
@@ -353,6 +358,7 @@ public final class CaptureBroadcastController {
                 return;
             } catch (RuntimeException opusFailure) {
                 opusEncoder = null;
+                activeAudioCodec = "PCM";
             }
         }
 
@@ -465,6 +471,7 @@ public final class CaptureBroadcastController {
         double kbps,
         double compressionRatio,
         VideoCodecMode codec,
+        String audioCodec,
         CaptureProfile profile
     ) {
     }
