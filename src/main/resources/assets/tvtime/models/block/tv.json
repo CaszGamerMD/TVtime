@@ -1,8 +1,23 @@
 {
-  "parent": "minecraft:block/orientable",
+  "ambientocclusion": false,
   "textures": {
-    "top": "minecraft:block/iron_block",
     "front": "minecraft:block/black_concrete",
-    "side": "minecraft:block/smooth_stone"
-  }
+    "back": "minecraft:block/iron_block",
+    "side": "minecraft:block/smooth_stone",
+    "particle": "minecraft:block/black_concrete"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 3],
+      "faces": {
+        "north": { "texture": "#front", "uv": [0, 0, 16, 16] },
+        "south": { "texture": "#back", "uv": [0, 0, 16, 16] },
+        "east": { "texture": "#side", "uv": [0, 0, 3, 16] },
+        "west": { "texture": "#side", "uv": [13, 0, 16, 16] },
+        "up": { "texture": "#side", "uv": [0, 0, 16, 3] },
+        "down": { "texture": "#side", "uv": [0, 13, 16, 16] }
+      }
+    }
+  ]
 }
