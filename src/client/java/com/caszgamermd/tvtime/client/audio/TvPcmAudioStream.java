@@ -14,13 +14,22 @@ public final class TvPcmAudioStream implements AudioStream {
     private static final int SAMPLE_RATE = 48_000;
     private static final int OUTPUT_CHANNELS = 1;
     private static final int BYTES_PER_SAMPLE = 2;
-    private static final int SILENCE_MILLIS = 20;
-    private static final int SILENCE_BYTES =
+
+    // Minecraft's Channel asks AudioStream for one full second (96 KB mono)
+    // and queues four reads. Returning a single 20 ms packet caused frequent
+    // under-runs. We intentionally return 40 ms live buffers instead:
+    // four queued buffers ~= 160 ms of jitter protection, while keeping
+    // latency low enough for streamed video.
+    private static final int TARGET_BUFFER_MILLIS = 40;
+    private static final int TARGET_BUFFER_BYTES =
         SAMPLE_RATE
             * OUTPUT_CHANNELS
             * BYTES_PER_SAMPLE
-            * SILENCE_MILLIS
+            * TARGET_BUFFER_MILLIS
             / 1000;
+
+    private static final int FIRST_PACKET_WAIT_MILLIS = 80;
+    private static final int NEXT_PACKET_WAIT_MILLIS = 24;
 
     private final UUID sessionId;
     private final SpeakerChannel speakerChannel;
@@ -58,16 +67,53 @@ public final class TvPcmAudioStream implements AudioStream {
             return null;
         }
 
-        DecodedAudioChunk chunk = reader.poll();
-        if (chunk == null) {
-            return ByteBuffer.allocateDirect(SILENCE_BYTES);
+        ByteBuffer output = ByteBuffer
+            .allocateDirect(TARGET_BUFFER_BYTES)
+            .order(ByteOrder.LITTLE_ENDIAN);
+
+        boolean receivedAudio = false;
+
+        while (output.hasRemaining() && !closed) {
+            long waitMillis = receivedAudio
+                ? NEXT_PACKET_WAIT_MILLIS
+                : FIRST_PACKET_WAIT_MILLIS;
+
+            DecodedAudioChunk chunk =
+                reader.pollWaiting(waitMillis);
+
+            if (chunk == null) {
+                break;
+            }
+
+            if (chunk.sampleRate() != SAMPLE_RATE) {
+                continue;
+            }
+
+            ByteBuffer mono = toMono(chunk);
+            int copy = Math.min(
+                output.remaining(),
+                mono.remaining()
+            );
+
+            int oldLimit = mono.limit();
+            mono.limit(mono.position() + copy);
+            output.put(mono);
+            mono.limit(oldLimit);
+
+            receivedAudio = true;
         }
 
-        if (chunk.sampleRate() != SAMPLE_RATE) {
-            return ByteBuffer.allocateDirect(SILENCE_BYTES);
+        if (!receivedAudio) {
+            // Preserve stream continuity if the network misses the jitter
+            // window. This is intentionally only 40 ms, not Minecraft's
+            // requested one-second buffer.
+            while (output.hasRemaining()) {
+                output.put((byte) 0);
+            }
         }
 
-        return toMono(chunk);
+        output.flip();
+        return output;
     }
 
     private ByteBuffer toMono(DecodedAudioChunk chunk) {
@@ -77,7 +123,7 @@ public final class TvPcmAudioStream implements AudioStream {
 
         int channels = chunk.channels();
         if (channels <= 0) {
-            return ByteBuffer.allocateDirect(SILENCE_BYTES);
+            return ByteBuffer.allocateDirect(0);
         }
 
         int frameBytes = channels * BYTES_PER_SAMPLE;
