@@ -279,7 +279,9 @@ public final class TVtimeNetworking {
             return;
         }
 
-        if (!player.level().getBlockState(payload.pos()).is(ModBlocks.SPEAKER)) {
+        if (!ModBlocks.isSpeaker(
+            player.level().getBlockState(payload.pos())
+        )) {
             return;
         }
 
