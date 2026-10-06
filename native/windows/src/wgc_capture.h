@@ -12,6 +12,7 @@
 
 #include <winrt/base.h>
 #include <winrt/Windows.Graphics.Capture.h>
+#include <winrt/Windows.Graphics.DirectX.Direct3D11.h>
 
 class WgcCaptureSession {
 public:
@@ -61,6 +62,10 @@ private:
     FrameCallback frame_callback_;
 
     winrt::com_ptr<ID3D11Device> d3d_device_;
+    winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice
+        capture_device_{nullptr};
+    int frame_pool_width_{0};
+    int frame_pool_height_{0};
     winrt::com_ptr<ID3D11DeviceContext> d3d_context_;
     winrt::com_ptr<ID3D11Texture2D> staging_texture_;
     UINT staging_width_{0};
