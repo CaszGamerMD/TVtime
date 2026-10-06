@@ -5,6 +5,11 @@ import com.caszgamermd.tvtime.block.ModBlocks;
 import com.caszgamermd.tvtime.broadcast.BroadcastManager;
 import com.caszgamermd.tvtime.network.TVtimeNetworking;
 import com.caszgamermd.tvtime.item.ModItems;
+import com.caszgamermd.tvtime.block.SpeakerBlock;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.block.Block;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
@@ -30,6 +35,41 @@ public final class TVtime implements ModInitializer {
         ModItems.initialize();
         ModBlockEntities.initialize();
         TVtimeNetworking.initialize();
+
+        UseBlockCallback.EVENT.register(
+            (player, level, hand, hitResult) -> {
+                if (hand != InteractionHand.MAIN_HAND
+                    || !player.isShiftKeyDown()
+                    || player.getItemInHand(hand).is(ModItems.TV_REMOTE)) {
+                    return InteractionResult.PASS;
+                }
+
+                var pos = hitResult.getBlockPos();
+                var state = level.getBlockState(pos);
+
+                if (!state.is(ModBlocks.CUSTOM_SPEAKER)) {
+                    return InteractionResult.PASS;
+                }
+
+                if (!level.isClientSide()) {
+                    var next = state
+                        .getValue(SpeakerBlock.SIDE_STYLE)
+                        .next();
+
+                    level.setBlock(
+                        pos,
+                        state.setValue(
+                            SpeakerBlock.SIDE_STYLE,
+                            next
+                        ),
+                        Block.UPDATE_ALL
+                    );
+                }
+
+                return InteractionResult.SUCCESS;
+            }
+        );
+
         LOGGER.info("Initializing TVtime");
     }
 }
