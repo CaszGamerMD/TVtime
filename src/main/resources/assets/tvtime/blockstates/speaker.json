@@ -1,5 +1,39 @@
 {
-  "variants": {
-    "": { "model": "tvtime:block/speaker" }
-  }
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "tvtime:block/speaker"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "tvtime:block/speaker",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "tvtime:block/speaker",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "tvtime:block/speaker",
+        "y": 270
+      }
+    }
+  ]
 }
