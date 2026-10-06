@@ -86,7 +86,8 @@ jobs:
           - automatic fallback to delta-Deflate
           - periodic keyframes + packet-loss recovery
           - bounded media fragmentation/reassembly
-          - selected-process PCM audio
+          - selected-process Opus audio (48 kHz stereo)
+          - automatic raw PCM fallback
           - positional mono TV/speaker playback
 
           Capture quality controls:
@@ -118,12 +119,12 @@ jobs:
           FULL/CENTER/LFE currently downmix both channels to mono.
 
           /tvtime_capture status shows current FPS, combined kbps,
-          active codec, quality profile, and video compression ratio.
+          active video codec, audio codec, quality profile, and video compression ratio.
 
           This build validates the full capture -> compression -> server
           relay -> remote connected-TV video + multi-speaker positional
-          audio path while H.264 is being validated. Opus audio compression
-          remains the next production-codec milestone.
+          audio path with H.264 + Opus enabled by default, while both retain
+          safe fallback paths for troubleshooting.
           "@ | Set-Content -Encoding UTF8 bundle/TESTING.txt
 
       - name: Upload Windows test bundle
