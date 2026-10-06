@@ -247,8 +247,13 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
         Direction right = rightFor(state.facing);
         double halfSpan = (state.widthBlocks - 1) / 2.0;
 
-        double x = 0.5 + right.getStepX() * halfSpan + state.facing.getStepX() * 0.501;
-        double z = 0.5 + right.getStepZ() * halfSpan + state.facing.getStepZ() * 0.501;
+        // The physical TV occupies the back 3/16 of its block space.
+        // Its visible face is therefore 5/16 from block center in the
+        // direction opposite FACING. The custom video surface sits just
+        // outside that face to avoid z-fighting.
+        double surfaceOffset = -(5.0 / 16.0);
+        double x = 0.5 + right.getStepX() * halfSpan + state.facing.getStepX() * surfaceOffset;
+        double z = 0.5 + right.getStepZ() * halfSpan + state.facing.getStepZ() * surfaceOffset;
         double y = state.heightBlocks / 2.0;
 
         matrices.translate(x, y, z);
