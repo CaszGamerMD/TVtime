@@ -71,11 +71,11 @@ jobs:
             throw "TVtime JAR is missing bundled tvtime-capture.exe"
           }
 
-          if (-not ($entries | Where-Object { $_ -match "^META-INF/jars/.*jcodec.*\\.jar$" })) {
+          if (-not ($entries | Where-Object { $_ -match "^META-INF/jars/.*jcodec.*\.jar$" })) {
             throw "TVtime JAR is missing bundled JCodec"
           }
 
-          if (-not ($entries | Where-Object { $_ -match "^META-INF/jars/.*[Cc]oncentus.*\\.jar$" })) {
+          if (-not ($entries | Where-Object { $_ -match "^META-INF/jars/.*[Cc]oncentus.*\.jar$" })) {
             throw "TVtime JAR is missing bundled Concentus"
           }
 
