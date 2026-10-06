@@ -128,7 +128,7 @@ HRESULT ProcessAudioCapture::ActivateCompleted(
     if (SUCCEEDED(hr)) {
         format_.wFormatTag = WAVE_FORMAT_PCM;
         format_.nChannels = 2;
-        format_.nSamplesPerSec = 44100;
+        format_.nSamplesPerSec = 48000;
         format_.wBitsPerSample = 16;
         format_.nBlockAlign =
             format_.nChannels * format_.wBitsPerSample / 8;
