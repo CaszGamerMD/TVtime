@@ -243,8 +243,16 @@ void WgcCaptureSession::handle_frame(
         )
     );
 
-    const int output_width = std::max(1, static_cast<int>(source_width * scale));
-    const int output_height = std::max(1, static_cast<int>(source_height * scale));
+    const int scaled_width =
+        std::max(2, static_cast<int>(source_width * scale));
+    const int scaled_height =
+        std::max(2, static_cast<int>(source_height * scale));
+
+    // YUV420/H.264 requires even dimensions. Keeping WGC output even lets
+    // arbitrary window aspect ratios stay on the H.264 path instead of
+    // needlessly falling back to the development delta codec.
+    const int output_width = scaled_width & ~1;
+    const int output_height = scaled_height & ~1;
 
     std::vector<std::uint8_t> bgra(
         static_cast<std::size_t>(output_width)
