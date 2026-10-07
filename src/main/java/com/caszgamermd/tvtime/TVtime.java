@@ -5,6 +5,8 @@ import com.caszgamermd.tvtime.block.ModBlocks;
 import com.caszgamermd.tvtime.broadcast.BroadcastManager;
 import com.caszgamermd.tvtime.network.TVtimeNetworking;
 import com.caszgamermd.tvtime.item.ModItems;
+import com.caszgamermd.tvtime.item.PortableTvSettings;
+import com.caszgamermd.tvtime.block.TvBlockEntity;
 import com.caszgamermd.tvtime.block.SpeakerBlock;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.world.InteractionHand;
@@ -38,16 +40,26 @@ public final class TVtime implements ModInitializer {
 
         UseBlockCallback.EVENT.register(
             (player, level, hand, hitResult) -> {
-                if (hand != InteractionHand.MAIN_HAND
-                    || !player.isShiftKeyDown()
-                    || player.getItemInHand(hand).is(ModItems.TV_REMOTE)) {
+                if (hand != InteractionHand.MAIN_HAND) {
                     return InteractionResult.PASS;
                 }
 
+                var held = player.getItemInHand(hand);
                 var pos = hitResult.getBlockPos();
                 var state = level.getBlockState(pos);
 
-                if (!state.is(ModBlocks.CUSTOM_SPEAKER)) {
+                if (held.is(ModBlocks.PORTABLE_TV.asItem())
+                    && state.is(ModBlocks.TV)
+                    && level.getBlockEntity(pos) instanceof TvBlockEntity tv) {
+                    if (!level.isClientSide()) {
+                        PortableTvSettings.copyFrom(held, tv);
+                    }
+                    return InteractionResult.SUCCESS;
+                }
+
+                if (!player.isShiftKeyDown()
+                    || held.is(ModItems.TV_REMOTE)
+                    || !state.is(ModBlocks.CUSTOM_SPEAKER)) {
                     return InteractionResult.PASS;
                 }
 

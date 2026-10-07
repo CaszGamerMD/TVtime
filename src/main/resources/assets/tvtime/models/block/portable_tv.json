@@ -1,0 +1,104 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "body": "minecraft:block/dark_oak_planks",
+    "trim": "minecraft:block/black_concrete",
+    "screen": "minecraft:block/black_concrete",
+    "metal": "minecraft:block/iron_block",
+    "knob": "minecraft:block/gray_concrete",
+    "particle": "minecraft:block/dark_oak_planks"
+  },
+  "elements": [
+    {
+      "from": [2, 1, 8],
+      "to": [14, 12, 16],
+      "faces": {
+        "north": { "texture": "#trim" },
+        "south": { "texture": "#body" },
+        "east": { "texture": "#body" },
+        "west": { "texture": "#body" },
+        "up": { "texture": "#body" },
+        "down": { "texture": "#body" }
+      }
+    },
+    {
+      "from": [3, 3, 7.75],
+      "to": [11, 9, 8],
+      "faces": {
+        "north": { "texture": "#screen" }
+      }
+    },
+    {
+      "from": [11.5, 7.2, 7.65],
+      "to": [13, 8.7, 8],
+      "faces": {
+        "north": { "texture": "#knob" }
+      }
+    },
+    {
+      "from": [11.7, 4.7, 7.65],
+      "to": [12.8, 5.8, 8],
+      "faces": {
+        "north": { "texture": "#knob" }
+      }
+    },
+    {
+      "from": [4, 12, 11],
+      "to": [12, 13, 14],
+      "faces": {
+        "north": { "texture": "#metal" },
+        "south": { "texture": "#metal" },
+        "east": { "texture": "#metal" },
+        "west": { "texture": "#metal" },
+        "up": { "texture": "#metal" },
+        "down": { "texture": "#metal" }
+      }
+    },
+    {
+      "from": [4, 12, 13],
+      "to": [5, 15, 14],
+      "faces": {
+        "north": { "texture": "#metal" },
+        "south": { "texture": "#metal" },
+        "east": { "texture": "#metal" },
+        "west": { "texture": "#metal" }
+      }
+    },
+    {
+      "from": [11, 12, 13],
+      "to": [12, 15, 14],
+      "faces": {
+        "north": { "texture": "#metal" },
+        "south": { "texture": "#metal" },
+        "east": { "texture": "#metal" },
+        "west": { "texture": "#metal" }
+      }
+    },
+    {
+      "from": [12.2, 12, 14],
+      "to": [12.7, 16, 14.5],
+      "faces": {
+        "north": { "texture": "#metal" },
+        "south": { "texture": "#metal" },
+        "east": { "texture": "#metal" },
+        "west": { "texture": "#metal" }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [20, 145, 0],
+      "scale": [0.8, 0.8, 0.8]
+    },
+    "firstperson_righthand": {
+      "rotation": [0, 145, 0],
+      "translation": [0, 2, 0],
+      "scale": [0.65, 0.65, 0.65]
+    },
+    "firstperson_lefthand": {
+      "rotation": [0, -145, 0],
+      "translation": [0, 2, 0],
+      "scale": [0.65, 0.65, 0.65]
+    }
+  }
+}

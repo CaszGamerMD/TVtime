@@ -15,6 +15,7 @@ import com.caszgamermd.tvtime.client.audio.TvAudioPlaybackManager;
 import com.caszgamermd.tvtime.client.audio.NearbyAudioSourceScanner;
 import com.caszgamermd.tvtime.client.screen.TvConfigScreen;
 import com.caszgamermd.tvtime.client.screen.SpeakerConfigScreen;
+import com.caszgamermd.tvtime.client.hud.PortableTvHud;
 import com.caszgamermd.tvtime.item.ModItems;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -32,6 +33,7 @@ public final class TVtimeClient implements ClientModInitializer {
         BlockEntityRenderers.register(ModBlockEntities.SPEAKER, SpeakerBlockEntityRenderer::new);
         TVtimeClientNetworking.initialize();
         TVtimeClientCommands.initialize();
+        PortableTvHud.initialize();
 
         UseBlockCallback.EVENT.register(
             (player, level, hand, hitResult) -> {
