@@ -11,6 +11,7 @@ public final class PortableTvSettings {
     private static final String CHANNEL = "tvtime_channel";
     private static final String DISPLAY_MODE = "tvtime_display_mode";
     private static final String AUDIO = "tvtime_audio";
+    private static final String PIP_CORNER = "tvtime_pip_corner";
 
     private PortableTvSettings() {
     }
@@ -34,16 +35,31 @@ public final class PortableTvSettings {
             mode = DisplayMode.FIT;
         }
 
-        return new Settings(channel, mode, audio);
+        PipCorner corner;
+        try {
+            corner = PipCorner.valueOf(
+                tag.getStringOr(
+                    PIP_CORNER,
+                    PipCorner.BOTTOM_RIGHT.name()
+                )
+            );
+        } catch (IllegalArgumentException ignored) {
+            corner = PipCorner.BOTTOM_RIGHT;
+        }
+
+        return new Settings(channel, mode, audio, corner);
     }
 
     public static void copyFrom(ItemStack stack, TvBlockEntity tv) {
+        Settings current = read(stack);
+
         write(
             stack,
             new Settings(
                 tv.channel(),
                 tv.displayMode(),
-                tv.tvAudioEnabled()
+                tv.tvAudioEnabled(),
+                current.pipCorner()
             )
         );
     }
@@ -58,23 +74,49 @@ public final class PortableTvSettings {
                 tag.putString(CHANNEL, safe.channel());
                 tag.putString(DISPLAY_MODE, safe.displayMode().name());
                 tag.putBoolean(AUDIO, safe.tvAudioEnabled());
+                tag.putString(PIP_CORNER, safe.pipCorner().name());
             }
+        );
+    }
+
+    public static void setPipCorner(
+        ItemStack stack,
+        PipCorner corner
+    ) {
+        Settings current = read(stack);
+        write(
+            stack,
+            new Settings(
+                current.channel(),
+                current.displayMode(),
+                current.tvAudioEnabled(),
+                corner
+            )
         );
     }
 
     public record Settings(
         String channel,
         DisplayMode displayMode,
-        boolean tvAudioEnabled
+        boolean tvAudioEnabled,
+        PipCorner pipCorner
     ) {
         public static final Settings DEFAULT =
-            new Settings("", DisplayMode.FIT, true);
+            new Settings(
+                "",
+                DisplayMode.FIT,
+                true,
+                PipCorner.BOTTOM_RIGHT
+            );
 
         public Settings {
             channel = channel == null ? "" : channel.trim();
             displayMode = displayMode == null
                 ? DisplayMode.FIT
                 : displayMode;
+            pipCorner = pipCorner == null
+                ? PipCorner.BOTTOM_RIGHT
+                : pipCorner;
         }
     }
 }
