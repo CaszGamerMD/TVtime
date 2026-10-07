@@ -12,7 +12,8 @@ public final class ModBlockEntities {
     public static final BlockEntityType<TvBlockEntity> TV = register(
         "tv",
         TvBlockEntity::new,
-        ModBlocks.TV
+        ModBlocks.TV,
+        ModBlocks.PORTABLE_TV
     );
 
     public static final BlockEntityType<SpeakerBlockEntity> SPEAKER = register(
