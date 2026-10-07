@@ -25,6 +25,15 @@ public final class ModBlocks {
             .noOcclusion()
     );
 
+    public static final Block PORTABLE_TV = register(
+        ModBlockItemIds.PORTABLE_TV,
+        PortableTvBlock::new,
+        BlockBehaviour.Properties.of()
+            .strength(1.5f, 3.0f)
+            .sound(SoundType.METAL)
+            .noOcclusion()
+    );
+
     // Legacy block kept registered so existing alpha worlds do not lose
     // already-placed speakers. It is intentionally hidden from the tab.
     public static final Block SPEAKER = register(
@@ -72,6 +81,10 @@ public final class ModBlocks {
     );
 
     private ModBlocks() {
+    }
+
+    public static boolean isTv(BlockState state) {
+        return state.is(TV) || state.is(PORTABLE_TV);
     }
 
     public static boolean isSpeaker(BlockState state) {
@@ -124,6 +137,7 @@ public final class ModBlocks {
     public static void initialize() {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(entries -> {
             entries.accept(TV.asItem());
+            entries.accept(PORTABLE_TV.asItem());
             entries.accept(IRON_SPEAKER.asItem());
             entries.accept(SPRUCE_SPEAKER.asItem());
             entries.accept(MODERN_SPEAKER.asItem());
