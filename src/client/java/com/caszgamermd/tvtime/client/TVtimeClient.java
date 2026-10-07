@@ -1,6 +1,7 @@
 package com.caszgamermd.tvtime.client;
 
 import com.caszgamermd.tvtime.block.ModBlockEntities;
+import com.caszgamermd.tvtime.block.ModBlocks;
 import com.caszgamermd.tvtime.block.TvBlockEntity;
 import com.caszgamermd.tvtime.block.SpeakerBlockEntity;
 import com.caszgamermd.tvtime.client.render.TvBlockEntityRenderer;
@@ -15,9 +16,12 @@ import com.caszgamermd.tvtime.client.audio.TvAudioPlaybackManager;
 import com.caszgamermd.tvtime.client.audio.NearbyAudioSourceScanner;
 import com.caszgamermd.tvtime.client.screen.TvConfigScreen;
 import com.caszgamermd.tvtime.client.screen.SpeakerConfigScreen;
+import com.caszgamermd.tvtime.client.screen.PortableTvPipConfigScreen;
 import com.caszgamermd.tvtime.client.hud.PortableTvHud;
 import com.caszgamermd.tvtime.item.ModItems;
+import com.caszgamermd.tvtime.item.PortableTvSettings;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -34,6 +38,29 @@ public final class TVtimeClient implements ClientModInitializer {
         TVtimeClientNetworking.initialize();
         TVtimeClientCommands.initialize();
         PortableTvHud.initialize();
+
+        UseItemCallback.EVENT.register(
+            (player, level, hand) -> {
+                if (!level.isClientSide()
+                    || hand != InteractionHand.MAIN_HAND
+                    || !player.getMainHandItem().is(ModItems.TV_REMOTE)
+                    || !player.getOffhandItem().is(ModBlocks.PORTABLE_TV.asItem())) {
+                    return InteractionResult.PASS;
+                }
+
+                var settings = PortableTvSettings.read(
+                    player.getOffhandItem()
+                );
+
+                Minecraft.getInstance().gui.setScreen(
+                    new PortableTvPipConfigScreen(
+                        settings.pipCorner()
+                    )
+                );
+
+                return InteractionResult.SUCCESS;
+            }
+        );
 
         UseBlockCallback.EVENT.register(
             (player, level, hand, hitResult) -> {
