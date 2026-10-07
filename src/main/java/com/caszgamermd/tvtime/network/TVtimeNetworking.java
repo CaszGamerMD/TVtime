@@ -306,7 +306,9 @@ public final class TVtimeNetworking {
             return;
         }
 
-        if (!player.level().getBlockState(payload.pos()).is(ModBlocks.TV)) {
+        if (!ModBlocks.isTv(
+            player.level().getBlockState(payload.pos())
+        )) {
             return;
         }
 
