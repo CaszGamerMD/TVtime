@@ -135,10 +135,10 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
         VideoTexture videoTexture
     ) {
         float canvasWidth = state.portable
-            ? 0.62f
+            ? 0.47f
             : Math.max(0.1f, state.widthBlocks - 0.10f);
         float canvasHeight = state.portable
-            ? 0.38f
+            ? 0.33f
             : Math.max(0.1f, state.heightBlocks - 0.10f);
 
         VideoLayout layout = VideoLayoutCalculator.calculate(
@@ -258,12 +258,19 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
         // direction opposite FACING. The custom video surface sits just
         // outside that face to avoid z-fighting.
         double surfaceOffset = state.portable
-            ? 0.0
+            ? (1.0 / 64.0)
             : -(5.0 / 16.0);
-        double x = 0.5 + right.getStepX() * halfSpan + state.facing.getStepX() * surfaceOffset;
-        double z = 0.5 + right.getStepZ() * halfSpan + state.facing.getStepZ() * surfaceOffset;
+        double horizontalOffset = state.portable
+            ? -(1.0 / 16.0)
+            : 0.0;
+        double x = 0.5
+            + right.getStepX() * (halfSpan + horizontalOffset)
+            + state.facing.getStepX() * surfaceOffset;
+        double z = 0.5
+            + right.getStepZ() * (halfSpan + horizontalOffset)
+            + state.facing.getStepZ() * surfaceOffset;
         double y = state.portable
-            ? 0.43
+            ? (6.0 / 16.0)
             : state.heightBlocks / 2.0;
 
         matrices.translate(x, y, z);
