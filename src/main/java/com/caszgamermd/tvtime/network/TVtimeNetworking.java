@@ -10,6 +10,8 @@ import com.caszgamermd.tvtime.network.payload.MediaRelayPayload;
 import com.caszgamermd.tvtime.network.payload.MediaFragmentPayload;
 import com.caszgamermd.tvtime.network.payload.ConfigureTvPayload;
 import com.caszgamermd.tvtime.network.payload.ConfigureSpeakerPayload;
+import com.caszgamermd.tvtime.network.payload.ConfigurePortableTvPipPayload;
+import com.caszgamermd.tvtime.item.PortableTvSettings;
 import com.caszgamermd.tvtime.network.payload.ChannelSessionPayload;
 import com.caszgamermd.tvtime.network.payload.StartBroadcastAckPayload;
 import com.caszgamermd.tvtime.network.payload.StartBroadcastPayload;
@@ -64,6 +66,10 @@ public final class TVtimeNetworking {
             ConfigureSpeakerPayload.TYPE,
             ConfigureSpeakerPayload.CODEC
         );
+        PayloadTypeRegistry.serverboundPlay().register(
+            ConfigurePortableTvPipPayload.TYPE,
+            ConfigurePortableTvPipPayload.CODEC
+        );
 
         PayloadTypeRegistry.clientboundPlay().register(
             StartBroadcastAckPayload.TYPE,
@@ -115,6 +121,12 @@ public final class TVtimeNetworking {
         ServerPlayNetworking.registerGlobalReceiver(
             ConfigureSpeakerPayload.TYPE,
             (payload, context) -> handleConfigureSpeaker(context.player(), payload)
+        );
+
+        ServerPlayNetworking.registerGlobalReceiver(
+            ConfigurePortableTvPipPayload.TYPE,
+            (payload, context) ->
+                handleConfigurePortableTvPip(context.player(), payload)
         );
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
@@ -265,6 +277,21 @@ public final class TVtimeNetworking {
                 new ChannelSessionPayload(session.channel(), session.id(), false)
             );
         });
+    }
+
+    private static void handleConfigurePortableTvPip(
+        ServerPlayer player,
+        ConfigurePortableTvPipPayload payload
+    ) {
+        var portable = player.getOffhandItem();
+        if (!portable.is(ModBlocks.PORTABLE_TV.asItem())) {
+            return;
+        }
+
+        PortableTvSettings.setPipCorner(
+            portable,
+            payload.corner()
+        );
     }
 
     private static void handleConfigureSpeaker(
