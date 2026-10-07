@@ -1,14 +1,15 @@
 package com.caszgamermd.tvtime.client.hud;
 
 import com.caszgamermd.tvtime.TVtime;
+import com.caszgamermd.tvtime.audio.SpeakerChannel;
 import com.caszgamermd.tvtime.block.ModBlocks;
 import com.caszgamermd.tvtime.client.audio.TvAudioAnchors;
 import com.caszgamermd.tvtime.client.media.VideoTexture;
 import com.caszgamermd.tvtime.client.media.VideoTextureManager;
 import com.caszgamermd.tvtime.client.network.ClientChannelDirectory;
 import com.caszgamermd.tvtime.client.network.ClientChannelSubscriptions;
+import com.caszgamermd.tvtime.item.PipCorner;
 import com.caszgamermd.tvtime.item.PortableTvSettings;
-import com.caszgamermd.tvtime.audio.SpeakerChannel;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.DeltaTracker;
@@ -27,6 +28,8 @@ public final class PortableTvHud {
     private static final int MAX_HEIGHT = 90;
     private static final int MARGIN = 8;
     private static final int BORDER = 3;
+    private static final int LABEL_HEIGHT = 14;
+    private static final int BOTTOM_HUD_CLEARANCE = 22;
 
     private PortableTvHud() {
     }
@@ -62,7 +65,13 @@ public final class PortableTvHud {
 
         UUID sessionId = ClientChannelDirectory.sessionFor(channel);
         if (sessionId == null) {
-            drawFrame(graphics, MAX_WIDTH, MAX_HEIGHT, channel, false);
+            drawFrame(
+                graphics,
+                MAX_WIDTH,
+                MAX_HEIGHT,
+                channel,
+                settings.pipCorner()
+            );
             return;
         }
 
@@ -81,7 +90,13 @@ public final class PortableTvHud {
         texture.updateFromLatest();
 
         if (!texture.ready()) {
-            drawFrame(graphics, MAX_WIDTH, MAX_HEIGHT, channel, false);
+            drawFrame(
+                graphics,
+                MAX_WIDTH,
+                MAX_HEIGHT,
+                channel,
+                settings.pipCorner()
+            );
             return;
         }
 
@@ -93,11 +108,24 @@ public final class PortableTvHud {
             MAX_HEIGHT / (float) sourceHeight
         );
 
-        int drawWidth = Math.max(1, Math.round(sourceWidth * scale));
-        int drawHeight = Math.max(1, Math.round(sourceHeight * scale));
+        int drawWidth = Math.max(
+            1,
+            Math.round(sourceWidth * scale)
+        );
+        int drawHeight = Math.max(
+            1,
+            Math.round(sourceHeight * scale)
+        );
 
-        int x = graphics.guiWidth() - MARGIN - drawWidth - BORDER * 2;
-        int y = graphics.guiHeight() - MARGIN - drawHeight - BORDER * 2 - 22;
+        Placement placement = placement(
+            graphics,
+            drawWidth,
+            drawHeight,
+            settings.pipCorner()
+        );
+
+        int x = placement.x();
+        int y = placement.y();
 
         graphics.fill(
             x,
@@ -142,11 +170,18 @@ public final class PortableTvHud {
         int width,
         int height,
         String channel,
-        boolean live
+        PipCorner corner
     ) {
         Minecraft client = Minecraft.getInstance();
-        int x = graphics.guiWidth() - MARGIN - width - BORDER * 2;
-        int y = graphics.guiHeight() - MARGIN - height - BORDER * 2 - 22;
+        Placement placement = placement(
+            graphics,
+            width,
+            height,
+            corner
+        );
+
+        int x = placement.x();
+        int y = placement.y();
 
         graphics.fill(
             x,
@@ -155,6 +190,7 @@ public final class PortableTvHud {
             y + height + BORDER * 2,
             0xE0101010
         );
+
         graphics.fill(
             x + BORDER,
             y + BORDER,
@@ -165,11 +201,49 @@ public final class PortableTvHud {
 
         graphics.text(
             client.font,
-            live ? channel : channel + " • OFFLINE",
+            channel + " • OFFLINE",
             x + BORDER + 5,
             y + BORDER + 5,
             0xFFFFFFFF,
             true
         );
+    }
+
+    private static Placement placement(
+        GuiGraphicsExtractor graphics,
+        int contentWidth,
+        int contentHeight,
+        PipCorner corner
+    ) {
+        PipCorner safeCorner = corner == null
+            ? PipCorner.BOTTOM_RIGHT
+            : corner;
+
+        int totalWidth = contentWidth + BORDER * 2;
+        int totalHeight =
+            contentHeight + BORDER * 2 + LABEL_HEIGHT;
+
+        int x = switch (safeCorner) {
+            case TOP_LEFT, BOTTOM_LEFT -> MARGIN;
+            case TOP_RIGHT, BOTTOM_RIGHT ->
+                graphics.guiWidth() - MARGIN - totalWidth;
+        };
+
+        int y = switch (safeCorner) {
+            case TOP_LEFT, TOP_RIGHT -> MARGIN;
+            case BOTTOM_LEFT, BOTTOM_RIGHT ->
+                graphics.guiHeight()
+                    - MARGIN
+                    - BOTTOM_HUD_CLEARANCE
+                    - totalHeight;
+        };
+
+        return new Placement(
+            Math.max(MARGIN, x),
+            Math.max(MARGIN, y)
+        );
+    }
+
+    private record Placement(int x, int y) {
     }
 }
