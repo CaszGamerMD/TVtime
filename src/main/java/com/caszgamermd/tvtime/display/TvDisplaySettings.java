@@ -18,6 +18,15 @@ public final class TvDisplaySettings {
         DisplayMode displayMode,
         boolean tvAudioEnabled
     ) {
+        if (level.getBlockState(anyTv).is(com.caszgamermd.tvtime.block.ModBlocks.PORTABLE_TV)) {
+            if (level.getBlockEntity(anyTv) instanceof TvBlockEntity tv) {
+                tv.setChannel(channel);
+                tv.setDisplayMode(displayMode);
+                tv.setTvAudioEnabled(tvAudioEnabled);
+            }
+            return;
+        }
+
         DisplayRect rect = TvDisplayScanner.scan(level, anyTv);
         Direction right = rightFor(rect.facing());
 
