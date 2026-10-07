@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 
 public final class TvBlockEntityRenderState extends BlockEntityRenderState {
     public boolean anchor;
+    public boolean portable;
     public int widthBlocks = 1;
     public int heightBlocks = 1;
     public Direction facing = Direction.NORTH;
