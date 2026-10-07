@@ -3,6 +3,7 @@ package com.caszgamermd.tvtime.client.render;
 import org.jetbrains.annotations.Nullable;
 
 import com.caszgamermd.tvtime.block.TvBlockEntity;
+import com.caszgamermd.tvtime.block.ModBlocks;
 import com.caszgamermd.tvtime.client.media.TestPatternVideo;
 import com.caszgamermd.tvtime.client.media.VideoTexture;
 import com.caszgamermd.tvtime.client.media.VideoTextureManager;
@@ -62,6 +63,7 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
 
         DisplayRect rect = blockEntity.displayRect();
         state.anchor = blockEntity.getBlockPos().equals(rect.anchor());
+        state.portable = blockEntity.getBlockState().is(ModBlocks.PORTABLE_TV);
         state.widthBlocks = rect.widthBlocks();
         state.heightBlocks = rect.heightBlocks();
         state.facing = rect.facing();
@@ -132,8 +134,12 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
         SubmitNodeCollector queue,
         VideoTexture videoTexture
     ) {
-        float canvasWidth = Math.max(0.1f, state.widthBlocks - 0.10f);
-        float canvasHeight = Math.max(0.1f, state.heightBlocks - 0.10f);
+        float canvasWidth = state.portable
+            ? 0.62f
+            : Math.max(0.1f, state.widthBlocks - 0.10f);
+        float canvasHeight = state.portable
+            ? 0.38f
+            : Math.max(0.1f, state.heightBlocks - 0.10f);
 
         VideoLayout layout = VideoLayoutCalculator.calculate(
             videoTexture.width(),
@@ -251,10 +257,14 @@ public final class TvBlockEntityRenderer implements BlockEntityRenderer<TvBlockE
         // Its visible face is therefore 5/16 from block center in the
         // direction opposite FACING. The custom video surface sits just
         // outside that face to avoid z-fighting.
-        double surfaceOffset = -(5.0 / 16.0);
+        double surfaceOffset = state.portable
+            ? 0.0
+            : -(5.0 / 16.0);
         double x = 0.5 + right.getStepX() * halfSpan + state.facing.getStepX() * surfaceOffset;
         double z = 0.5 + right.getStepZ() * halfSpan + state.facing.getStepZ() * surfaceOffset;
-        double y = state.heightBlocks / 2.0;
+        double y = state.portable
+            ? 0.43
+            : state.heightBlocks / 2.0;
 
         matrices.translate(x, y, z);
     }
