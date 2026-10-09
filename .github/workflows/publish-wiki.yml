@@ -1,0 +1,27 @@
+name: Publish TVtime Wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/wiki/**"
+      - ".github/workflows/publish-wiki.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-tvtime-wiki
+  cancel-in-progress: true
+
+jobs:
+  wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out TVtime
+        uses: actions/checkout@v4
+      - name: Sync docs/wiki to GitHub Wiki
+        uses: step-security/github-wiki-action@v5
+        with:
+          path: docs/wiki
