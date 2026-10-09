@@ -32,7 +32,7 @@ import java.util.UUID;
  */
 public final class CameraManager {
     public static final int MAX_ACTIVE_PER_DIMENSION = 4;
-    public static final int FPS = 1;
+    public static final int FPS = CameraFeedRenderer.FPS_LIMIT;
     private static final TicketType CAMERA_TICKET =
         new TicketType(TicketType.NO_TIMEOUT, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION);
     private static final Map<ServerLevel, Map<BlockPos, CameraRuntime>> CAMERAS = new IdentityHashMap<>();
@@ -146,15 +146,41 @@ public final class CameraManager {
                     continue;
                 }
             }
-            if (tick % 20 != Math.floorMod(camera.getBlockPos().asLong(), 20L) || runtime.session == null) continue;
-            var subscribers = CaszualTvTimeNetworking.subscriptions().viewers(runtime.session.id());
-            if (subscribers.isEmpty()) continue;
-            byte[] frame = CameraFeedRenderer.render(world, camera);
+            // The render budget is applied after all cameras are examined.
+            // No subscribers = no ray tracing, irrespective of chunk-loader state.
+            if (runtime.session == null
+                || CaszualTvTimeNetworking.subscriptions().viewers(runtime.session.id()).isEmpty()) {
+                runtime.frame = null;
+                continue;
+            }
+            if (runtime.frame != null && !runtime.frame.matches(camera)) {
+                runtime.frame = null; // Pan/tilt/zoom changed during an in-flight frame.
+            }
+            if (runtime.frame == null
+                && tick - runtime.lastPublishedTick >= CameraFeedRenderer.FRAME_INTERVAL_TICKS) {
+                runtime.frame = new CameraFeedRenderer.Frame(camera);
+            }
+        }
+
+        // A *global* per-dimension pixel/raycast budget, shared across cameras.
+        // More simultaneous feeds reduce frame rate, rather than freezing the server.
+        List<CameraRuntime> pending = index.values().stream()
+            .filter(runtime -> runtime.frame != null && runtime.session != null)
+            .toList();
+        int remaining = CameraFeedRenderer.TOTAL_RAYS_PER_TICK;
+        int cursor = 0;
+        for (CameraRuntime runtime : pending) {
+            int budget = Math.max(1, remaining / (pending.size() - cursor++));
+            remaining -= budget;
+            if (!runtime.frame.renderNext(world, budget)) continue;
+            byte[] frame = runtime.frame.data();
+            runtime.frame = null;
+            runtime.lastPublishedTick = tick;
             var packet = new MediaRelayPayload(
                 runtime.session.id(), MediaKind.VIDEO, runtime.sequence++,
                 tick * 50_000L, true, frame
             );
-            for (UUID viewerId : subscribers) {
+            for (UUID viewerId : CaszualTvTimeNetworking.subscriptions().viewers(runtime.session.id())) {
                 ServerPlayer viewer = world.getServer().getPlayerList().getPlayer(viewerId);
                 if (viewer != null) ServerPlayNetworking.send(viewer, packet);
             }
@@ -177,6 +203,7 @@ public final class CameraManager {
         CaszualTvTimeNetworking.subscriptions().removeSession(session.id());
         CaszualTvTime.broadcasts().remove(session.id());
         runtime.session = null;
+        runtime.frame = null;
         runtime.sequence = 0;
     }
 
@@ -212,6 +239,8 @@ public final class CameraManager {
         private boolean ticketed;
         private BroadcastSession session;
         private long sequence;
+        private long lastPublishedTick = Long.MIN_VALUE / 2;
+        private CameraFeedRenderer.Frame frame;
         private CameraRuntime(CameraBlockEntity camera) { this.camera = camera; }
     }
 }

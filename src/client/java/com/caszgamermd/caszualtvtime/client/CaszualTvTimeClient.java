@@ -6,6 +6,7 @@ import com.caszgamermd.caszualtvtime.block.TvBlockEntity;
 import com.caszgamermd.caszualtvtime.block.SpeakerBlockEntity;
 import com.caszgamermd.caszualtvtime.client.render.TvBlockEntityRenderer;
 import com.caszgamermd.caszualtvtime.client.render.SpeakerBlockEntityRenderer;
+import com.caszgamermd.caszualtvtime.client.render.CameraBlockEntityRenderer;
 import com.caszgamermd.caszualtvtime.client.network.CaszualTvTimeClientNetworking;
 import com.caszgamermd.caszualtvtime.client.network.ClientChannelSubscriptions;
 import com.caszgamermd.caszualtvtime.client.network.ClientChannelDirectory;
@@ -36,6 +37,7 @@ public final class CaszualTvTimeClient implements ClientModInitializer {
     public void onInitializeClient() {
         BlockEntityRenderers.register(ModBlockEntities.TV, TvBlockEntityRenderer::new);
         BlockEntityRenderers.register(ModBlockEntities.SPEAKER, SpeakerBlockEntityRenderer::new);
+        BlockEntityRenderers.register(ModBlockEntities.CAMERA, CameraBlockEntityRenderer::new);
         CaszualTvTimeClientNetworking.initialize();
         CaszualTvTimeClientCommands.initialize();
         PortableTvHud.initialize();

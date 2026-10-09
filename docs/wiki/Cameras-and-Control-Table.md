@@ -4,7 +4,7 @@
 
 Caszual TV Time adds a **Camera** and **Camera Control Table** for security-room style video surveillance using the existing in-game TV screens.
 
-> **Important alpha limitation:** The first implementation broadcasts a low-resolution, live **block-color perspective** from a camera position (48 × 27 pixels, at 1 frame/second). It shows nearby block changes but **does not yet render Minecraft textures, entities/mobs, particles, or shader lighting as the player's normal view does**. This is a functional first camera-feed renderer, not full GPU quality.
+> **Important alpha limitation:** The current implementation broadcasts a higher-resolution, live **block-color perspective** from a camera position (128 × 72 pixels, at up to 2 frames/second). It shows nearby block changes but **does not yet render Minecraft textures, entities/mobs, particles, or shader lighting as the player's normal view does**. This is a functional first camera-feed renderer, not full GPU quality.
 
 ## Setup
 
@@ -29,7 +29,7 @@ A camera channel works through the existing Caszual TV Time channel/session syst
 | Tilt ▲ / ▼ | Moves viewing angle up/down | −80° to +80°, 10° steps |
 | Zoom − / + | Narrows or widens camera's view | 1× to 8×, 0.5× steps |
 
-**Pan/tilt/zoom are optical feed settings.** The first implementation changes the transmitted perspective but does not yet physically animate the camera model.
+**Pan/tilt changes the physical camera model's orientation** as well as its viewing direction. Zoom changes the viewing angle without moving the physical camera.
 
 **Saving matters:** changes in the screen are sent to the server when you click **Save**; clicking **Back** leaves without saving.
 
@@ -74,7 +74,7 @@ Both are also in the **Functional Blocks** creative inventory tab.
 - **No cameras listed:** place and load the camera at least once so it enters the server directory; refresh the control table.
 - **No TV picture:** check camera power, camera channel, TV channel, and whether that channel is occupied by another broadcaster.
 - **Unloaded scene/short range:** the simple block-color ray camera cannot see beyond the chunks currently loaded on the server. It deliberately does not synchronously load a new chunk for each ray.
-- **Video quality:** currently deliberately small (48 × 27 / 1 FPS); resolution and proper world rendering remain future development tasks.
-- **Performance:** start with a single camera. Camera tickets and additional viewers have server/network cost.
+- **Video quality:** now 128 × 72 pixels at up to 2 FPS. A shared render budget reduces FPS when more cameras stream simultaneously to avoid overloading the server. It remains a block-color view, not a Minecraft GPU-rendered camera with textures/entities/shaders.
+- **Performance:** ray traversal uses voxel stepping, and the work is spread across server ticks with a global per-dimension budget of 1,200 rays per tick. Cameras not being watched do not render or send frames. Start with a single camera. Chunk tickets and viewers still have server/network cost.
 
 [Report camera bugs](https://github.com/CaszGamerMD/TVtime/issues).
