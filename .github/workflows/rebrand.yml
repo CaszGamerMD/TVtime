@@ -1,0 +1,29 @@
+name: Apply Caszual TV Time Rebrand
+on:
+  push:
+    branches: [rebrand/caszual-tv-time]
+    paths:
+      - ".github/workflows/rebrand.yml"
+      - ".github/scripts/rebrand_tvtime.py"
+permissions:
+  contents: write
+jobs:
+  rename:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+      - name: Rebrand source and resources
+        run: python3 .github/scripts/rebrand_tvtime.py
+      - name: Commit complete rebrand
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "refactor: rebrand TVtime to Caszual TV Time"
+          git push origin HEAD:rebrand/caszual-tv-time
