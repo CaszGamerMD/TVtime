@@ -58,6 +58,11 @@ public final class CameraControlScreen extends Screen {
         rebuildWidgets();
     }
 
+    private void rememberFields() {
+        if (nameBox != null) name = nameBox.getValue();
+        if (channelBox != null) channel = channelBox.getValue();
+    }
+
     private void save() {
         if (selected < 0 || selected >= entries.size()) return;
         if (!ClientPlayNetworking.canSend(ConfigureCameraPayload.TYPE)) {
@@ -108,27 +113,27 @@ public final class CameraControlScreen extends Screen {
         addWidget(channelBox);
 
         addRenderableWidget(Button.builder(Component.literal(active ? "Camera ON" : "Camera OFF"),
-            b -> { active = !active; rebuildWidgets(); }).bounds(left, 116, 232, 20).build());
+            b -> { rememberFields(); active = !active; rebuildWidgets(); }).bounds(left, 116, 232, 20).build());
 
         addRenderableWidget(Button.builder(Component.literal("Pan ◀"), b -> {
-            pan = Math.max(-180, pan - 15); rebuildWidgets();
+            rememberFields(); pan = Math.max(-180, pan - 15); rebuildWidgets();
         }).bounds(left, 144, 92, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Pan ▶"), b -> {
-            pan = Math.min(180, pan + 15); rebuildWidgets();
+            rememberFields(); pan = Math.min(180, pan + 15); rebuildWidgets();
         }).bounds(left + 140, 144, 92, 20).build());
 
         addRenderableWidget(Button.builder(Component.literal("Tilt ▲"), b -> {
-            tilt = Math.max(-80, tilt - 10); rebuildWidgets();
+            rememberFields(); tilt = Math.max(-80, tilt - 10); rebuildWidgets();
         }).bounds(left, 173, 92, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Tilt ▼"), b -> {
-            tilt = Math.min(80, tilt + 10); rebuildWidgets();
+            rememberFields(); tilt = Math.min(80, tilt + 10); rebuildWidgets();
         }).bounds(left + 140, 173, 92, 20).build());
 
         addRenderableWidget(Button.builder(Component.literal("Zoom −"), b -> {
-            zoom = Math.max(1, zoom - 0.5f); rebuildWidgets();
+            rememberFields(); zoom = Math.max(1, zoom - 0.5f); rebuildWidgets();
         }).bounds(left, 202, 92, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Zoom +"), b -> {
-            zoom = Math.min(8, zoom + 0.5f); rebuildWidgets();
+            rememberFields(); zoom = Math.min(8, zoom + 0.5f); rebuildWidgets();
         }).bounds(left + 140, 202, 92, 20).build());
 
         addRenderableWidget(Button.builder(Component.literal("Save"), b -> save())
@@ -155,5 +160,5 @@ public final class CameraControlScreen extends Screen {
         }
     }
 
-    @Override public void onClose() { minecraft.setScreen(null); }
+    @Override public void onClose() { minecraft.gui.setScreen(null); }
 }
