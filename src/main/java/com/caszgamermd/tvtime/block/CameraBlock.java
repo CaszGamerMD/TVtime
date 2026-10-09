@@ -13,6 +13,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import com.caszgamermd.tvtime.camera.CameraSavedData;
+import com.caszgamermd.tvtime.camera.CameraManager;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -45,6 +49,15 @@ public final class CameraBlock extends BaseEntityBlock {
 
     @Override protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
         builder.add(TvBlock.FACING);
+    }
+
+    @Override protected void onRemove(BlockState state, Level level, BlockPos pos,
+                                      BlockState next, boolean moved) {
+        if (!next.is(this) && level instanceof ServerLevel server) {
+            CameraSavedData.get(server).remove(pos);
+            CameraManager.remove(server, pos);
+        }
+        super.onRemove(state, level, pos, next, moved);
     }
 
     @Nullable @Override public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

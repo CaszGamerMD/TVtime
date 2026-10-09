@@ -2,6 +2,7 @@ package com.caszgamermd.tvtime.network;
 
 import com.caszgamermd.tvtime.TVtime;
 import com.caszgamermd.tvtime.camera.CameraManager;
+import com.caszgamermd.tvtime.camera.CameraSavedData;
 import com.caszgamermd.tvtime.block.CameraBlockEntity;
 import com.caszgamermd.tvtime.network.payload.CameraCatalogPayload;
 import com.caszgamermd.tvtime.network.payload.ConfigureCameraPayload;
@@ -312,11 +313,11 @@ public final class TVtimeNetworking {
     private static void sendCameraCatalog(ServerPlayer player, BlockPos console) {
         if (!canUseCameraConsole(player, console)) return;
         ServerLevel world = (ServerLevel) player.level();
-        var cams = CameraManager.cameras(world).stream()
-            .sorted(Comparator.comparing(CameraBlockEntity::cameraName))
+        var cams = CameraSavedData.get(world).entries().stream()
+            .sorted(Comparator.comparing(CameraSavedData.Entry::name))
             .limit(64)
             .map(c -> new CameraCatalogPayload.CameraEntry(
-                c.getBlockPos(), c.cameraName(), c.channel(),
+                c.pos(), c.name(), c.channel(),
                 c.active(), c.pan(), c.tilt(), c.zoom()))
             .toList();
         ServerPlayNetworking.send(player, new CameraCatalogPayload(console, cams));
@@ -325,10 +326,25 @@ public final class TVtimeNetworking {
     private static void handleConfigureCamera(ServerPlayer player, ConfigureCameraPayload p) {
         if (!canUseCameraConsole(player, p.consolePos())) return;
         ServerLevel world = (ServerLevel) player.level();
+        if (!CameraSavedData.get(world).contains(p.cameraPos())) return;
+        // Loading one known, offline camera chunk on explicit user interaction
+        // is bounded and allows remote power-on after the ticket was released.
         CameraBlockEntity camera = CameraManager.lookup(world, p.cameraPos());
-        if (camera == null || !world.getBlockState(p.cameraPos()).is(ModBlocks.CAMERA)) return;
+        if (camera == null) {
+            world.getChunkAt(p.cameraPos());
+            if (world.getBlockEntity(p.cameraPos()) instanceof CameraBlockEntity found) {
+                camera = found;
+                CameraManager.add(world, camera);
+            }
+        }
+        if (camera == null || !world.getBlockState(p.cameraPos()).is(ModBlocks.CAMERA)) {
+            CameraSavedData.get(world).remove(p.cameraPos());
+            sendCameraCatalog(player, p.consolePos());
+            return;
+        }
         // A control console may affect orientation, channel and power, but never position.
         camera.configure(p.name(), p.channel(), p.active(), p.pan(), p.tilt(), p.zoom());
+        CameraSavedData.get(world).put(camera);
         sendCameraCatalog(player, p.consolePos());
     }
 

@@ -50,6 +50,23 @@ public final class CameraManager {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             for (ServerLevel level : server.getAllLevels()) tick(level);
         });
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            // Reload enabled cameras after restart, even when no player is near them.
+            // Limit synchronous startup work to the same bound as active camera tickets.
+            for (ServerLevel level : server.getAllLevels()) {
+                int count = 0;
+                for (var entry : CameraSavedData.get(level).entries()) {
+                    if (!entry.active() || count >= MAX_ACTIVE_PER_DIMENSION) continue;
+                    count++;
+                    level.getChunkAt(entry.pos());
+                    if (level.getBlockEntity(entry.pos()) instanceof CameraBlockEntity camera) {
+                        add(level, camera);
+                    } else {
+                        CameraSavedData.get(level).remove(entry.pos());
+                    }
+                }
+            }
+        });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             for (var level : new ArrayList<>(CAMERAS.keySet())) {
                 for (var pos : new ArrayList<>(CAMERAS.get(level).keySet())) remove(level, pos);
@@ -98,6 +115,7 @@ public final class CameraManager {
                 remove(world, camera.getBlockPos());
                 continue;
             }
+            CameraSavedData.get(world).put(camera);
             boolean allowed = camera.active() && active < MAX_ACTIVE_PER_DIMENSION;
             if (!allowed) { release(world, runtime); continue; }
             active++;
