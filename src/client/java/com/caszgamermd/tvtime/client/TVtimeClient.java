@@ -15,6 +15,7 @@ import com.caszgamermd.tvtime.client.capture.CaptureBroadcastController;
 import com.caszgamermd.tvtime.client.audio.TvAudioPlaybackManager;
 import com.caszgamermd.tvtime.client.audio.NearbyAudioSourceScanner;
 import com.caszgamermd.tvtime.client.screen.TvConfigScreen;
+import com.caszgamermd.tvtime.client.screen.CameraControlScreen;
 import com.caszgamermd.tvtime.client.screen.SpeakerConfigScreen;
 import com.caszgamermd.tvtime.client.screen.PortableTvPipConfigScreen;
 import com.caszgamermd.tvtime.client.hud.PortableTvHud;
@@ -67,6 +68,13 @@ public final class TVtimeClient implements ClientModInitializer {
                 if (!level.isClientSide()
                     || hand != InteractionHand.MAIN_HAND) {
                     return InteractionResult.PASS;
+                }
+
+                if (level.getBlockState(hitResult.getBlockPos()).is(ModBlocks.CAMERA_CONTROL_TABLE)) {
+                    CameraControlScreen screen = new CameraControlScreen(hitResult.getBlockPos());
+                    Minecraft.getInstance().gui.setScreen(screen);
+                    screen.requestCatalog();
+                    return InteractionResult.SUCCESS;
                 }
 
                 if (!player.getItemInHand(hand).is(ModItems.TV_REMOTE)) {
