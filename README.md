@@ -1,27 +1,34 @@
 # TVtime
 
-TVtime is a Fabric mod for Minecraft 26.2 that aims to let players broadcast a selected desktop application window, including audio, to shared in-world TV displays.
+**TVtime** is a Minecraft **26.2 Fabric** mod that lets players broadcast a selected **Windows application window and its audio** to shared, in-world TV screens.
 
-## Planned architecture
+**Current version:** 0.1.0-alpha.1 — experimental development build.
 
-- **Client capture:** a broadcasting player's client captures a selected window and its application audio.
-- **Client encode:** video/audio are encoded client-side.
-- **Server relay:** the dedicated server owns session state and relays encoded media packets; it does not render or transcode media.
-- **Client decode/render:** viewing clients decode the stream and render it across connected TV blocks.
-- **Positional audio:** TV blocks and linked speaker blocks act as in-world sound emitters.
+## Features
 
-## V1 targets
+- Thin, wall-oriented **TV Screen** blocks that form connected rectangular displays (up to 16 × 16).
+- Named broadcast channels, **FIT / FILL / STRETCH** video layouts, and optional built-in TV audio.
+- **TV Remote** configuration screens for displays and speakers.
+- Four speaker styles: **Iron, Spruce, Modern, Custom**, plus the legacy speaker kept for older worlds. Supports positional audio and speaker roles.
+- **Portable TV** as a placed display or offhand picture-in-picture overlay with four corner choices.
+- Windows application-window capture, selectable quality and codecs, and multiplayer relay.
 
-- Connected TV blocks form one seamless logical display.
-- Fit / Fill / Stretch presentation modes.
-- Server-authoritative broadcast sessions and channel assignment.
-- Multiple displays can tune to the same channel.
-- TV-local positional audio.
-- Linkable speaker blocks with Full / Left / Right roles.
-- Configurable server limits for stream resolution, FPS, and bitrate.
-- Windows-first application capture.
-- Dedicated-server-safe class separation.
+## Documentation
 
-## Current status
+📺 **[Read the TVtime Wiki / user guide](docs/wiki/Home.md)**
 
-Initial Fabric 26.2 project and core domain model are being built.
+Start with [installation and your first broadcast](docs/wiki/Getting-Started.md), explore the [block/item guide](docs/wiki/Home.md), review [crafting recipes](docs/wiki/Crafting-Recipes.md) and [commands](docs/wiki/Commands.md), or use [troubleshooting](docs/wiki/Troubleshooting.md).
+
+## Requirements
+
+Minecraft Java **26.2**, Fabric Loader **0.19.3+**, Fabric API, and **Java 25+**. Windows is required for the current native *broadcasting* helper; the project is Windows-first and viewer-platform compatibility may vary. Install TVtime on clients and on the Fabric multiplayer server.
+
+## Alpha build
+
+A development test JAR and notes are checked in under [dist/](dist/). For a capture-ready Windows bundle, use the repository's **Windows Test Bundle** GitHub Actions artifact; ordinary builds may lack the bundled native helper. See the [installation guide](docs/wiki/Getting-Started.md).
+
+## Issues and contributions
+
+Please report bugs with build details and reproduction steps in [GitHub Issues](https://github.com/CaszGamerMD/TVtime/issues). TVtime is under active development; GUI, capture, audio synchronization, and multi-display performance may still need testing.
+
+MIT licensed — see [LICENSE](LICENSE).
