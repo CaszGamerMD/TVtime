@@ -1,8 +1,8 @@
 {
   "replace": false,
   "values": [
-    "tvtime:tv",
-    "tvtime:camera",
-    "tvtime:camera_control_table"
+    "caszual_tv_time:tv",
+    "caszual_tv_time:camera",
+    "caszual_tv_time:camera_control_table"
   ]
 }

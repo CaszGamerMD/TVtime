@@ -227,7 +227,7 @@ std::vector<WindowInfo> list_windows() {
 void write_hello() {
     std::cout
         << "{\"type\":\"hello\",\"protocol\":1,"
-        << "\"helper\":\"tvtime-capture\","
+        << "\"helper\":\"caszual-tv-time-capture\","
         << "\"captureBackend\":\"windows-graphics-capture\"}"
         << std::endl;
 }
@@ -373,7 +373,7 @@ int main() {
                 << "\"audio\":" << (audio_capture->running() ? "true" : "false")
                 << "}" << std::endl;
         } else {
-            write_error("unknown_command", "Unknown TVtime capture-helper command.");
+            write_error("unknown_command", "Unknown Caszual TV Time capture-helper command.");
         }
     }
 

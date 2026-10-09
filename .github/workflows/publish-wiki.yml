@@ -1,4 +1,4 @@
-name: Publish TVtime Wiki
+name: Publish Caszual TV Time Wiki
 
 on:
   push:
@@ -12,14 +12,14 @@ permissions:
   contents: write
 
 concurrency:
-  group: publish-tvtime-wiki
+  group: publish-caszual_tv_time-wiki
   cancel-in-progress: true
 
 jobs:
   wiki:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out TVtime
+      - name: Check out Caszual TV Time
         uses: actions/checkout@v4
       - name: Check if GitHub Wiki has a first page
         id: wiki_status
@@ -32,9 +32,9 @@ jobs:
             echo "ready=true" >> "${GITHUB_OUTPUT}"
           else
             echo "ready=false" >> "${GITHUB_OUTPUT}"
-            echo "## TVtime Wiki needs its first page" >> "${GITHUB_STEP_SUMMARY}"
+            echo "## Caszual TV Time Wiki needs its first page" >> "${GITHUB_STEP_SUMMARY}"
             echo "Open https://github.com/${GITHUB_REPOSITORY}/wiki and create the first Home page once." >> "${GITHUB_STEP_SUMMARY}"
-            echo "Then manually rerun this workflow (Actions > Publish TVtime Wiki > Run workflow)." >> "${GITHUB_STEP_SUMMARY}"
+            echo "Then manually rerun this workflow (Actions > Publish Caszual TV Time Wiki > Run workflow)." >> "${GITHUB_STEP_SUMMARY}"
             echo "::notice::GitHub Wiki is not initialized; documentation is already available under docs/wiki."
           fi
       - name: Sync docs/wiki to GitHub Wiki

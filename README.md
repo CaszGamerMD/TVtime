@@ -1,8 +1,8 @@
-# TVtime
+# Caszual TV Time
 
-**TVtime** is a Minecraft **26.2 Fabric** mod that lets players broadcast a selected **Windows application window and its audio** to shared, in-world TV screens.
+**Caszual TV Time** is a Minecraft **26.2 Fabric** mod that lets players broadcast a selected **Windows application window and its audio** to shared, in-world TV screens.
 
-**Current version:** 0.1.0-alpha.1 — experimental development build.
+**Current version:** 0.1.0-alpha.2 — experimental development build.
 
 ## Features
 
@@ -16,13 +16,13 @@
 
 ## Documentation
 
-📺 **[Read the TVtime Wiki / user guide](docs/wiki/Home.md)**
+📺 **[Read the Caszual TV Time Wiki / user guide](docs/wiki/Home.md)**
 
 Start with [installation and your first broadcast](docs/wiki/Getting-Started.md), explore the [block/item guide](docs/wiki/Home.md), review [crafting recipes](docs/wiki/Crafting-Recipes.md) and [commands](docs/wiki/Commands.md), or use [troubleshooting](docs/wiki/Troubleshooting.md).
 
 ## Requirements
 
-Minecraft Java **26.2**, Fabric Loader **0.19.3+**, Fabric API, and **Java 25+**. Windows is required for the current native *broadcasting* helper; the project is Windows-first and viewer-platform compatibility may vary. Install TVtime on clients and on the Fabric multiplayer server.
+Minecraft Java **26.2**, Fabric Loader **0.19.3+**, Fabric API, and **Java 25+**. Windows is required for the current native *broadcasting* helper; the project is Windows-first and viewer-platform compatibility may vary. Install Caszual TV Time on clients and on the Fabric multiplayer server.
 
 ## Alpha build
 
@@ -30,6 +30,10 @@ A development test JAR and notes are checked in under [dist/](dist/). For a capt
 
 ## Issues and contributions
 
-Please report bugs with build details and reproduction steps in [GitHub Issues](https://github.com/CaszGamerMD/TVtime/issues). TVtime is under active development; GUI, capture, audio synchronization, and multi-display performance may still need testing.
+Please report bugs with build details and reproduction steps in [GitHub Issues](https://github.com/CaszGamerMD/TVtime/issues). Caszual TV Time is under active development; GUI, capture, audio synchronization, and multi-display performance may still need testing.
 
 MIT licensed — see [LICENSE](LICENSE).
+
+## Breaking rebrand
+
+Previously called TVtime. The new mod ID is caszual_tv_time. Old tvtime block/item IDs are not migrated, as requested; remove the prior JAR before installing the new one. The GitHub repository URL remains unchanged.

@@ -1,7 +1,7 @@
 name: Windows Test Bundle
 
 concurrency:
-  group: tvtime-windows-bundle-${{ github.ref }}
+  group: caszual_tv_time-windows-bundle-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -49,9 +49,9 @@ jobs:
       - name: Embed native helper in client resources
         shell: pwsh
         run: |
-          $target = "src/client/resources/tvtime/native/windows-x64"
+          $target = "src/client/resources/caszual_tv_time/native/windows-x64"
           New-Item -ItemType Directory -Force -Path $target | Out-Null
-          Copy-Item native/windows/build/Release/tvtime-capture.exe "$target/tvtime-capture.exe"
+          Copy-Item native/windows/build/Release/caszual-tv-time-capture.exe "$target/caszual-tv-time-capture.exe"
 
       - name: Build Fabric mod
         shell: pwsh
@@ -65,21 +65,21 @@ jobs:
             Select-Object -First 1
 
           if (-not $jar) {
-            throw "No TVtime mod jar was produced."
+            throw "No Caszual TV Time mod jar was produced."
           }
 
           $entries = jar tf $jar.FullName
 
-          if (-not ($entries -contains "tvtime/native/windows-x64/tvtime-capture.exe")) {
-            throw "TVtime JAR is missing bundled tvtime-capture.exe"
+          if (-not ($entries -contains "caszual_tv_time/native/windows-x64/caszual-tv-time-capture.exe")) {
+            throw "Caszual TV Time JAR is missing bundled caszual-tv-time-capture.exe"
           }
 
           if (-not ($entries | Where-Object { $_ -match "^META-INF/jars/.*jcodec.*\.jar$" })) {
-            throw "TVtime JAR is missing bundled JCodec"
+            throw "Caszual TV Time JAR is missing bundled JCodec"
           }
 
           if (-not ($entries | Where-Object { $_ -match "^META-INF/jars/.*[Cc]oncentus.*\.jar$" })) {
-            throw "TVtime JAR is missing bundled Concentus"
+            throw "Caszual TV Time JAR is missing bundled Concentus"
           }
 
       - name: Assemble test bundle
@@ -92,22 +92,22 @@ jobs:
             Select-Object -First 1
 
           if (-not $jar) {
-            throw "No TVtime mod jar was produced."
+            throw "No Caszual TV Time mod jar was produced."
           }
 
           Copy-Item $jar.FullName bundle/$($jar.Name)
 
           @"
-          TVtime Windows development bundle
+          Caszual TV Time Windows development bundle
 
-          1. Put the TVtime JAR in your Minecraft mods folder.
+          1. Put the Caszual TV Time JAR in your Minecraft mods folder.
           2. Start Minecraft. The Windows capture helper is bundled inside
              the JAR and is extracted automatically to:
-             config/tvtime/native/tvtime-capture.exe
-          3. /tvtime_capture windows
-          4. /tvtime_capture start <windowIndex> <channel>
+             config/caszual_tv_time/native/caszual-tv-time-capture.exe
+          3. /caszual_tv_time_capture windows
+          4. /caszual_tv_time_capture start <windowIndex> <channel>
           5. Look at a connected TV wall and run:
-             /tvtime_capture tune <channel>
+             /caszual_tv_time_capture tune <channel>
 
           Current real-window development stream:
           - AUTO video codec prefers H.264 (JCodec baseline)
@@ -119,25 +119,25 @@ jobs:
           - positional mono TV/speaker playback
 
           Capture quality controls:
-          /tvtime_capture quality LOW
+          /caszual_tv_time_capture quality LOW
             192x108 @ 12 FPS
-          /tvtime_capture quality BALANCED
+          /caszual_tv_time_capture quality BALANCED
             320x180 @ 15 FPS (default)
-          /tvtime_capture quality HIGH
+          /caszual_tv_time_capture quality HIGH
             640x360 @ 20 FPS
 
           Codec controls:
-          /tvtime_capture codec AUTO
-          /tvtime_capture codec H264
-          /tvtime_capture codec DELTA
+          /caszual_tv_time_capture codec AUTO
+          /caszual_tv_time_capture codec H264
+          /caszual_tv_time_capture codec DELTA
 
           AUTO is the recommended test mode.
 
           Speaker test:
-          1. Place a TVtime Speaker block.
+          1. Place a Caszual TV Time Speaker block.
           2. Look directly at it.
           3. Run:
-             /tvtime_test speaker <channel> <role> [volume] [range]
+             /caszual_tv_time_test speaker <channel> <role> [volume] [range]
 
           Roles:
           FULL, LEFT, RIGHT, CENTER, REAR_LEFT, REAR_RIGHT, LFE
@@ -146,7 +146,7 @@ jobs:
           RIGHT/REAR_RIGHT use the captured right stereo channel.
           FULL/CENTER/LFE currently downmix both channels to mono.
 
-          /tvtime_capture status shows current FPS, combined kbps,
+          /caszual_tv_time_capture status shows current FPS, combined kbps,
           active video codec, audio codec, quality profile, and video compression ratio.
 
           This build validates the full capture -> compression -> server
@@ -158,7 +158,7 @@ jobs:
       - name: Upload Windows test bundle
         uses: actions/upload-artifact@v4
         with:
-          name: TVtime-Windows-Test
+          name: Caszual-TV-Time-Windows-Test
           path: bundle/*
 
       - name: Publish verified package to repository
@@ -170,12 +170,12 @@ jobs:
             Select-Object -First 1
 
           if (-not $jar) {
-            throw "No verified TVtime mod jar was produced."
+            throw "No verified Caszual TV Time mod jar was produced."
           }
 
           New-Item -ItemType Directory -Force -Path dist | Out-Null
 
-          $packageName = "TVtime-0.1.0-alpha.1.jar"
+          $packageName = "caszual-tv-time-0.1.0-alpha.2.jar"
           Copy-Item $jar.FullName "dist/$packageName" -Force
           Copy-Item bundle/TESTING.txt dist/TESTING.txt -Force
 
@@ -189,5 +189,5 @@ jobs:
             exit 0
           }
 
-          git commit -m "Package TVtime 0.1.0-alpha.1"
+          git commit -m "Package Caszual TV Time 0.1.0-alpha.2"
           git push origin HEAD:main

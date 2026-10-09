@@ -21,7 +21,7 @@ A single TV configuration applies its channel, display mode, and audio setting t
 A channel is a name that links one broadcaster to any number of tuned TV displays and speakers. Examples: `movies`, `music`, `game`.
 
 - Select a channel when starting your broadcast.
-- Give a TV exactly the same channel name using the remote or `/tvtime_capture tune`.
+- Give a TV exactly the same channel name using the remote or `/caszual_tv_time_capture tune`.
 - Link a speaker by assigning that same name.
 - More than one screen can show the same channel.
 - Only one active broadcaster can occupy a given channel at a time.

@@ -1,6 +1,6 @@
-# TVtime Windows capture helper
+# Caszual TV Time Windows capture helper
 
-tvtime-capture.exe is the Windows-only helper process used by the Minecraft client.
+caszual-tv-time-capture.exe is the Windows-only helper process used by the Minecraft client.
 
 It runs out-of-process rather than through JNI so failures in Windows capture,
 hardware video encoding, or audio capture do not crash the JVM.

@@ -1,4 +1,4 @@
-## TVtime Wiki
+## Caszual TV Time Wiki
 
 - [Home](Home.md)
 - [Getting Started](Getting-Started.md)

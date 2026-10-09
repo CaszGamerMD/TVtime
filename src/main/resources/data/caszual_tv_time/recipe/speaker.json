@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "INI",
+    "IRI"
+  ],
+  "key": {
+    "I": "minecraft:iron_nugget",
+    "N": "minecraft:note_block",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "caszual_tv_time:speaker",
+    "count": 1
+  }
+}

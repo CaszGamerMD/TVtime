@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "tvtime",
+  "id": "caszual_tv_time",
   "version": "${version}",
-  "name": "TVtime",
-  "description": "Shared in-world TV streaming for Fabric.",
+  "name": "Caszual TV Time",
+  "description": "In-world TVs, desktop broadcasting, cameras and positional audio for Fabric.",
   "authors": [
     "CaszGamerMD"
   ],
@@ -14,10 +14,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.caszgamermd.tvtime.TVtime"
+      "com.caszgamermd.caszualtvtime.CaszualTvTime"
     ],
     "client": [
-      "com.caszgamermd.tvtime.client.TVtimeClient"
+      "com.caszgamermd.caszualtvtime.client.CaszualTvTimeClient"
     ]
   },
   "depends": {
@@ -28,7 +28,7 @@
   },
   "mixins": [
     {
-      "config": "tvtime.client.mixins.json",
+      "config": "caszual_tv_time.client.mixins.json",
       "environment": "client"
     }
   ]

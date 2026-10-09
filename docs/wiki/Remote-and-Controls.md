@@ -2,13 +2,13 @@
 
 [← Wiki home](Home.md)
 
-The **TV Remote** is the main in-game control for TVtime devices. It is in the **Functional Blocks** creative inventory tab and has a maximum item stack size of one.
+The **TV Remote** is the main in-game control for Caszual TV Time devices. It is in the **Functional Blocks** creative inventory tab and has a maximum item stack size of one.
 
 ## Configure a TV
 
 1. Hold the remote in your **main hand**.
 2. **Right-click** a placed TV Screen or Portable TV.
-3. In **TVtime TV Settings**, set:
+3. In **Caszual TV Time TV Settings**, set:
    - **Channel:** the name of the broadcast to watch (maximum 64 characters in the GUI).
    - **Display mode:** FIT, FILL, or STRETCH.
    - **Built-in TV audio:** on/off.
@@ -19,7 +19,7 @@ On a connected TV wall, settings apply to the entire detected rectangle. On a pl
 
 ## Configure a speaker
 
-1. Aim at any TVtime speaker block and right-click with the remote.
+1. Aim at any Caszual TV Time speaker block and right-click with the remote.
 2. Choose the channel, output role, volume, and hearing range.
 3. Press **Done**.
 
@@ -39,6 +39,6 @@ The PiP preference is stored on the portable item. See [Portable TV](Portable-TV
 
 ## Command alternative
 
-You can also look directly at a placed block and run the `/tvtime_capture tune` or `/tvtime_capture speaker` commands. See [Commands](Commands.md).
+You can also look directly at a placed block and run the `/caszual_tv_time_capture tune` or `/caszual_tv_time_capture speaker` commands. See [Commands](Commands.md).
 
 **Distance rule:** The multiplayer server accepts TV/speaker configuration messages only from players within 8 blocks of the targeted block (squared-distance check ≤ 64).

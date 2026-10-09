@@ -2,7 +2,7 @@
 
 [← Wiki home](Home.md)
 
-TVtime can emit stream audio from a TV Screen or from separate placed speakers. All speakers receive media from the same **named channel** they are tuned to.
+Caszual TV Time can emit stream audio from a TV Screen or from separate placed speakers. All speakers receive media from the same **named channel** they are tuned to.
 
 ## Speaker designs
 

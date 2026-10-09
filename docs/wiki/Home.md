@@ -1,8 +1,8 @@
-# TVtime — Community Wiki
+# Caszual TV Time — Community Wiki
 
-**TVtime** is an experimental Minecraft **26.2 Fabric** mod by CaszGamerMD for broadcasting a Windows application window (including its audio) to TVs placed in a shared Minecraft world.
+**Caszual TV Time** is an experimental Minecraft **26.2 Fabric** mod by CaszGamerMD for broadcasting a Windows application window (including its audio) to TVs placed in a shared Minecraft world.
 
-> **Release status:** 0.1.0-alpha.1. This wiki documents what is present in the repository's `main` branch, not a promise that every feature works perfectly. See [Known Issues](Troubleshooting.md#known-alpha-issues) before treating the mod as production-ready.
+> **Release status:** 0.1.0-alpha.2. This wiki documents what is present in the repository's `main` branch, not a promise that every feature works perfectly. See [Known Issues](Troubleshooting.md#known-alpha-issues) before treating the mod as production-ready.
 
 ## Start here
 
@@ -37,11 +37,11 @@
 ### Scope and maturity
 
 - The *broadcaster* uses a Windows capture helper; the native capture path is Windows-first.
-- Minecraft clients use Fabric. TVtime must also be installed server-side for multiplayer media relay.
+- Minecraft clients use Fabric. Caszual TV Time must also be installed server-side for multiplayer media relay.
 - Minecraft 26.2, Java 25+, Fabric Loader 0.19.3+, and Fabric API are required by mod metadata.
 - Source files for some newer devices exist, but crafting recipes for them have **not** yet been added to `main`.
 - Media/network and rendering code are experimental. Performance may vary, particularly with multiple active screens.
 
-**Repository:** [CaszGamerMD/TVtime](https://github.com/CaszGamerMD/TVtime) · **Packaged alpha:** [dist/TVtime-0.1.0-alpha.1.jar](https://github.com/CaszGamerMD/TVtime/blob/main/dist/TVtime-0.1.0-alpha.1.jar) · **Issue tracker:** [GitHub Issues](https://github.com/CaszGamerMD/TVtime/issues)
+**Repository:** [CaszGamerMD/Caszual TV Time](https://github.com/CaszGamerMD/TVtime) · **Packaged alpha:** [dist/caszual-tv-time-0.1.0-alpha.2.jar](https://github.com/CaszGamerMD/TVtime/blob/main/dist/caszual-tv-time-0.1.0-alpha.2.jar) · **Issue tracker:** [GitHub Issues](https://github.com/CaszGamerMD/TVtime/issues)
 
 This Markdown collection lives under `docs/wiki/` and can also be copied into GitHub's dedicated Wiki repository.
