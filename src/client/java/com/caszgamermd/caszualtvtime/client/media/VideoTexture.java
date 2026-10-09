@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.media;
+package com.caszgamermd.caszualtvtime.client.media;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;

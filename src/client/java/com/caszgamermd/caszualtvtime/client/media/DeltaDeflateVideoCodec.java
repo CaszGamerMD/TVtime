@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.media;
+package com.caszgamermd.caszualtvtime.client.media;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;

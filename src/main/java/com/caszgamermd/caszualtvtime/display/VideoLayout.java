@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.display;
+package com.caszgamermd.caszualtvtime.display;
 
 public record VideoLayout(
     float x,

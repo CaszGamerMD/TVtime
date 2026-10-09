@@ -1,9 +1,9 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.render;
+package com.caszgamermd.caszualtvtime.client.render;
 
-import com.caszgamermd.caszualcaszual_tv_time.block.SpeakerBlockEntity;
-import com.caszgamermd.caszualcaszual_tv_time.client.audio.TvAudioAnchors;
-import com.caszgamermd.caszualcaszual_tv_time.client.network.ClientChannelDirectory;
-import com.caszgamermd.caszualcaszual_tv_time.client.network.ClientChannelSubscriptions;
+import com.caszgamermd.caszualtvtime.block.SpeakerBlockEntity;
+import com.caszgamermd.caszualtvtime.client.audio.TvAudioAnchors;
+import com.caszgamermd.caszualtvtime.client.network.ClientChannelDirectory;
+import com.caszgamermd.caszualtvtime.client.network.ClientChannelSubscriptions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;

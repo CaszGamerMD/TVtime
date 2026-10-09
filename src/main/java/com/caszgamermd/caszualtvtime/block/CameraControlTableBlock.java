@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.block;
+package com.caszgamermd.caszualtvtime.block;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;

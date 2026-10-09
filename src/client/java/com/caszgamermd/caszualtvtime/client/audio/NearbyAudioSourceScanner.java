@@ -1,10 +1,10 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.audio;
+package com.caszgamermd.caszualtvtime.client.audio;
 
-import com.caszgamermd.caszualcaszual_tv_time.block.SpeakerBlockEntity;
-import com.caszgamermd.caszualcaszual_tv_time.block.TvBlockEntity;
-import com.caszgamermd.caszualcaszual_tv_time.client.network.ClientChannelDirectory;
-import com.caszgamermd.caszualcaszual_tv_time.client.network.ClientChannelSubscriptions;
-import com.caszgamermd.caszualcaszual_tv_time.display.DisplayRect;
+import com.caszgamermd.caszualtvtime.block.SpeakerBlockEntity;
+import com.caszgamermd.caszualtvtime.block.TvBlockEntity;
+import com.caszgamermd.caszualtvtime.client.network.ClientChannelDirectory;
+import com.caszgamermd.caszualtvtime.client.network.ClientChannelSubscriptions;
+import com.caszgamermd.caszualtvtime.display.DisplayRect;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;

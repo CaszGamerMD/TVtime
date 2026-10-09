@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.network;
+package com.caszgamermd.caszualtvtime.client.network;
 
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.SubscribeChannelPayload;
+import com.caszgamermd.caszualtvtime.network.payload.SubscribeChannelPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 import java.util.HashMap;

@@ -1,7 +1,7 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.screen;
+package com.caszgamermd.caszualtvtime.client.screen;
 
-import com.caszgamermd.caszualcaszual_tv_time.item.PipCorner;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.ConfigurePortableTvPipPayload;
+import com.caszgamermd.caszualtvtime.item.PipCorner;
+import com.caszgamermd.caszualtvtime.network.payload.ConfigurePortableTvPipPayload;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

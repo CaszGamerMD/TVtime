@@ -1,8 +1,8 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.screen;
+package com.caszgamermd.caszualtvtime.client.screen;
 
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.CameraCatalogPayload;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.ConfigureCameraPayload;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.RequestCameraCatalogPayload;
+import com.caszgamermd.caszualtvtime.network.payload.CameraCatalogPayload;
+import com.caszgamermd.caszualtvtime.network.payload.ConfigureCameraPayload;
+import com.caszgamermd.caszualtvtime.network.payload.RequestCameraCatalogPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;

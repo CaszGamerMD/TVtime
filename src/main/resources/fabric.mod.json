@@ -8,7 +8,7 @@
     "CaszGamerMD"
   ],
   "contact": {
-    "sources": "__CASZUAL_TV_TIME_REPOSITORY_URL__"
+    "sources": "https://github.com/CaszGamerMD/TVtime"
   },
   "license": "MIT",
   "environment": "*",

@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.broadcast;
+package com.caszgamermd.caszualtvtime.broadcast;
 
 import java.util.Collection;
 import java.util.Map;

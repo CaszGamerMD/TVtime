@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.block;
+package com.caszgamermd.caszualtvtime.block;
 
-import com.caszgamermd.caszualcaszual_tv_time.item.PortableTvSettings;
+import com.caszgamermd.caszualtvtime.item.PortableTvSettings;
 import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,8 +1,8 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.screen;
+package com.caszgamermd.caszualtvtime.client.screen;
 
-import com.caszgamermd.caszualcaszual_tv_time.block.TvBlockEntity;
-import com.caszgamermd.caszualcaszual_tv_time.broadcast.DisplayMode;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.ConfigureTvPayload;
+import com.caszgamermd.caszualtvtime.block.TvBlockEntity;
+import com.caszgamermd.caszualtvtime.broadcast.DisplayMode;
+import com.caszgamermd.caszualtvtime.network.payload.ConfigureTvPayload;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

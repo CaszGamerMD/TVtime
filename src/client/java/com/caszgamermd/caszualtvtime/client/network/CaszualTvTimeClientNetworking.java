@@ -1,26 +1,26 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.network;
+package com.caszgamermd.caszualtvtime.client.network;
 
-import com.caszgamermd.caszualcaszual_tv_time.client.media.ClientBroadcastMedia;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.CameraCatalogPayload;
-import com.caszgamermd.caszualcaszual_tv_time.client.screen.CameraControlScreen;
+import com.caszgamermd.caszualtvtime.client.media.ClientBroadcastMedia;
+import com.caszgamermd.caszualtvtime.network.payload.CameraCatalogPayload;
+import com.caszgamermd.caszualtvtime.client.screen.CameraControlScreen;
 import net.minecraft.client.Minecraft;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.RawTestFrameCodec;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.VideoFrameStore;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.VideoDecodeScheduler;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.RawPcmAudioCodec;
-import com.caszgamermd.caszualcaszual_tv_time.client.audio.TvAudioBus;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.DeflateVideoCodec;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.DeltaVideoDecoderStore;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.H264VideoCodec;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.H264VideoDecoderStore;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.OpusAudioCodec;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.OpusAudioDecoderStore;
-import com.caszgamermd.caszualcaszual_tv_time.network.MediaKind;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.MediaReassembler;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.MediaRelayPayload;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.MediaFragmentPayload;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.StartBroadcastAckPayload;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.ChannelSessionPayload;
+import com.caszgamermd.caszualtvtime.client.media.RawTestFrameCodec;
+import com.caszgamermd.caszualtvtime.client.media.VideoFrameStore;
+import com.caszgamermd.caszualtvtime.client.media.VideoDecodeScheduler;
+import com.caszgamermd.caszualtvtime.client.media.RawPcmAudioCodec;
+import com.caszgamermd.caszualtvtime.client.audio.TvAudioBus;
+import com.caszgamermd.caszualtvtime.client.media.DeflateVideoCodec;
+import com.caszgamermd.caszualtvtime.client.media.DeltaVideoDecoderStore;
+import com.caszgamermd.caszualtvtime.client.media.H264VideoCodec;
+import com.caszgamermd.caszualtvtime.client.media.H264VideoDecoderStore;
+import com.caszgamermd.caszualtvtime.client.media.OpusAudioCodec;
+import com.caszgamermd.caszualtvtime.client.media.OpusAudioDecoderStore;
+import com.caszgamermd.caszualtvtime.network.MediaKind;
+import com.caszgamermd.caszualtvtime.client.media.MediaReassembler;
+import com.caszgamermd.caszualtvtime.network.payload.MediaRelayPayload;
+import com.caszgamermd.caszualtvtime.network.payload.MediaFragmentPayload;
+import com.caszgamermd.caszualtvtime.network.payload.StartBroadcastAckPayload;
+import com.caszgamermd.caszualtvtime.network.payload.ChannelSessionPayload;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 

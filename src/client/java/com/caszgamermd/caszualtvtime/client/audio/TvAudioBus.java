@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.audio;
+package com.caszgamermd.caszualtvtime.client.audio;
 
-import com.caszgamermd.caszualcaszual_tv_time.client.media.DecodedAudioChunk;
+import com.caszgamermd.caszualtvtime.client.media.DecodedAudioChunk;
 
 import java.util.ArrayDeque;
 import java.util.Map;

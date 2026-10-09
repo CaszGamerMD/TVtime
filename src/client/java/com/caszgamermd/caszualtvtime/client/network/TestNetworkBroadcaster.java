@@ -1,10 +1,10 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.network;
+package com.caszgamermd.caszualtvtime.client.network;
 
-import com.caszgamermd.caszualcaszual_tv_time.client.media.RawTestFrameCodec;
-import com.caszgamermd.caszualcaszual_tv_time.network.MediaKind;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.MediaRelayPayload;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.StartBroadcastPayload;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.StopBroadcastPayload;
+import com.caszgamermd.caszualtvtime.client.media.RawTestFrameCodec;
+import com.caszgamermd.caszualtvtime.network.MediaKind;
+import com.caszgamermd.caszualtvtime.network.payload.MediaRelayPayload;
+import com.caszgamermd.caszualtvtime.network.payload.StartBroadcastPayload;
+import com.caszgamermd.caszualtvtime.network.payload.StopBroadcastPayload;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 

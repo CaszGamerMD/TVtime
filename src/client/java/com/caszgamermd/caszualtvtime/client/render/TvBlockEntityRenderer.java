@@ -1,19 +1,19 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.render;
+package com.caszgamermd.caszualtvtime.client.render;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.caszgamermd.caszualcaszual_tv_time.block.TvBlockEntity;
-import com.caszgamermd.caszualcaszual_tv_time.block.ModBlocks;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.TestPatternVideo;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.VideoTexture;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.VideoTextureManager;
-import com.caszgamermd.caszualcaszual_tv_time.client.network.ClientChannelSubscriptions;
-import com.caszgamermd.caszualcaszual_tv_time.client.network.ClientChannelDirectory;
-import com.caszgamermd.caszualcaszual_tv_time.client.audio.TvAudioAnchors;
-import com.caszgamermd.caszualcaszual_tv_time.display.DisplayRect;
-import com.caszgamermd.caszualcaszual_tv_time.audio.SpeakerChannel;
-import com.caszgamermd.caszualcaszual_tv_time.display.VideoLayout;
-import com.caszgamermd.caszualcaszual_tv_time.display.VideoLayoutCalculator;
+import com.caszgamermd.caszualtvtime.block.TvBlockEntity;
+import com.caszgamermd.caszualtvtime.block.ModBlocks;
+import com.caszgamermd.caszualtvtime.client.media.TestPatternVideo;
+import com.caszgamermd.caszualtvtime.client.media.VideoTexture;
+import com.caszgamermd.caszualtvtime.client.media.VideoTextureManager;
+import com.caszgamermd.caszualtvtime.client.network.ClientChannelSubscriptions;
+import com.caszgamermd.caszualtvtime.client.network.ClientChannelDirectory;
+import com.caszgamermd.caszualtvtime.client.audio.TvAudioAnchors;
+import com.caszgamermd.caszualtvtime.display.DisplayRect;
+import com.caszgamermd.caszualtvtime.audio.SpeakerChannel;
+import com.caszgamermd.caszualtvtime.display.VideoLayout;
+import com.caszgamermd.caszualtvtime.display.VideoLayoutCalculator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;

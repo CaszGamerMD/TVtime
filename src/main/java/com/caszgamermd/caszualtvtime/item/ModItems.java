@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.item;
+package com.caszgamermd.caszualtvtime.item;
 
 import java.util.function.Function;
 

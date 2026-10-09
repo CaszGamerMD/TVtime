@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.capture;
+package com.caszgamermd.caszualtvtime.client.capture;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

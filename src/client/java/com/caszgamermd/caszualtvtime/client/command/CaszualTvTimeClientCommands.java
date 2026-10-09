@@ -1,14 +1,14 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.command;
+package com.caszgamermd.caszualtvtime.client.command;
 
-import com.caszgamermd.caszualcaszual_tv_time.broadcast.DisplayMode;
-import com.caszgamermd.caszualcaszual_tv_time.audio.SpeakerChannel;
-import com.caszgamermd.caszualcaszual_tv_time.client.capture.CaptureBroadcastController;
-import com.caszgamermd.caszualcaszual_tv_time.client.capture.CaptureWindow;
-import com.caszgamermd.caszualcaszual_tv_time.client.capture.CaptureProfile;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.VideoCodecMode;
-import com.caszgamermd.caszualcaszual_tv_time.client.network.TestNetworkBroadcaster;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.ConfigureTvPayload;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.ConfigureSpeakerPayload;
+import com.caszgamermd.caszualtvtime.broadcast.DisplayMode;
+import com.caszgamermd.caszualtvtime.audio.SpeakerChannel;
+import com.caszgamermd.caszualtvtime.client.capture.CaptureBroadcastController;
+import com.caszgamermd.caszualtvtime.client.capture.CaptureWindow;
+import com.caszgamermd.caszualtvtime.client.capture.CaptureProfile;
+import com.caszgamermd.caszualtvtime.client.media.VideoCodecMode;
+import com.caszgamermd.caszualtvtime.client.network.TestNetworkBroadcaster;
+import com.caszgamermd.caszualtvtime.network.payload.ConfigureTvPayload;
+import com.caszgamermd.caszualtvtime.network.payload.ConfigureSpeakerPayload;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;

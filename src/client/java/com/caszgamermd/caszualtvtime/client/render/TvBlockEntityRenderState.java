@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.render;
+package com.caszgamermd.caszualtvtime.client.render;
 
-import com.caszgamermd.caszualcaszual_tv_time.broadcast.DisplayMode;
+import com.caszgamermd.caszualtvtime.broadcast.DisplayMode;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;

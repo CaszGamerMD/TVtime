@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.media;
+package com.caszgamermd.caszualtvtime.client.media;
 
-import com.caszgamermd.caszualcaszual_tv_time.network.MediaKind;
+import com.caszgamermd.caszualtvtime.network.MediaKind;
 
 import java.util.ArrayDeque;
 import java.util.Map;

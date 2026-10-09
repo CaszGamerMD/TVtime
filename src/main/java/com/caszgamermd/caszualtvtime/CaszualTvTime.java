@@ -1,14 +1,14 @@
-package com.caszgamermd.caszualcaszual_tv_time;
+package com.caszgamermd.caszualtvtime;
 
-import com.caszgamermd.caszualcaszual_tv_time.block.ModBlockEntities;
-import com.caszgamermd.caszualcaszual_tv_time.camera.CameraManager;
-import com.caszgamermd.caszualcaszual_tv_time.block.ModBlocks;
-import com.caszgamermd.caszualcaszual_tv_time.broadcast.BroadcastManager;
-import com.caszgamermd.caszualcaszual_tv_time.network.CaszualTvTimeNetworking;
-import com.caszgamermd.caszualcaszual_tv_time.item.ModItems;
-import com.caszgamermd.caszualcaszual_tv_time.item.PortableTvSettings;
-import com.caszgamermd.caszualcaszual_tv_time.block.TvBlockEntity;
-import com.caszgamermd.caszualcaszual_tv_time.block.SpeakerBlock;
+import com.caszgamermd.caszualtvtime.block.ModBlockEntities;
+import com.caszgamermd.caszualtvtime.camera.CameraManager;
+import com.caszgamermd.caszualtvtime.block.ModBlocks;
+import com.caszgamermd.caszualtvtime.broadcast.BroadcastManager;
+import com.caszgamermd.caszualtvtime.network.CaszualTvTimeNetworking;
+import com.caszgamermd.caszualtvtime.item.ModItems;
+import com.caszgamermd.caszualtvtime.item.PortableTvSettings;
+import com.caszgamermd.caszualtvtime.block.TvBlockEntity;
+import com.caszgamermd.caszualtvtime.block.SpeakerBlock;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;

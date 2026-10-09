@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.media;
+package com.caszgamermd.caszualtvtime.client.media;
 
 import java.util.ArrayList;
 import java.util.List;

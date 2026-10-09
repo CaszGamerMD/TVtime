@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.block;
+package com.caszgamermd.caszualtvtime.block;
 
 import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.Nullable;

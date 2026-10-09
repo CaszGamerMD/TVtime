@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.capture;
+package com.caszgamermd.caszualtvtime.client.capture;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;

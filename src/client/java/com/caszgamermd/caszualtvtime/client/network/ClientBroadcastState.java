@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.network;
+package com.caszgamermd.caszualtvtime.client.network;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;

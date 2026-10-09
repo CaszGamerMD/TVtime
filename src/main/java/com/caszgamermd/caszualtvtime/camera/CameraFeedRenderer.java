@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.camera;
+package com.caszgamermd.caszualtvtime.camera;
 
-import com.caszgamermd.caszualcaszual_tv_time.block.CameraBlockEntity;
+import com.caszgamermd.caszualtvtime.block.CameraBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;

@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.audio;
+package com.caszgamermd.caszualtvtime.client.audio;
 
-import com.caszgamermd.caszualcaszual_tv_time.audio.SpeakerChannel;
+import com.caszgamermd.caszualtvtime.audio.SpeakerChannel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 

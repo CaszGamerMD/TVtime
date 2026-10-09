@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.block;
+package com.caszgamermd.caszualtvtime.block;
 
-import com.caszgamermd.caszualcaszual_tv_time.CaszualTvTime;
+import com.caszgamermd.caszualtvtime.CaszualTvTime;
 import net.minecraft.references.BlockItemId;
 
 public final class ModBlockItemIds {

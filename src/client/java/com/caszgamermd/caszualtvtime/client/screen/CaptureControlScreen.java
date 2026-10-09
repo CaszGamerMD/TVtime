@@ -1,9 +1,9 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.screen;
+package com.caszgamermd.caszualtvtime.client.screen;
 
-import com.caszgamermd.caszualcaszual_tv_time.client.capture.CaptureBroadcastController;
-import com.caszgamermd.caszualcaszual_tv_time.client.capture.CaptureProfile;
-import com.caszgamermd.caszualcaszual_tv_time.client.capture.CaptureWindow;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.VideoCodecMode;
+import com.caszgamermd.caszualtvtime.client.capture.CaptureBroadcastController;
+import com.caszgamermd.caszualtvtime.client.capture.CaptureProfile;
+import com.caszgamermd.caszualtvtime.client.capture.CaptureWindow;
+import com.caszgamermd.caszualtvtime.client.media.VideoCodecMode;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;

@@ -1,7 +1,7 @@
-package com.caszgamermd.caszualcaszual_tv_time.item;
+package com.caszgamermd.caszualtvtime.item;
 
-import com.caszgamermd.caszualcaszual_tv_time.block.TvBlockEntity;
-import com.caszgamermd.caszualcaszual_tv_time.broadcast.DisplayMode;
+import com.caszgamermd.caszualtvtime.block.TvBlockEntity;
+import com.caszgamermd.caszualtvtime.broadcast.DisplayMode;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;

@@ -1,8 +1,8 @@
-package com.caszgamermd.caszualcaszual_tv_time.display;
+package com.caszgamermd.caszualtvtime.display;
 
-import com.caszgamermd.caszualcaszual_tv_time.block.TvBlock;
-import com.caszgamermd.caszualcaszual_tv_time.block.TvBlockEntity;
-import com.caszgamermd.caszualcaszual_tv_time.broadcast.DisplayMode;
+import com.caszgamermd.caszualtvtime.block.TvBlock;
+import com.caszgamermd.caszualtvtime.block.TvBlockEntity;
+import com.caszgamermd.caszualtvtime.broadcast.DisplayMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -18,7 +18,7 @@ public final class TvDisplaySettings {
         DisplayMode displayMode,
         boolean tvAudioEnabled
     ) {
-        if (level.getBlockState(anyTv).is(com.caszgamermd.caszualcaszual_tv_time.block.ModBlocks.PORTABLE_TV)) {
+        if (level.getBlockState(anyTv).is(com.caszgamermd.caszualtvtime.block.ModBlocks.PORTABLE_TV)) {
             if (level.getBlockEntity(anyTv) instanceof TvBlockEntity tv) {
                 tv.setChannel(channel);
                 tv.setDisplayMode(displayMode);

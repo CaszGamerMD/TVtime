@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "com.caszgamermd.caszual_tv_time.client.mixin",
+  "package": "com.caszgamermd.caszualtvtime.client.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
     "SoundManagerAccessor",

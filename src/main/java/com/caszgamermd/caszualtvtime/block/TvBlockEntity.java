@@ -1,8 +1,8 @@
-package com.caszgamermd.caszualcaszual_tv_time.block;
+package com.caszgamermd.caszualtvtime.block;
 
-import com.caszgamermd.caszualcaszual_tv_time.broadcast.DisplayMode;
-import com.caszgamermd.caszualcaszual_tv_time.display.DisplayRect;
-import com.caszgamermd.caszualcaszual_tv_time.display.TvDisplayScanner;
+import com.caszgamermd.caszualtvtime.broadcast.DisplayMode;
+import com.caszgamermd.caszualtvtime.display.DisplayRect;
+import com.caszgamermd.caszualtvtime.display.TvDisplayScanner;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;

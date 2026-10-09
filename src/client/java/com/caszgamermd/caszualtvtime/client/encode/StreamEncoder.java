@@ -1,7 +1,7 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.encode;
+package com.caszgamermd.caszualtvtime.client.encode;
 
-import com.caszgamermd.caszualcaszual_tv_time.client.capture.CapturedAudioChunk;
-import com.caszgamermd.caszualcaszual_tv_time.client.capture.CapturedVideoFrame;
+import com.caszgamermd.caszualtvtime.client.capture.CapturedAudioChunk;
+import com.caszgamermd.caszualtvtime.client.capture.CapturedVideoFrame;
 
 import java.util.function.Consumer;
 

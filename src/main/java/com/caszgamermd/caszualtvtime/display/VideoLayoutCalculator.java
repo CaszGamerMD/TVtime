@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.display;
+package com.caszgamermd.caszualtvtime.display;
 
-import com.caszgamermd.caszualcaszual_tv_time.broadcast.DisplayMode;
+import com.caszgamermd.caszualtvtime.broadcast.DisplayMode;
 
 public final class VideoLayoutCalculator {
     private VideoLayoutCalculator() {

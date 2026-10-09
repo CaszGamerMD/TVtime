@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.media;
+package com.caszgamermd.caszualtvtime.client.media;
 
-import com.caszgamermd.caszualcaszual_tv_time.client.capture.CapturedAudioChunk;
+import com.caszgamermd.caszualtvtime.client.capture.CapturedAudioChunk;
 import org.concentus.OpusApplication;
 import org.concentus.OpusDecoder;
 import org.concentus.OpusEncoder;

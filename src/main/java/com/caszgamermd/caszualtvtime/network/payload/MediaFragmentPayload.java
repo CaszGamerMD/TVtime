@@ -1,7 +1,7 @@
-package com.caszgamermd.caszualcaszual_tv_time.network.payload;
+package com.caszgamermd.caszualtvtime.network.payload;
 
-import com.caszgamermd.caszualcaszual_tv_time.CaszualTvTime;
-import com.caszgamermd.caszualcaszual_tv_time.network.MediaKind;
+import com.caszgamermd.caszualtvtime.CaszualTvTime;
+import com.caszgamermd.caszualtvtime.network.MediaKind;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

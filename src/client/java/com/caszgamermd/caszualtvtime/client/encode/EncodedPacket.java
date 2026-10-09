@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.encode;
+package com.caszgamermd.caszualtvtime.client.encode;
 
-import com.caszgamermd.caszualcaszual_tv_time.network.MediaKind;
+import com.caszgamermd.caszualtvtime.network.MediaKind;
 
 import java.util.Objects;
 

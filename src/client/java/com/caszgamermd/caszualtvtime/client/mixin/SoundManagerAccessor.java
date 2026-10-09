@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.mixin;
+package com.caszgamermd.caszualtvtime.client.mixin;
 
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.client.sounds.SoundManager;

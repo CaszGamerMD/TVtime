@@ -65,4 +65,4 @@ An ordinary source build may not include the native helper unless you have built
 - Use `/caszual_tv_time_capture status` to capture reproducible metrics.
 - Update this wiki along with changes to blocks, settings, commands, and recipe JSON.
 
-**Source:** [GitHub Repository](__CASZUAL_TV_TIME_REPOSITORY_URL__) · [Issues](__CASZUAL_TV_TIME_REPOSITORY_URL__/issues)
+**Source:** [GitHub Repository](https://github.com/CaszGamerMD/TVtime) · [Issues](https://github.com/CaszGamerMD/TVtime/issues)

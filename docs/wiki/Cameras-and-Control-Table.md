@@ -77,4 +77,4 @@ Both are also in the **Functional Blocks** creative inventory tab.
 - **Video quality:** currently deliberately small (48 × 27 / 1 FPS); resolution and proper world rendering remain future development tasks.
 - **Performance:** start with a single camera. Camera tickets and additional viewers have server/network cost.
 
-[Report camera bugs](__CASZUAL_TV_TIME_REPOSITORY_URL__/issues).
+[Report camera bugs](https://github.com/CaszGamerMD/TVtime/issues).

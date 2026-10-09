@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.display;
+package com.caszgamermd.caszualtvtime.display;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

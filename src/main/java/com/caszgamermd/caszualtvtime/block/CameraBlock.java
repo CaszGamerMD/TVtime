@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.block;
+package com.caszgamermd.caszualtvtime.block;
 
 import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.Nullable;
@@ -15,8 +15,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import com.caszgamermd.caszualcaszual_tv_time.camera.CameraSavedData;
-import com.caszgamermd.caszualcaszual_tv_time.camera.CameraManager;
+import com.caszgamermd.caszualtvtime.camera.CameraSavedData;
+import com.caszgamermd.caszualtvtime.camera.CameraManager;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 

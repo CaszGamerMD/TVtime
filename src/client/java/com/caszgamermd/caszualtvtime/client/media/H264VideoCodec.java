@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.media;
+package com.caszgamermd.caszualtvtime.client.media;
 
 import org.jcodec.codecs.h264.H264Decoder;
 import org.jcodec.codecs.h264.H264Encoder;

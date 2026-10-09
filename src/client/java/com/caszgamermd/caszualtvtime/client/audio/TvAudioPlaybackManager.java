@@ -1,8 +1,8 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.audio;
+package com.caszgamermd.caszualtvtime.client.audio;
 
-import com.caszgamermd.caszualcaszual_tv_time.audio.SpeakerChannel;
-import com.caszgamermd.caszualcaszual_tv_time.client.mixin.SoundEngineAccessor;
-import com.caszgamermd.caszualcaszual_tv_time.client.mixin.SoundManagerAccessor;
+import com.caszgamermd.caszualtvtime.audio.SpeakerChannel;
+import com.caszgamermd.caszualtvtime.client.mixin.SoundEngineAccessor;
+import com.caszgamermd.caszualtvtime.client.mixin.SoundManagerAccessor;
 import com.mojang.blaze3d.audio.Channel;
 import com.mojang.blaze3d.audio.Library;
 

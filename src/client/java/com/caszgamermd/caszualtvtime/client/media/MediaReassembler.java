@@ -1,7 +1,7 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.media;
+package com.caszgamermd.caszualtvtime.client.media;
 
-import com.caszgamermd.caszualcaszual_tv_time.network.MediaKind;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.MediaFragmentPayload;
+import com.caszgamermd.caszualtvtime.network.MediaKind;
+import com.caszgamermd.caszualtvtime.network.payload.MediaFragmentPayload;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;

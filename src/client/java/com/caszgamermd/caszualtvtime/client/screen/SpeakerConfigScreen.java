@@ -1,8 +1,8 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.screen;
+package com.caszgamermd.caszualtvtime.client.screen;
 
-import com.caszgamermd.caszualcaszual_tv_time.audio.SpeakerChannel;
-import com.caszgamermd.caszualcaszual_tv_time.block.SpeakerBlockEntity;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.ConfigureSpeakerPayload;
+import com.caszgamermd.caszualtvtime.audio.SpeakerChannel;
+import com.caszgamermd.caszualtvtime.block.SpeakerBlockEntity;
+import com.caszgamermd.caszualtvtime.network.payload.ConfigureSpeakerPayload;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

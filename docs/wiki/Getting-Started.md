@@ -19,7 +19,7 @@ These are the values in `fabric.mod.json` and `gradle.properties`. Caszual TV Ti
 ## Installation
 
 1. Install the appropriate Minecraft 26.2 Fabric profile and Fabric API.
-2. Obtain a compatible Caszual TV Time JAR. The repository contains an [alpha JAR in dist/](__CASZUAL_TV_TIME_REPOSITORY_URL__/tree/main/dist). For a verified Windows capture-helper package, check the **Windows Test Bundle** GitHub Actions artifact.
+2. Obtain a compatible Caszual TV Time JAR. The repository contains an [alpha JAR in dist/](https://github.com/CaszGamerMD/TVtime/tree/main/dist). For a verified Windows capture-helper package, check the **Windows Test Bundle** GitHub Actions artifact.
 3. Put Caszual TV Time in your Minecraft instance's `mods` folder; install it on your Fabric server too if you are playing multiplayer.
 4. Restart Minecraft (and the server, if applicable).
 5. Find **TV Screen**, **Portable TV**, **Iron Speaker**, **Spruce Speaker**, **Modern Speaker**, **Custom Speaker**, and **TV Remote** in the **Functional Blocks** creative inventory tab.

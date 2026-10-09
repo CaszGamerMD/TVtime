@@ -30,7 +30,7 @@ A development test JAR and notes are checked in under [dist/](dist/). For a capt
 
 ## Issues and contributions
 
-Please report bugs with build details and reproduction steps in [GitHub Issues](__CASZUAL_TV_TIME_REPOSITORY_URL__/issues). Caszual TV Time is under active development; GUI, capture, audio synchronization, and multi-display performance may still need testing.
+Please report bugs with build details and reproduction steps in [GitHub Issues](https://github.com/CaszGamerMD/TVtime/issues). Caszual TV Time is under active development; GUI, capture, audio synchronization, and multi-display performance may still need testing.
 
 MIT licensed — see [LICENSE](LICENSE).
 

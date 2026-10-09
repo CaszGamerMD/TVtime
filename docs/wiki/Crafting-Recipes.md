@@ -22,7 +22,7 @@ I I I
 
 **Output:** 1 × TV Screen.
 
-Source: [tv.json](__CASZUAL_TV_TIME_REPOSITORY_URL__/blob/main/src/main/resources/data/caszual_tv_time/recipe/tv.json)
+Source: [tv.json](https://github.com/CaszGamerMD/TVtime/blob/main/src/main/resources/data/caszual_tv_time/recipe/tv.json)
 
 ## Legacy Speaker — `caszual_tv_time:speaker`
 
@@ -40,7 +40,7 @@ I R I
 
 **Output:** 1 × Legacy Speaker.
 
-Source: [speaker.json](__CASZUAL_TV_TIME_REPOSITORY_URL__/blob/main/src/main/resources/data/caszual_tv_time/recipe/speaker.json)
+Source: [speaker.json](https://github.com/CaszGamerMD/TVtime/blob/main/src/main/resources/data/caszual_tv_time/recipe/speaker.json)
 
 **Note:** This recipe produces the **Legacy Speaker**, not the newer Iron/Spruce/Modern/Custom speaker blocks. The legacy speaker is hidden from the current creative tab but retained to avoid breaking earlier alpha worlds.
 

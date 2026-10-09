@@ -66,4 +66,4 @@ The following are **previously reported problem areas**, not claims that the lat
 
 **For a useful bug report**, include the exact JAR/build, Minecraft 26.2, Fabric/API versions, OS, whether you are broadcasting or viewing, reproduction steps, which command was used, screenshots/logs, and `/caszual_tv_time_capture status` if available.
 
-[Report an issue on GitHub](__CASZUAL_TV_TIME_REPOSITORY_URL__/issues).
+[Report an issue on GitHub](https://github.com/CaszGamerMD/TVtime/issues).

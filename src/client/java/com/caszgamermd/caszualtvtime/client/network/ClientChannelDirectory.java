@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.network;
+package com.caszgamermd.caszualtvtime.client.network;
 
 import java.util.Map;
 import java.util.UUID;

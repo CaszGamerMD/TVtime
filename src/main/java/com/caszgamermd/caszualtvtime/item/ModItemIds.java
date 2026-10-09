@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.item;
+package com.caszgamermd.caszualtvtime.item;
 
-import com.caszgamermd.caszualcaszual_tv_time.CaszualTvTime;
+import com.caszgamermd.caszualtvtime.CaszualTvTime;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;

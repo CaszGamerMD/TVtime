@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.item;
+package com.caszgamermd.caszualtvtime.item;
 
 public enum PipCorner {
     TOP_LEFT("Top left"),

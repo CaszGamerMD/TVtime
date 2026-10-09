@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.network;
+package com.caszgamermd.caszualtvtime.network;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;

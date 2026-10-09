@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.media;
+package com.caszgamermd.caszualtvtime.client.media;
 
-import com.caszgamermd.caszualcaszual_tv_time.client.audio.TvAudioBus;
+import com.caszgamermd.caszualtvtime.client.audio.TvAudioBus;
 
 import java.util.Map;
 import java.util.UUID;

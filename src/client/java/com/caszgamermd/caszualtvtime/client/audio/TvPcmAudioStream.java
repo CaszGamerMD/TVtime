@@ -1,8 +1,8 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.audio;
+package com.caszgamermd.caszualtvtime.client.audio;
 
-import com.caszgamermd.caszualcaszual_tv_time.audio.SpeakerChannel;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.DecodedAudioChunk;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.VideoFrameStore;
+import com.caszgamermd.caszualtvtime.audio.SpeakerChannel;
+import com.caszgamermd.caszualtvtime.client.media.DecodedAudioChunk;
+import com.caszgamermd.caszualtvtime.client.media.VideoFrameStore;
 import net.minecraft.client.sounds.AudioStream;
 
 import javax.sound.sampled.AudioFormat;

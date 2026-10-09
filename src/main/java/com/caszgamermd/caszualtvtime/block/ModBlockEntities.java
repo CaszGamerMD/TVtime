@@ -1,6 +1,6 @@
-package com.caszgamermd.caszualcaszual_tv_time.block;
+package com.caszgamermd.caszualtvtime.block;
 
-import com.caszgamermd.caszualcaszual_tv_time.CaszualTvTime;
+import com.caszgamermd.caszualtvtime.CaszualTvTime;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;

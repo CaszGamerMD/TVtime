@@ -1,15 +1,15 @@
-package com.caszgamermd.caszualcaszual_tv_time.client.hud;
+package com.caszgamermd.caszualtvtime.client.hud;
 
-import com.caszgamermd.caszualcaszual_tv_time.CaszualTvTime;
-import com.caszgamermd.caszualcaszual_tv_time.audio.SpeakerChannel;
-import com.caszgamermd.caszualcaszual_tv_time.block.ModBlocks;
-import com.caszgamermd.caszualcaszual_tv_time.client.audio.TvAudioAnchors;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.VideoTexture;
-import com.caszgamermd.caszualcaszual_tv_time.client.media.VideoTextureManager;
-import com.caszgamermd.caszualcaszual_tv_time.client.network.ClientChannelDirectory;
-import com.caszgamermd.caszualcaszual_tv_time.client.network.ClientChannelSubscriptions;
-import com.caszgamermd.caszualcaszual_tv_time.item.PipCorner;
-import com.caszgamermd.caszualcaszual_tv_time.item.PortableTvSettings;
+import com.caszgamermd.caszualtvtime.CaszualTvTime;
+import com.caszgamermd.caszualtvtime.audio.SpeakerChannel;
+import com.caszgamermd.caszualtvtime.block.ModBlocks;
+import com.caszgamermd.caszualtvtime.client.audio.TvAudioAnchors;
+import com.caszgamermd.caszualtvtime.client.media.VideoTexture;
+import com.caszgamermd.caszualtvtime.client.media.VideoTextureManager;
+import com.caszgamermd.caszualtvtime.client.network.ClientChannelDirectory;
+import com.caszgamermd.caszualtvtime.client.network.ClientChannelSubscriptions;
+import com.caszgamermd.caszualtvtime.item.PipCorner;
+import com.caszgamermd.caszualtvtime.item.PortableTvSettings;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.DeltaTracker;

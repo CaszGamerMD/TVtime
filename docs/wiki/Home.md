@@ -42,6 +42,6 @@
 - Source files for some newer devices exist, but crafting recipes for them have **not** yet been added to `main`.
 - Media/network and rendering code are experimental. Performance may vary, particularly with multiple active screens.
 
-**Repository:** [CaszGamerMD/Caszual TV Time](__CASZUAL_TV_TIME_REPOSITORY_URL__) · **Packaged alpha:** [dist/caszual-tv-time-0.1.0-alpha.2.jar](__CASZUAL_TV_TIME_REPOSITORY_URL__/blob/main/dist/caszual-tv-time-0.1.0-alpha.2.jar) · **Issue tracker:** [GitHub Issues](__CASZUAL_TV_TIME_REPOSITORY_URL__/issues)
+**Repository:** [CaszGamerMD/Caszual TV Time](https://github.com/CaszGamerMD/TVtime) · **Packaged alpha:** [dist/caszual-tv-time-0.1.0-alpha.2.jar](https://github.com/CaszGamerMD/TVtime/blob/main/dist/caszual-tv-time-0.1.0-alpha.2.jar) · **Issue tracker:** [GitHub Issues](https://github.com/CaszGamerMD/TVtime/issues)
 
 This Markdown collection lives under `docs/wiki/` and can also be copied into GitHub's dedicated Wiki repository.

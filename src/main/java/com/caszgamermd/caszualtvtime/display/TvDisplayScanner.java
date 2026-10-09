@@ -1,7 +1,7 @@
-package com.caszgamermd.caszualcaszual_tv_time.display;
+package com.caszgamermd.caszualtvtime.display;
 
-import com.caszgamermd.caszualcaszual_tv_time.block.ModBlocks;
-import com.caszgamermd.caszualcaszual_tv_time.block.TvBlock;
+import com.caszgamermd.caszualtvtime.block.ModBlocks;
+import com.caszgamermd.caszualtvtime.block.TvBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;

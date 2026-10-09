@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.config;
+package com.caszgamermd.caszualtvtime.config;
 
 public record StreamLimits(
     int maxWidth,

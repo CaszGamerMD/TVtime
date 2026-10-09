@@ -1,4 +1,4 @@
-package com.caszgamermd.caszualcaszual_tv_time.audio;
+package com.caszgamermd.caszualtvtime.audio;
 
 public enum SpeakerChannel {
     FULL,

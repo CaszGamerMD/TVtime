@@ -1,13 +1,13 @@
-package com.caszgamermd.caszualcaszual_tv_time.camera;
+package com.caszgamermd.caszualtvtime.camera;
 
-import com.caszgamermd.caszualcaszual_tv_time.CaszualTvTime;
-import com.caszgamermd.caszualcaszual_tv_time.block.CameraBlockEntity;
-import com.caszgamermd.caszualcaszual_tv_time.block.ModBlocks;
-import com.caszgamermd.caszualcaszual_tv_time.broadcast.BroadcastSession;
-import com.caszgamermd.caszualcaszual_tv_time.network.MediaKind;
-import com.caszgamermd.caszualcaszual_tv_time.network.CaszualTvTimeNetworking;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.ChannelSessionPayload;
-import com.caszgamermd.caszualcaszual_tv_time.network.payload.MediaRelayPayload;
+import com.caszgamermd.caszualtvtime.CaszualTvTime;
+import com.caszgamermd.caszualtvtime.block.CameraBlockEntity;
+import com.caszgamermd.caszualtvtime.block.ModBlocks;
+import com.caszgamermd.caszualtvtime.broadcast.BroadcastSession;
+import com.caszgamermd.caszualtvtime.network.MediaKind;
+import com.caszgamermd.caszualtvtime.network.CaszualTvTimeNetworking;
+import com.caszgamermd.caszualtvtime.network.payload.ChannelSessionPayload;
+import com.caszgamermd.caszualtvtime.network.payload.MediaRelayPayload;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
