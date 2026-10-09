@@ -29,7 +29,7 @@ See [Speakers & Audio](Speakers-and-Audio.md) for precise ranges and roles.
 
 **Sneak + right-click** a **Custom Speaker** to cycle its visible side material. Do this **without holding the TV Remote**. The current sequence is:
 
-\`IRON → SPRUCE → BLACK → WHITE → COPPER → STONE → IRON\`
+`IRON → SPRUCE → BLACK → WHITE → COPPER → STONE → IRON`
 
 ## Configure Portable TV picture-in-picture
 
@@ -39,6 +39,6 @@ The PiP preference is stored on the portable item. See [Portable TV](Portable-TV
 
 ## Command alternative
 
-You can also look directly at a placed block and run the \`/tvtime_capture tune\` or \`/tvtime_capture speaker\` commands. See [Commands](Commands.md).
+You can also look directly at a placed block and run the `/tvtime_capture tune` or `/tvtime_capture speaker` commands. See [Commands](Commands.md).
 
 **Distance rule:** The multiplayer server accepts TV/speaker configuration messages only from players within 8 blocks of the targeted block (squared-distance check ≤ 64).

@@ -4,15 +4,15 @@
 
 **Important:** This page is sourced from the recipe JSON files currently present in the repository, not from speculative recipes or future feature ideas. In **0.1.0-alpha.1 on main**, there are only **two** recipe definitions.
 
-## TV Screen — \`tvtime:tv\`
+## TV Screen — `tvtime:tv`
 
 Crafting grid (top to bottom):
 
-\`\`\`text
+```text
 I I I
 G G R
 I I I
-\`\`\`
+```
 
 | Symbol | Ingredient |
 | --- | --- |
@@ -24,13 +24,13 @@ I I I
 
 Source: [tv.json](https://github.com/CaszGamerMD/TVtime/blob/main/src/main/resources/data/tvtime/recipe/tv.json)
 
-## Legacy Speaker — \`tvtime:speaker\`
+## Legacy Speaker — `tvtime:speaker`
 
-\`\`\`text
+```text
 I I I
 I N I
 I R I
-\`\`\`
+```
 
 | Symbol | Ingredient |
 | --- | --- |
@@ -46,7 +46,7 @@ Source: [speaker.json](https://github.com/CaszGamerMD/TVtime/blob/main/src/main/
 
 ## Items currently lacking checked-in recipes
 
-No crafting JSON recipes were found for the following items in \`main\` as of this documentation update:
+No crafting JSON recipes were found for the following items in `main` as of this documentation update:
 
 - Portable TV
 - TV Remote
@@ -55,7 +55,7 @@ No crafting JSON recipes were found for the following items in \`main\` as of th
 - Modern Speaker
 - Custom Speaker
 
-These devices are currently available via the **Functional Blocks** creative inventory tab. Their presence in the mod does **not** mean there is a survival crafting recipe yet. If recipes are added later, update this page from \`src/main/resources/data/tvtime/recipe/\`.
+These devices are currently available via the **Functional Blocks** creative inventory tab. Their presence in the mod does **not** mean there is a survival crafting recipe yet. If recipes are added later, update this page from `src/main/resources/data/tvtime/recipe/`.
 
 ## Creative inventory
 

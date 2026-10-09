@@ -18,10 +18,10 @@ A single TV configuration applies its channel, display mode, and audio setting t
 
 ## Channels
 
-A channel is a name that links one broadcaster to any number of tuned TV displays and speakers. Examples: \`movies\`, \`music\`, \`game\`.
+A channel is a name that links one broadcaster to any number of tuned TV displays and speakers. Examples: `movies`, `music`, `game`.
 
 - Select a channel when starting your broadcast.
-- Give a TV exactly the same channel name using the remote or \`/tvtime_capture tune\`.
+- Give a TV exactly the same channel name using the remote or `/tvtime_capture tune`.
 - Link a speaker by assigning that same name.
 - More than one screen can show the same channel.
 - Only one active broadcaster can occupy a given channel at a time.
@@ -33,9 +33,9 @@ If the channel is empty, offline, or different from the broadcaster's channel, t
 
 | Mode | Result |
 | --- | --- |
-| \`FIT\` | Preserve aspect ratio and show the entire picture; may leave empty bars |
-| \`FILL\` | Preserve aspect ratio and fill the screen; may crop outer edges |
-| \`STRETCH\` | Fill the display, even if it distorts the aspect ratio |
+| `FIT` | Preserve aspect ratio and show the entire picture; may leave empty bars |
+| `FILL` | Preserve aspect ratio and fill the screen; may crop outer edges |
+| `STRETCH` | Fill the display, even if it distorts the aspect ratio |
 
 **Recommendation:** start with FIT, then try FILL for an edge-to-edge screen.
 
