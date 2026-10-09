@@ -134,7 +134,7 @@ public final class CameraManager {
             if (runtime.session == null) {
                 try {
                     UUID owner = UUID.nameUUIDFromBytes(
-                        ("tvtime:camera:" + world.dimension().location() + ":" + camera.getBlockPos().asLong())
+                        ("tvtime:camera:" + world.dimension().identifier() + ":" + camera.getBlockPos().asLong())
                             .getBytes(StandardCharsets.UTF_8));
                     BroadcastSession session = TVtime.broadcasts().create(owner, channel);
                     session.markLive(CameraFeedRenderer.WIDTH, CameraFeedRenderer.HEIGHT, FPS, 256);
@@ -189,21 +189,21 @@ public final class CameraManager {
     }
 
     private static void acquireTicket(ServerLevel world, BlockPos pos) {
-        long key = new ChunkPos(pos).toLong();
+        long key = ChunkPos.containing(pos).pack();
         Map<Long, Integer> counts = TICKET_REFS.computeIfAbsent(world, ignored -> new HashMap<>());
         int before = counts.getOrDefault(key, 0);
         counts.put(key, before + 1);
-        if (before == 0) world.getChunkSource().addTicketWithRadius(CAMERA_TICKET, new ChunkPos(pos), 1);
+        if (before == 0) world.getChunkSource().addTicketWithRadius(CAMERA_TICKET, ChunkPos.containing(pos), 1);
     }
 
     private static void releaseTicket(ServerLevel world, BlockPos pos) {
         Map<Long, Integer> counts = TICKET_REFS.get(world);
         if (counts == null) return;
-        long key = new ChunkPos(pos).toLong();
+        long key = ChunkPos.containing(pos).pack();
         int before = counts.getOrDefault(key, 0);
         if (before <= 1) {
             counts.remove(key);
-            if (before == 1) world.getChunkSource().removeTicketWithRadius(CAMERA_TICKET, new ChunkPos(pos), 1);
+            if (before == 1) world.getChunkSource().removeTicketWithRadius(CAMERA_TICKET, ChunkPos.containing(pos), 1);
         } else counts.put(key, before - 1);
     }
 

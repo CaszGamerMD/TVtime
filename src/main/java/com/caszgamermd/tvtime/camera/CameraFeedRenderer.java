@@ -36,7 +36,7 @@ public final class CameraFeedRenderer {
         double ux = sinYaw * sinPitch, uy = cosPitch, uz = -cosYaw * sinPitch;
         double tangent = Math.tan(Math.toRadians(34.0 / camera.zoom()));
         BlockPos.MutableBlockPos sample = new BlockPos.MutableBlockPos();
-        int time = (int) (level.getDayTime() % 24000L);
+        int time = (int) (level.getGameTime() % 24000L);
 
         for (int y = 0; y < HEIGHT; y++) {
             double vertical = (1.0 - (y + 0.5) * 2.0 / HEIGHT) * tangent;
