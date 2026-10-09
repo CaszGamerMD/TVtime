@@ -1,7 +1,7 @@
 name: Windows Native Helper
 
 concurrency:
-  group: tvtime-native-${{ github.ref }}
+  group: caszual_tv_time-native-${{ github.ref }}
   cancel-in-progress: true
 
 on:
@@ -34,5 +34,5 @@ jobs:
       - name: Upload helper
         uses: actions/upload-artifact@v4
         with:
-          name: tvtime-capture-windows-x64
-          path: native/windows/build/Release/tvtime-capture.exe
+          name: caszual-tv-time-capture-windows-x64
+          path: native/windows/build/Release/caszual-tv-time-capture.exe
