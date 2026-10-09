@@ -146,7 +146,7 @@ public final class CameraManager {
                     continue;
                 }
             }
-            if (tick % 20 != 0 || runtime.session == null) continue;
+            if (tick % 20 != Math.floorMod(camera.getBlockPos().asLong(), 20L) || runtime.session == null) continue;
             var subscribers = TVtimeNetworking.subscriptions().viewers(runtime.session.id());
             if (subscribers.isEmpty()) continue;
             byte[] frame = CameraFeedRenderer.render(world, camera);
@@ -193,7 +193,7 @@ public final class CameraManager {
         Map<Long, Integer> counts = TICKET_REFS.computeIfAbsent(world, ignored -> new HashMap<>());
         int before = counts.getOrDefault(key, 0);
         counts.put(key, before + 1);
-        if (before == 0) world.getChunkSource().addTicketWithRadius(CAMERA_TICKET, ChunkPos.containing(pos), 1);
+        if (before == 0) world.getChunkSource().addTicketWithRadius(CAMERA_TICKET, ChunkPos.containing(pos), 2);
     }
 
     private static void releaseTicket(ServerLevel world, BlockPos pos) {
@@ -203,7 +203,7 @@ public final class CameraManager {
         int before = counts.getOrDefault(key, 0);
         if (before <= 1) {
             counts.remove(key);
-            if (before == 1) world.getChunkSource().removeTicketWithRadius(CAMERA_TICKET, ChunkPos.containing(pos), 1);
+            if (before == 1) world.getChunkSource().removeTicketWithRadius(CAMERA_TICKET, ChunkPos.containing(pos), 2);
         } else counts.put(key, before - 1);
     }
 

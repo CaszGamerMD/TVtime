@@ -58,7 +58,7 @@ public final class CameraFeedRenderer {
                         break;
                     }
                     BlockState state = level.getBlockState(sample);
-                    if (state.isAir()) continue;
+                    if (sample.equals(origin) || state.isAir()) continue;
                     // Color from the actual block state; ray depth adds distance shading.
                     rgb = state.getMapColor(level, sample).col;
                     if (rgb == 0) rgb = 0x777777;

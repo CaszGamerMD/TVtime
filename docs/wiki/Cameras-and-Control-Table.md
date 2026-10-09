@@ -35,7 +35,7 @@ A camera channel works through the existing TVtime channel/session system; one l
 
 ## Remote activation and chunk loading
 
-- Active cameras receive a server-side **chunk loading + simulation ticket** while the server is running. The camera keeps its local area loaded when no player is nearby.
+- Active cameras receive a server-side **chunk loading + simulation ticket** while the server is running. The camera keeps its local area (radius-2 chunk ticket) loaded when no player is nearby.
 - **Turning a camera OFF releases its chunk ticket** and stops its TVtime broadcast. This saves server resources.
 - TVtime maintains a **saved per-dimension directory** of cameras. An offline camera is still visible from a control table and may be powered back on remotely without physically visiting it.
 - On server restart, the mod attempts to restore enabled cameras from that saved directory.
