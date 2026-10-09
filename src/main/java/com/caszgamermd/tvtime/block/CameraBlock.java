@@ -51,13 +51,13 @@ public final class CameraBlock extends BaseEntityBlock {
         builder.add(TvBlock.FACING);
     }
 
-    @Override protected void onRemove(BlockState state, Level level, BlockPos pos,
-                                      BlockState next, boolean moved) {
-        if (!next.is(this) && level instanceof ServerLevel server) {
-            CameraSavedData.get(server).remove(pos);
-            CameraManager.remove(server, pos);
+    @Override protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level,
+                                                          BlockPos pos, boolean moved) {
+        if (!level.getBlockState(pos).is(this)) {
+            CameraSavedData.get(level).remove(pos);
+            CameraManager.remove(level, pos);
         }
-        super.onRemove(state, level, pos, next, moved);
+        super.affectNeighborsAfterRemoval(state, level, pos, moved);
     }
 
     @Nullable @Override public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
