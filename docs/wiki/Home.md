@@ -7,6 +7,7 @@
 ## Start here
 
 - **[Getting Started](Getting-Started.md)** — prerequisites, installation, and first broadcast
+- **[Cameras & Control Table](Cameras-and-Control-Table.md)** — live feeds, remote pan/tilt/zoom/power, and chunk loading
 - **[TV Screens & Channels](TV-Screens-and-Channels.md)** — wall-mounted TVs, connected displays, tuning, and display modes
 - **[Broadcasting](Broadcasting.md)** — select a desktop application, start/stop streams, quality, codecs
 - **[Remote & Controls](Remote-and-Controls.md)** — configure in-game devices using the remote
@@ -21,6 +22,7 @@
 
 | Feature | Description |
 | --- | --- |
+| Security cameras | Camera/control table, live block-perspective feed and remote on/off |
 | TV Screen | Thin, wall-oriented screen (3/16-block depth); adjacent matching screens form one larger display |
 | Connected TV walls | Rectangular displays with matching facing, up to 16 × 16 TV blocks |
 | Named channels | A broadcaster streams to a channel; multiple displays and viewers can subscribe |

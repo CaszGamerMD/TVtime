@@ -10,6 +10,7 @@
 - Named broadcast channels, **FIT / FILL / STRETCH** video layouts, and optional built-in TV audio.
 - **TV Remote** configuration screens for displays and speakers.
 - Four speaker styles: **Iron, Spruce, Modern, Custom**, plus the legacy speaker kept for older worlds. Supports positional audio and speaker roles.
+- **Experimental security cameras**, controlled through a Camera Control Table (pan/tilt/zoom, power on/off, named TV channels, local chunk tickets). The initial feed is a low-resolution block-color view, not full Minecraft rendering.
 - **Portable TV** as a placed display or offhand picture-in-picture overlay with four corner choices.
 - Windows application-window capture, selectable quality and codecs, and multiplayer relay.
 
