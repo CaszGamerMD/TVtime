@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.caszgamermd.caszual_tv_time.client.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "SoundManagerAccessor",
+    "SoundEngineAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

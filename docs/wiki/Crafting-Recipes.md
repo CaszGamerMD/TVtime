@@ -2,9 +2,9 @@
 
 [← Wiki home](Home.md)
 
-**Important:** This page is sourced from the recipe JSON files currently present in the repository, not from speculative recipes or future feature ideas. In **0.1.0-alpha.1 on main**, the base mod had **two** recipes; the CCTV feature branch adds **two more** (camera and control table).
+**Important:** This page is sourced from the recipe JSON files currently present in the repository, not from speculative recipes or future feature ideas. In **0.1.0-alpha.2 on main**, the base mod had **two** recipes; the CCTV feature branch adds **two more** (camera and control table).
 
-## TV Screen — `tvtime:tv`
+## TV Screen — `caszual_tv_time:tv`
 
 Crafting grid (top to bottom):
 
@@ -22,9 +22,9 @@ I I I
 
 **Output:** 1 × TV Screen.
 
-Source: [tv.json](https://github.com/CaszGamerMD/TVtime/blob/main/src/main/resources/data/tvtime/recipe/tv.json)
+Source: [tv.json](__CASZUAL_TV_TIME_REPOSITORY_URL__/blob/main/src/main/resources/data/caszual_tv_time/recipe/tv.json)
 
-## Legacy Speaker — `tvtime:speaker`
+## Legacy Speaker — `caszual_tv_time:speaker`
 
 ```text
 I I I
@@ -40,7 +40,7 @@ I R I
 
 **Output:** 1 × Legacy Speaker.
 
-Source: [speaker.json](https://github.com/CaszGamerMD/TVtime/blob/main/src/main/resources/data/tvtime/recipe/speaker.json)
+Source: [speaker.json](__CASZUAL_TV_TIME_REPOSITORY_URL__/blob/main/src/main/resources/data/caszual_tv_time/recipe/speaker.json)
 
 **Note:** This recipe produces the **Legacy Speaker**, not the newer Iron/Spruce/Modern/Custom speaker blocks. The legacy speaker is hidden from the current creative tab but retained to avoid breaking earlier alpha worlds.
 
@@ -61,7 +61,7 @@ No crafting JSON recipes were found for the following items in `main` as of this
 - Modern Speaker
 - Custom Speaker
 
-These devices are currently available via the **Functional Blocks** creative inventory tab. Their presence in the mod does **not** mean there is a survival crafting recipe yet. If recipes are added later, update this page from `src/main/resources/data/tvtime/recipe/`.
+These devices are currently available via the **Functional Blocks** creative inventory tab. Their presence in the mod does **not** mean there is a survival crafting recipe yet. If recipes are added later, update this page from `src/main/resources/data/caszual_tv_time/recipe/`.
 
 ## Creative inventory
 

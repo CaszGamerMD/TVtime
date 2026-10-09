@@ -2,7 +2,7 @@
 
 [← Wiki home](Home.md)
 
-TVtime adds a **Camera** and **Camera Control Table** for security-room style video surveillance using the existing in-game TV screens.
+Caszual TV Time adds a **Camera** and **Camera Control Table** for security-room style video surveillance using the existing in-game TV screens.
 
 > **Important alpha limitation:** The first implementation broadcasts a low-resolution, live **block-color perspective** from a camera position (48 × 27 pixels, at 1 frame/second). It shows nearby block changes but **does not yet render Minecraft textures, entities/mobs, particles, or shader lighting as the player's normal view does**. This is a functional first camera-feed renderer, not full GPU quality.
 
@@ -16,7 +16,7 @@ TVtime adds a **Camera** and **Camera Control Table** for security-room style vi
 6. Place a **TV Screen** or connected TV wall; use the **TV Remote** to tune it to exactly `gate_camera`.
 7. Watch the live block-scene feed from the camera, or tune several TVs to the same camera channel.
 
-A camera channel works through the existing TVtime channel/session system; one live broadcaster (camera or computer capture) can occupy a named channel at once. Choose distinct names.
+A camera channel works through the existing Caszual TV Time channel/session system; one live broadcaster (camera or computer capture) can occupy a named channel at once. Choose distinct names.
 
 ## Remote controls
 
@@ -36,8 +36,8 @@ A camera channel works through the existing TVtime channel/session system; one l
 ## Remote activation and chunk loading
 
 - Active cameras receive a server-side **chunk loading + simulation ticket** while the server is running. The camera keeps its local area (radius-2 chunk ticket) loaded when no player is nearby.
-- **Turning a camera OFF releases its chunk ticket** and stops its TVtime broadcast. This saves server resources.
-- TVtime maintains a **saved per-dimension directory** of cameras. An offline camera is still visible from a control table and may be powered back on remotely without physically visiting it.
+- **Turning a camera OFF releases its chunk ticket** and stops its Caszual TV Time broadcast. This saves server resources.
+- Caszual TV Time maintains a **saved per-dimension directory** of cameras. An offline camera is still visible from a control table and may be powered back on remotely without physically visiting it.
 - On server restart, the mod attempts to restore enabled cameras from that saved directory.
 - **Safety limit:** no more than **four active camera feeds per dimension** are supported by this initial implementation. Additional enabled cameras must wait until capacity becomes free.
 - The camera's chunk ticket does **not** automatically send terrain/chunks to distant players for normal gameplay movement; it is meant for the camera's server-side feed/simulation.
@@ -77,4 +77,4 @@ Both are also in the **Functional Blocks** creative inventory tab.
 - **Video quality:** currently deliberately small (48 × 27 / 1 FPS); resolution and proper world rendering remain future development tasks.
 - **Performance:** start with a single camera. Camera tickets and additional viewers have server/network cost.
 
-[Report camera bugs](https://github.com/CaszGamerMD/TVtime/issues).
+[Report camera bugs](__CASZUAL_TV_TIME_REPOSITORY_URL__/issues).

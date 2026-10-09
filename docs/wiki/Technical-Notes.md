@@ -44,7 +44,7 @@ The `StreamLimits` default values are **code defaults**, not evidence of a confi
 | `src/client/java/.../screen/` | Remote configuration and broadcast GUI |
 | `src/client/java/.../hud/` | Offhand Portable TV picture-in-picture |
 | `native/windows/` | Windows capture helper source |
-| `src/main/resources/data/tvtime/recipe/` | Actual crafting JSON files |
+| `src/main/resources/data/caszual_tv_time/recipe/` | Actual crafting JSON files |
 | `dist/` | Published alpha test JAR/instructions |
 
 ## Build
@@ -62,7 +62,7 @@ An ordinary source build may not include the native helper unless you have built
 - Test one speaker, then several with distinct roles.
 - Compare LOW/BALANCED/HIGH and AUTO/H264/DELTA.
 - Watch for high aggregate frame/texturing cost when several displays show streams.
-- Use `/tvtime_capture status` to capture reproducible metrics.
+- Use `/caszual_tv_time_capture status` to capture reproducible metrics.
 - Update this wiki along with changes to blocks, settings, commands, and recipe JSON.
 
-**Source:** [GitHub Repository](https://github.com/CaszGamerMD/TVtime) · [Issues](https://github.com/CaszGamerMD/TVtime/issues)
+**Source:** [GitHub Repository](__CASZUAL_TV_TIME_REPOSITORY_URL__) · [Issues](__CASZUAL_TV_TIME_REPOSITORY_URL__/issues)

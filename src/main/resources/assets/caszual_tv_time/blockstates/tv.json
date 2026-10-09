@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "caszual_tv_time:block/tv" },
+    "facing=east":  { "model": "caszual_tv_time:block/tv", "y": 90 },
+    "facing=south": { "model": "caszual_tv_time:block/tv", "y": 180 },
+    "facing=west":  { "model": "caszual_tv_time:block/tv", "y": 270 }
+  }
+}

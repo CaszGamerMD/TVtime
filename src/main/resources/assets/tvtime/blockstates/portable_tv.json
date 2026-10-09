@@ -1,8 +1,0 @@
-{
-  "variants": {
-    "facing=north": { "model": "tvtime:block/portable_tv" },
-    "facing=east":  { "model": "tvtime:block/portable_tv", "y": 90 },
-    "facing=south": { "model": "tvtime:block/portable_tv", "y": 180 },
-    "facing=west":  { "model": "tvtime:block/portable_tv", "y": 270 }
-  }
-}

@@ -1,0 +1,12 @@
+{
+  "block.caszual_tv_time.tv": "TV Screen",
+  "block.caszual_tv_time.speaker": "Legacy Speaker",
+  "item.caszual_tv_time.tv_remote": "TV Remote",
+  "block.caszual_tv_time.iron_speaker": "Iron Speaker",
+  "block.caszual_tv_time.spruce_speaker": "Spruce Speaker",
+  "block.caszual_tv_time.modern_speaker": "Modern Speaker",
+  "block.caszual_tv_time.custom_speaker": "Custom Speaker",
+  "block.caszual_tv_time.portable_tv": "Portable TV",
+  "block.caszual_tv_time.camera": "Camera",
+  "block.caszual_tv_time.camera_control_table": "Camera Control Table"
+}
