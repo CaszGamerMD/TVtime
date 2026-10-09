@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "tvtime:block/camera"
+    },
+    "facing=east": {
+      "model": "tvtime:block/camera",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "tvtime:block/camera",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "tvtime:block/camera",
+      "y": 270
+    }
+  }
+}

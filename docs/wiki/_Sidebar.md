@@ -2,6 +2,7 @@
 
 - [Home](Home.md)
 - [Getting Started](Getting-Started.md)
+- [Cameras & Control Table](Cameras-and-Control-Table.md)
 - [TV Screens & Channels](TV-Screens-and-Channels.md)
 - [Broadcasting](Broadcasting.md)
 - [Remote & Controls](Remote-and-Controls.md)

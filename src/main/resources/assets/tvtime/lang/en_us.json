@@ -6,5 +6,7 @@
   "block.tvtime.spruce_speaker": "Spruce Speaker",
   "block.tvtime.modern_speaker": "Modern Speaker",
   "block.tvtime.custom_speaker": "Custom Speaker",
-  "block.tvtime.portable_tv": "Portable TV"
+  "block.tvtime.portable_tv": "Portable TV",
+  "block.tvtime.camera": "Camera",
+  "block.tvtime.camera_control_table": "Camera Control Table"
 }

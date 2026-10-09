@@ -1,6 +1,15 @@
 package com.caszgamermd.tvtime.network;
 
 import com.caszgamermd.tvtime.TVtime;
+import com.caszgamermd.tvtime.camera.CameraManager;
+import com.caszgamermd.tvtime.camera.CameraSavedData;
+import com.caszgamermd.tvtime.block.CameraBlockEntity;
+import com.caszgamermd.tvtime.network.payload.CameraCatalogPayload;
+import com.caszgamermd.tvtime.network.payload.ConfigureCameraPayload;
+import com.caszgamermd.tvtime.network.payload.RequestCameraCatalogPayload;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import java.util.Comparator;
 import com.caszgamermd.tvtime.broadcast.BroadcastSession;
 import com.caszgamermd.tvtime.config.StreamLimits;
 import com.caszgamermd.tvtime.display.TvDisplaySettings;
@@ -38,6 +47,12 @@ public final class TVtimeNetworking {
     }
 
     public static void initialize() {
+        PayloadTypeRegistry.serverboundPlay().register(
+            RequestCameraCatalogPayload.TYPE, RequestCameraCatalogPayload.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(
+            ConfigureCameraPayload.TYPE, ConfigureCameraPayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(
+            CameraCatalogPayload.TYPE, CameraCatalogPayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(
             StartBroadcastPayload.TYPE,
             StartBroadcastPayload.CODEC
@@ -88,6 +103,14 @@ public final class TVtimeNetworking {
             ChannelSessionPayload.CODEC
         );
 
+        ServerPlayNetworking.registerGlobalReceiver(
+            RequestCameraCatalogPayload.TYPE,
+            (payload, context) -> sendCameraCatalog(context.player(), payload.consolePos())
+        );
+        ServerPlayNetworking.registerGlobalReceiver(
+            ConfigureCameraPayload.TYPE,
+            (payload, context) -> handleConfigureCamera(context.player(), payload)
+        );
         ServerPlayNetworking.registerGlobalReceiver(
             StartBroadcastPayload.TYPE,
             (payload, context) -> handleStart(context.player(), payload)
@@ -277,6 +300,52 @@ public final class TVtimeNetworking {
                 new ChannelSessionPayload(session.channel(), session.id(), false)
             );
         });
+    }
+
+    private static boolean canUseCameraConsole(ServerPlayer player, BlockPos pos) {
+        long dx = (long) player.blockPosition().getX() - pos.getX();
+        long dy = (long) player.blockPosition().getY() - pos.getY();
+        long dz = (long) player.blockPosition().getZ() - pos.getZ();
+        return dx * dx + dy * dy + dz * dz <= 64
+            && player.level().getBlockState(pos).is(ModBlocks.CAMERA_CONTROL_TABLE);
+    }
+
+    private static void sendCameraCatalog(ServerPlayer player, BlockPos console) {
+        if (!canUseCameraConsole(player, console)) return;
+        ServerLevel world = (ServerLevel) player.level();
+        var cams = CameraSavedData.get(world).entries().stream()
+            .sorted(Comparator.comparing(CameraSavedData.Entry::name))
+            .limit(64)
+            .map(c -> new CameraCatalogPayload.CameraEntry(
+                c.pos(), c.name(), c.channel(),
+                c.active(), c.pan(), c.tilt(), c.zoom()))
+            .toList();
+        ServerPlayNetworking.send(player, new CameraCatalogPayload(console, cams));
+    }
+
+    private static void handleConfigureCamera(ServerPlayer player, ConfigureCameraPayload p) {
+        if (!canUseCameraConsole(player, p.consolePos())) return;
+        ServerLevel world = (ServerLevel) player.level();
+        if (!CameraSavedData.get(world).contains(p.cameraPos())) return;
+        // Loading one known, offline camera chunk on explicit user interaction
+        // is bounded and allows remote power-on after the ticket was released.
+        CameraBlockEntity camera = CameraManager.lookup(world, p.cameraPos());
+        if (camera == null) {
+            world.getChunkAt(p.cameraPos());
+            if (world.getBlockEntity(p.cameraPos()) instanceof CameraBlockEntity found) {
+                camera = found;
+                CameraManager.add(world, camera);
+            }
+        }
+        if (camera == null || !world.getBlockState(p.cameraPos()).is(ModBlocks.CAMERA)) {
+            CameraSavedData.get(world).remove(p.cameraPos());
+            sendCameraCatalog(player, p.consolePos());
+            return;
+        }
+        // A control console may affect orientation, channel and power, but never position.
+        camera.configure(p.name(), p.channel(), p.active(), p.pan(), p.tilt(), p.zoom());
+        CameraSavedData.get(world).put(camera);
+        sendCameraCatalog(player, p.consolePos());
     }
 
     private static void handleConfigurePortableTvPip(

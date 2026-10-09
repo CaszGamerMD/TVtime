@@ -1,6 +1,9 @@
 package com.caszgamermd.tvtime.client.network;
 
 import com.caszgamermd.tvtime.client.media.ClientBroadcastMedia;
+import com.caszgamermd.tvtime.network.payload.CameraCatalogPayload;
+import com.caszgamermd.tvtime.client.screen.CameraControlScreen;
+import net.minecraft.client.Minecraft;
 import com.caszgamermd.tvtime.client.media.RawTestFrameCodec;
 import com.caszgamermd.tvtime.client.media.VideoFrameStore;
 import com.caszgamermd.tvtime.client.media.VideoDecodeScheduler;
@@ -28,6 +31,14 @@ public final class TVtimeClientNetworking {
     }
 
     public static void initialize() {
+        ClientPlayNetworking.registerGlobalReceiver(
+            CameraCatalogPayload.TYPE,
+            (payload, context) -> context.client().execute(() -> {
+                if (Minecraft.getInstance().gui.screen() instanceof CameraControlScreen screen) {
+                    screen.updateCatalog(payload);
+                }
+            })
+        );
         ClientPlayNetworking.registerGlobalReceiver(
             StartBroadcastAckPayload.TYPE,
             (payload, context) -> context.client().execute(() ->
