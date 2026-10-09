@@ -1,6 +1,7 @@
 package com.caszgamermd.tvtime;
 
 import com.caszgamermd.tvtime.block.ModBlockEntities;
+import com.caszgamermd.tvtime.camera.CameraManager;
 import com.caszgamermd.tvtime.block.ModBlocks;
 import com.caszgamermd.tvtime.broadcast.BroadcastManager;
 import com.caszgamermd.tvtime.network.TVtimeNetworking;
@@ -37,6 +38,7 @@ public final class TVtime implements ModInitializer {
         ModItems.initialize();
         ModBlockEntities.initialize();
         TVtimeNetworking.initialize();
+        CameraManager.initialize();
 
         UseBlockCallback.EVENT.register(
             (player, level, hand, hitResult) -> {
