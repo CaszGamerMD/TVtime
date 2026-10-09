@@ -34,7 +34,7 @@ public final class TVtimeClientNetworking {
         ClientPlayNetworking.registerGlobalReceiver(
             CameraCatalogPayload.TYPE,
             (payload, context) -> context.client().execute(() -> {
-                if (Minecraft.getInstance().screen instanceof CameraControlScreen screen) {
+                if (Minecraft.getInstance().gui.screen() instanceof CameraControlScreen screen) {
                     screen.updateCatalog(payload);
                 }
             })
