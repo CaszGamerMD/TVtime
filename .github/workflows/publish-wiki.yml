@@ -21,7 +21,24 @@ jobs:
     steps:
       - name: Check out TVtime
         uses: actions/checkout@v4
+      - name: Check if GitHub Wiki has a first page
+        id: wiki_status
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          WIKI_REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git"
+          if git ls-remote "${WIKI_REMOTE}" HEAD >/dev/null 2>&1; then
+            echo "ready=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "ready=false" >> "${GITHUB_OUTPUT}"
+            echo "## TVtime Wiki needs its first page" >> "${GITHUB_STEP_SUMMARY}"
+            echo "Open https://github.com/${GITHUB_REPOSITORY}/wiki and create the first Home page once." >> "${GITHUB_STEP_SUMMARY}"
+            echo "Then manually rerun this workflow (Actions > Publish TVtime Wiki > Run workflow)." >> "${GITHUB_STEP_SUMMARY}"
+            echo "::notice::GitHub Wiki is not initialized; documentation is already available under docs/wiki."
+          fi
       - name: Sync docs/wiki to GitHub Wiki
+        if: steps.wiki_status.outputs.ready == 'true'
         uses: step-security/github-wiki-action@v5
         with:
           path: docs/wiki
