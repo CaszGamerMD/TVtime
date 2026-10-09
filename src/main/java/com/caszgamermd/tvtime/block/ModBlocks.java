@@ -34,6 +34,18 @@ public final class ModBlocks {
             .noOcclusion()
     );
 
+    public static final Block CAMERA = register(
+        ModBlockItemIds.CAMERA,
+        CameraBlock::new,
+        BlockBehaviour.Properties.of().strength(2.0f, 6.0f).sound(SoundType.METAL).noOcclusion()
+    );
+
+    public static final Block CAMERA_CONTROL_TABLE = register(
+        ModBlockItemIds.CAMERA_CONTROL_TABLE,
+        CameraControlTableBlock::new,
+        BlockBehaviour.Properties.of().strength(2.5f, 6.0f).sound(SoundType.METAL).noOcclusion()
+    );
+
     // Legacy block kept registered so existing alpha worlds do not lose
     // already-placed speakers. It is intentionally hidden from the tab.
     public static final Block SPEAKER = register(
@@ -137,6 +149,8 @@ public final class ModBlocks {
     public static void initialize() {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(entries -> {
             entries.accept(TV.asItem());
+            entries.accept(CAMERA.asItem());
+            entries.accept(CAMERA_CONTROL_TABLE.asItem());
             entries.accept(PORTABLE_TV.asItem());
             entries.accept(IRON_SPEAKER.asItem());
             entries.accept(SPRUCE_SPEAKER.asItem());

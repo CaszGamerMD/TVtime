@@ -16,6 +16,12 @@ public final class ModBlockEntities {
         ModBlocks.PORTABLE_TV
     );
 
+    public static final BlockEntityType<CameraBlockEntity> CAMERA = register(
+        "camera",
+        CameraBlockEntity::new,
+        ModBlocks.CAMERA
+    );
+
     public static final BlockEntityType<SpeakerBlockEntity> SPEAKER = register(
         "speaker",
         SpeakerBlockEntity::new,
