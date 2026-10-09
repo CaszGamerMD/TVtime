@@ -66,7 +66,42 @@ def new_contents(path, text):
     return text
 
 
+def repair_rebranded_tree():
+    tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).split(b"\0")
+    count = 0
+    for entry in tracked:
+        if not entry:
+            continue
+        name = entry.decode("utf-8")
+        if name in SKIP or name.startswith(".github/workflows/"):
+            continue
+        path = ROOT / name
+        if not path.is_file():
+            continue
+        try:
+            before = path.read_text(encoding="utf-8")
+        except UnicodeError:
+            continue
+        after = (before
+            .replace("com.caszgamermd.caszualcaszual_tv_time",
+                     "com.caszgamermd.caszualtvtime")
+            .replace("com.caszgamermd.caszual_tv_time",
+                     "com.caszgamermd.caszualtvtime")
+            .replace("__CASZUAL_TV_TIME_REPOSITORY_URL__", REPO_URL))
+        if after != before:
+            path.write_text(after, encoding="utf-8")
+            count += 1
+    assert "com.caszgamermd.caszualtvtime" in (
+        ROOT / "src/main/java/com/caszgamermd/caszualtvtime/CaszualTvTime.java").read_text()
+    assert REPO_URL in (ROOT / "src/main/resources/fabric.mod.json").read_text()
+    print("Rebrand integrity fixes applied to", count, "files")
+
+
 def main():
+    descriptor = ROOT / 'src/main/resources/fabric.mod.json'
+    if descriptor.is_file() and json.loads(descriptor.read_text()).get('id') == 'caszual_tv_time':
+        repair_rebranded_tree()
+        return
     tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).split(b"\0")
     modified = moved = 0
     for entry in tracked:
