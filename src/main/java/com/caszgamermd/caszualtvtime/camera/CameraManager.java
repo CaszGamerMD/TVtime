@@ -181,9 +181,15 @@ public final class CameraManager {
             .filter(runtime -> runtime.frame != null && runtime.session != null)
             .toList();
         int remaining = CameraFeedRenderer.TOTAL_RAYS_PER_TICK;
-        int cursor = 0;
-        for (CameraRuntime runtime : pending) {
-            int budget = Math.max(1, remaining / (pending.size() - cursor++));
+        // Strict per-tick deadline. This is deliberately more important than FPS
+        // until camera pictures are supplied by a client GPU rather than CPU rays.
+        long deadline = System.nanoTime() + 900_000L;
+        int offset = pending.isEmpty() ? 0 : Math.floorMod((int) tick, pending.size());
+        for (int i = 0; i < pending.size() && remaining > 0; i++) {
+            if (System.nanoTime() >= deadline) break;
+            CameraRuntime runtime = pending.get((offset + i) % pending.size());
+            // Bound each batch so the deadline is checked between small batches.
+            int budget = Math.min(64, Math.max(1, remaining / (pending.size() - i)));
             remaining -= budget;
             if (!runtime.frame.renderNext(world, budget)) continue;
             byte[] frame = runtime.frame.data();
