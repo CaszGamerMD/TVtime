@@ -17,6 +17,7 @@ import com.caszgamermd.caszualtvtime.client.audio.TvAudioPlaybackManager;
 import com.caszgamermd.caszualtvtime.client.audio.NearbyAudioSourceScanner;
 import com.caszgamermd.caszualtvtime.client.screen.TvConfigScreen;
 import com.caszgamermd.caszualtvtime.client.screen.CameraControlScreen;
+import com.caszgamermd.caszualtvtime.client.camera.CameraOperator;
 import com.caszgamermd.caszualtvtime.client.screen.SpeakerConfigScreen;
 import com.caszgamermd.caszualtvtime.client.screen.PortableTvPipConfigScreen;
 import com.caszgamermd.caszualtvtime.client.hud.PortableTvHud;
@@ -104,6 +105,7 @@ public final class CaszualTvTimeClient implements ClientModInitializer {
             }
         );
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            CameraOperator.tick();
             if (client.level == null) {
                 ClientChannelSubscriptions.clear();
                 ClientChannelDirectory.clear();

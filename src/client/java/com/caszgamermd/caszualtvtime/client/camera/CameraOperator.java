@@ -53,7 +53,7 @@ public final class CameraOperator {
             return "Server camera controls are not available.";
         }
         var backend = CaptureBroadcastController.instance();
-        if (!backend.backend().supported()) {
+        if (!backend.backend().available()) {
             return "HD hosting requires TV Time's Windows capture helper.";
         }
         int minecraftWindow = -1;
@@ -130,6 +130,11 @@ public final class CameraOperator {
             updateAngles(a, camera.pan(), camera.tilt(), camera.zoom());
         }
         if (mc.getCameraEntity() != a.stand) mc.setCameraEntity(a.stand);
+        if (a.started && !CaptureBroadcastController.instance().running()) {
+            stop();
+            mc.gui.setScreen(null);
+            return;
+        }
         if (a.ticks++ < 12 || a.started) return;
         try {
             CaptureBroadcastController.instance().start(a.minecraftWindow, a.channel);
