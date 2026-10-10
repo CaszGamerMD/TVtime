@@ -2,7 +2,7 @@
 
 **Caszual TV Time** is a Minecraft **26.2 Fabric** mod that lets players broadcast a selected **Windows application window and its audio** to shared, in-world TV screens.
 
-**Current version:** 0.1.0-alpha.2 — experimental development build.
+**Current version:** 0.1.0-alpha.3 — experimental development build.
 
 ## Features
 
@@ -37,3 +37,7 @@ MIT licensed — see [LICENSE](LICENSE).
 ## Breaking rebrand
 
 Previously called TVtime. The new mod ID is caszual_tv_time. Old tvtime block/item IDs are not migrated, as requested; remove the prior JAR before installing the new one. The GitHub repository URL remains unchanged.
+
+## Experimental HD camera operator (Windows)
+
+A nearby player can select a placed camera at its Camera Control Table and choose **Host HD camera (Windows; local)**. Caszual TV Time puts only that client's camera view at the fixed camera position, then broadcasts the real Minecraft render through its existing window/H.264 streaming system at 640×360 (HIGH). The player is not teleported; press Esc to restore normal view. The operator must be within 48 blocks with the camera chunk loaded, and the legacy CPU feed is turned OFF during hosting. It requires an active client running the Windows capture helper: **remote unattended GPU cameras are not yet implemented**.

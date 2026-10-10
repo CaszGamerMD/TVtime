@@ -175,19 +175,20 @@ jobs:
 
           New-Item -ItemType Directory -Force -Path dist | Out-Null
 
-          $packageName = "caszual-tv-time-0.1.0-alpha.2.jar"
+          $packageName = "caszual-tv-time-0.1.0-alpha.3.jar"
+          Get-ChildItem dist/caszual-tv-time-*.jar -ErrorAction SilentlyContinue | Remove-Item -Force
           Copy-Item $jar.FullName "dist/$packageName" -Force
           Copy-Item bundle/TESTING.txt dist/TESTING.txt -Force
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add dist/$packageName dist/TESTING.txt
+          git add -A dist
 
           if (git diff --cached --quiet) {
             Write-Host "Verified package is already current in dist/."
             exit 0
           }
 
-          git commit -m "Package Caszual TV Time 0.1.0-alpha.2"
+          git commit -m "Package Caszual TV Time 0.1.0-alpha.3"
           git push origin HEAD:main

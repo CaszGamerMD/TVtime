@@ -1,6 +1,7 @@
 package com.caszgamermd.caszualtvtime.client.screen;
 
 import com.caszgamermd.caszualtvtime.network.payload.CameraCatalogPayload;
+import com.caszgamermd.caszualtvtime.client.camera.CameraOperator;
 import com.caszgamermd.caszualtvtime.network.payload.ConfigureCameraPayload;
 import com.caszgamermd.caszualtvtime.network.payload.RequestCameraCatalogPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -79,6 +80,15 @@ public final class CameraControlScreen extends Screen {
         rebuildWidgets();
     }
 
+    private void beginHD() {
+        if (selected < 0 || selected >= entries.size()) return;
+        rememberFields();
+        String error = CameraOperator.begin(
+            table, entries.get(selected).pos(), name, channel, pan, tilt, zoom
+        );
+        if (error != null) status = error;
+    }
+
     @Override protected void init() {
         int left = width / 2 - 116;
         if (!editing) {
@@ -140,6 +150,9 @@ public final class CameraControlScreen extends Screen {
             .bounds(left, 242, 111, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Back"), b -> { editing = false; rebuildWidgets(); })
             .bounds(left + 121, 242, 111, 20).build());
+
+        addRenderableWidget(Button.builder(Component.literal("Host HD camera (Windows; local)"),
+            b -> beginHD()).bounds(left, 269, 232, 20).build());
     }
 
     @Override public void extractRenderState(GuiGraphicsExtractor graphics, int mx, int my, float pt) {
@@ -151,6 +164,9 @@ public final class CameraControlScreen extends Screen {
             graphics.centeredText(font, Component.literal(String.format("Pan %.0f°", pan)), width/2, 150, -1);
             graphics.centeredText(font, Component.literal(String.format("Tilt %.0f°", tilt)), width/2, 179, -1);
             graphics.centeredText(font, Component.literal(String.format("x%.1f", zoom)), width/2, 208, -1);
+            if (!status.isBlank() && !status.equals("Loading camera directory...")) {
+                graphics.centeredText(font, Component.literal(status), width/2, 296, 0xffe07e6e);
+            }
             if (nameBox != null) nameBox.extractRenderState(graphics, mx, my, pt);
             if (channelBox != null) channelBox.extractRenderState(graphics, mx, my, pt);
         } else {

@@ -90,3 +90,19 @@ This patch reduces gameplay load by:
 - Compressing each finished camera frame once using the existing TVZ1 video format instead of broadcasting raw RGBA for every subscriber. Unchanged frames are not retransmitted more than once every two seconds.
 
 **This is a server TPS/bandwidth fix, not a full-quality camera implementation.** A true security-camera feed must be rendered with Minecraft's native renderer on a client with the camera's chunks/entities loaded, encoded to video and relayed to TVs. Creating that GPU-backed render path is separate work; simply increasing the CPU renderer resolution is intentionally avoided.
+
+## Experimental HD Operator (real Minecraft scene)
+
+The experimental **Host HD camera (Windows; local)** button in a camera's control-table settings replaces the low-resolution CPU block-color feed with the **same Windows window-capture and H.264 video pathway** that TV Time already uses for broadcasting screens.
+
+Requirements:
+
+1. Run the game on a **Windows Minecraft client** with the bundled native capture helper; the helper must be able to enumerate/capture its own Minecraft game window.
+2. Stand within **48 blocks of the camera**, with its chunks already loaded by your own client. **Remote/distant cameras cannot use this mode unattended.**
+3. Right-click a Camera Control Table, select the local camera, enter a channel, and click **Host HD camera (Windows; local)**.
+4. Your game viewpoint changes to that fixed camera's position and angle; your real player entity stays at the control table. The Windows capture helper streams the rendered scene at the existing **HIGH profile (640×360, up to 20 FPS)**, including textures, mobs and lighting, on the camera's TV channel. The camera's old CPU feed is switched **OFF** while the HD broadcast is active, to avoid the channel collision and spare the server.
+5. Leave the hosting client running and press **Esc** to stop. Your usual camera view, FOV, and HUD settings are restored. The camera block stays switched OFF afterward; turn it ON again at the table if you want to restore the legacy feed.
+
+The operator controls the camera view, not the camera block's X/Y/Z. Pan and tilt read the camera's configured orientation. This feature intentionally requires the operator's Minecraft client to render the scene, so it **does not** make an unoccupied camera independent of players or operators, and does not provide a background/offscreen renderer for arbitrary distant chunks. The client must receive the remote camera's chunks and entities from vanilla networking before they can be rendered. At most one HD operator camera feed can be active from a single game client. Full offscreen automatic HD cameras would require a dedicated renderer or remote worker and multi-position client chunk streaming.
+
+Because this mode captures the running Minecraft window, it may include client screen overlays from other mods. Test in a non-production world before relying on it for surveillance, and remember that it uses the **Windows native capture helper**, not a dedicated-server renderer.
