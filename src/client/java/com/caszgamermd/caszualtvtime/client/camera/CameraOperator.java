@@ -77,7 +77,7 @@ public final class CameraOperator {
             mc.level, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5
         );
         Entity oldCamera = mc.getCameraEntity();
-        boolean oldHud = mc.options.hideGui;
+        boolean oldHud = mc.gui.hud.isHidden();
         var oldProfile = backend.captureProfile();
         var oldCodec = backend.preferredCodec();
         var fovOption = mc.options.fov();
@@ -92,7 +92,7 @@ public final class CameraOperator {
             // Set only the client-side viewer to the anchored camera. The
             // real player remains at the control table.
             mc.setCameraEntity(stand);
-            mc.options.hideGui = true;
+            if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle();
             fovOption.set(Math.max(30, Math.min(110,
                 (int) (oldFov / Math.max(1.0, zoom)))));
             backend.setCaptureProfile(CaptureProfile.HIGH);
@@ -122,8 +122,8 @@ public final class CameraOperator {
         if (!mc.level.hasChunkAt(a.pos)
             || !mc.level.getBlockState(a.pos).is(ModBlocks.CAMERA)) {
             stop();
-            mc.player.displayClientMessage(Component.literal(
-                "Camera area unloaded. HD broadcast stopped."), false);
+            mc.player.sendSystemMessage(Component.literal(
+                "Camera area unloaded. HD broadcast stopped."));
             return;
         }
         if (mc.level.getBlockEntity(a.pos) instanceof CameraBlockEntity camera) {
@@ -141,8 +141,8 @@ public final class CameraOperator {
             a.started = true;
         } catch (RuntimeException failure) {
             stop();
-            mc.player.displayClientMessage(Component.literal(
-                "HD camera broadcast failed: " + failure.getMessage()), false);
+            mc.player.sendSystemMessage(Component.literal(
+                "HD camera broadcast failed: " + failure.getMessage()));
             mc.gui.setScreen(null);
         }
     }
@@ -167,7 +167,7 @@ public final class CameraOperator {
         if (a.started) controller.stop();
         if (mc.player != null) mc.setCameraEntity(a.originalCamera == null
             ? mc.player : a.originalCamera);
-        mc.options.hideGui = a.originalHud;
+        if (mc.gui.hud.isHidden() != a.originalHud) mc.gui.hud.toggle();
         mc.options.fov().set(a.originalFov);
         controller.setCaptureProfile(a.originalProfile);
         controller.setPreferredCodec(a.originalCodec);
