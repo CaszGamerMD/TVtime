@@ -19,7 +19,7 @@ public final class CameraFeedRenderer {
     public static final int HEIGHT = 72;
     public static final int FPS_LIMIT = 2;
     public static final int FRAME_INTERVAL_TICKS = 20 / FPS_LIMIT;
-    public static final int TOTAL_RAYS_PER_TICK = 1200;
+    public static final int TOTAL_RAYS_PER_TICK = 512;
     private static final int MAGIC = 0x54565230; // TVR0; uses existing TVtime RGBA decoder
     private static final double RANGE = 40.0;
 

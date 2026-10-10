@@ -75,6 +75,18 @@ Both are also in the **Functional Blocks** creative inventory tab.
 - **No TV picture:** check camera power, camera channel, TV channel, and whether that channel is occupied by another broadcaster.
 - **Unloaded scene/short range:** the simple block-color ray camera cannot see beyond the chunks currently loaded on the server. It deliberately does not synchronously load a new chunk for each ray.
 - **Video quality:** now 128 × 72 pixels at up to 2 FPS. A shared render budget reduces FPS when more cameras stream simultaneously to avoid overloading the server. It remains a block-color view, not a Minecraft GPU-rendered camera with textures/entities/shaders.
-- **Performance:** ray traversal uses voxel stepping, and the work is spread across server ticks with a global per-dimension budget of 1,200 rays per tick. Cameras not being watched do not render or send frames. Start with a single camera. Chunk tickets and viewers still have server/network cost.
+- **Performance:** ray traversal uses voxel stepping, and the work is spread across server ticks with a global per-dimension budget of up to 512 rays per tick, with a 0.9 ms rendering deadline. Cameras not being watched do not render or send frames. Start with a single camera. Chunk tickets and viewers still have server/network cost.
 
 [Report camera bugs](https://github.com/CaszGamerMD/TVtime/issues).
+
+## Performance hotfix and image-quality limitations
+
+The camera is still a legacy **server CPU block-color raycaster**. Minecraft does not have full block texture atlases, mob renderers, particles or shaders available to the dedicated server. This mode cannot be turned into a normal player-quality view simply by raising pixel dimensions, which multiplies ray work and causes lag.
+
+This patch reduces gameplay load by:
+
+- Using **non-simulating chunk tickets** by default, radius one (chunk-loads do not tick farms, entities or redstone). Administrators who deliberately want simulated chunks can launch with `-Dcaszual_tv_time.camera.simulateChunks=true`. The radius can be set to 0–2 with `-Dcaszual_tv_time.camera.chunkRadius=1`.
+- Enforcing a strict per-dimension CPU budget and small processing batches, preventing the camera renderer from consuming a full server tick.
+- Compressing each finished camera frame once using the existing TVZ1 video format instead of broadcasting raw RGBA for every subscriber. Unchanged frames are not retransmitted more than once every two seconds.
+
+**This is a server TPS/bandwidth fix, not a full-quality camera implementation.** A true security-camera feed must be rendered with Minecraft's native renderer on a client with the camera's chunks/entities loaded, encoded to video and relayed to TVs. Creating that GPU-backed render path is separate work; simply increasing the CPU renderer resolution is intentionally avoided.
