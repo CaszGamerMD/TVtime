@@ -5,6 +5,7 @@ import com.caszgamermd.caszualtvtime.block.CameraBlockEntity;
 import com.caszgamermd.caszualtvtime.block.ModBlocks;
 import com.caszgamermd.caszualtvtime.broadcast.BroadcastSession;
 import com.caszgamermd.caszualtvtime.network.MediaKind;
+import java.util.Arrays;
 import com.caszgamermd.caszualtvtime.network.CaszualTvTimeNetworking;
 import com.caszgamermd.caszualtvtime.network.payload.ChannelSessionPayload;
 import com.caszgamermd.caszualtvtime.network.payload.MediaRelayPayload;
@@ -33,8 +34,20 @@ import java.util.UUID;
 public final class CameraManager {
     public static final int MAX_ACTIVE_PER_DIMENSION = 4;
     public static final int FPS = CameraFeedRenderer.FPS_LIMIT;
+    /**
+     * A camera must not silently turn an entire area into a simulated farm.
+     * Chunk *loading* and block/entity *simulation* are distinct in 26.2.
+     * Operators may opt into simulation explicitly with the JVM property.
+     */
+    private static final boolean SIMULATE_CHUNKS =
+        Boolean.getBoolean("caszual_tv_time.camera.simulateChunks");
+    private static final int CHUNK_RADIUS = Math.max(0, Math.min(2,
+        Integer.getInteger("caszual_tv_time.camera.chunkRadius", 1)));
     private static final TicketType CAMERA_TICKET =
-        new TicketType(TicketType.NO_TIMEOUT, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION);
+        new TicketType(TicketType.NO_TIMEOUT,
+            SIMULATE_CHUNKS
+                ? TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION
+                : TicketType.FLAG_LOADING);
     private static final Map<ServerLevel, Map<BlockPos, CameraRuntime>> CAMERAS = new IdentityHashMap<>();
     private static final Map<ServerLevel, Map<Long, Integer>> TICKET_REFS = new IdentityHashMap<>();
 
@@ -176,9 +189,17 @@ public final class CameraManager {
             byte[] frame = runtime.frame.data();
             runtime.frame = null;
             runtime.lastPublishedTick = tick;
+            // Do not resend unchanged still images every second, but refresh
+            // independent keyframes for players who tune into the channel later.
+            boolean refresh = tick - runtime.lastSentTick >= 40;
+            if (!refresh && Arrays.equals(frame, runtime.lastFrame)) continue;
+            runtime.lastFrame = frame;
+            runtime.lastSentTick = tick;
+            byte[] encoded = CameraFrameEncoder.encode(
+                CameraFeedRenderer.WIDTH, CameraFeedRenderer.HEIGHT, frame);
             var packet = new MediaRelayPayload(
                 runtime.session.id(), MediaKind.VIDEO, runtime.sequence++,
-                tick * 50_000L, true, frame
+                tick * 50_000L, true, encoded
             );
             for (UUID viewerId : CaszualTvTimeNetworking.subscriptions().viewers(runtime.session.id())) {
                 ServerPlayer viewer = world.getServer().getPlayerList().getPlayer(viewerId);
@@ -205,6 +226,8 @@ public final class CameraManager {
         runtime.session = null;
         runtime.frame = null;
         runtime.sequence = 0;
+        runtime.lastFrame = null;
+        runtime.lastSentTick = Long.MIN_VALUE / 2;
     }
 
     private static void release(ServerLevel world, CameraRuntime runtime) {
@@ -220,7 +243,7 @@ public final class CameraManager {
         Map<Long, Integer> counts = TICKET_REFS.computeIfAbsent(world, ignored -> new HashMap<>());
         int before = counts.getOrDefault(key, 0);
         counts.put(key, before + 1);
-        if (before == 0) world.getChunkSource().addTicketWithRadius(CAMERA_TICKET, ChunkPos.containing(pos), 2);
+        if (before == 0) world.getChunkSource().addTicketWithRadius(CAMERA_TICKET, ChunkPos.containing(pos), CHUNK_RADIUS);
     }
 
     private static void releaseTicket(ServerLevel world, BlockPos pos) {
@@ -230,7 +253,7 @@ public final class CameraManager {
         int before = counts.getOrDefault(key, 0);
         if (before <= 1) {
             counts.remove(key);
-            if (before == 1) world.getChunkSource().removeTicketWithRadius(CAMERA_TICKET, ChunkPos.containing(pos), 2);
+            if (before == 1) world.getChunkSource().removeTicketWithRadius(CAMERA_TICKET, ChunkPos.containing(pos), CHUNK_RADIUS);
         } else counts.put(key, before - 1);
     }
 
@@ -241,6 +264,8 @@ public final class CameraManager {
         private long sequence;
         private long lastPublishedTick = Long.MIN_VALUE / 2;
         private CameraFeedRenderer.Frame frame;
+        private byte[] lastFrame;
+        private long lastSentTick = Long.MIN_VALUE / 2;
         private CameraRuntime(CameraBlockEntity camera) { this.camera = camera; }
     }
 }
